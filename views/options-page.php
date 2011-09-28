@@ -5,7 +5,7 @@
 ?>
 <h2>WP Meetup Options</h2>
 <p class="description">
-    Options for Meetup.com integration.
+    Options for Meetup.com integration. <a href="http://wordpress.org/extend/plugins/wp-meetup/">Visit plugin page</a>.
 </p>
 
 
@@ -124,10 +124,10 @@ $date_select .= "</select>";
     <input type="submit" value="Update Options" class="button-primary" />
 </p>
 
-<?php if ($events): ?>
+<?php if ($group): ?>
 <h3>Update Events Posts</h3>
 <p>
-    To better manage resources, WP Meetup does not automatically check Meetup.com for changes to events.  If you add new events or change the information for any events, you need to manually update the event posts.  Clicking "Update Event Posts" below will fetch the updates from Meetup.com and regenerate your event posts.
+    WP Meetup fetches the latest updates to your meetup events every hour and updates your event posts accordingly.  However, if you want recent changes to be reflected immediately, you can force an update by clicking "Update Event Posts."
 </p>
 <p>
     <input type="submit" name="update_events" value="Update Event Posts" class="button-secondary" />
@@ -135,6 +135,19 @@ $date_select .= "</select>";
 <?php endif; ?>
 
 </form>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<p>Powered by <a href="http://nuancedmedia.com/">Nuanced Media</a> <span class="fb-like" data-href="http://www.facebook.com/NuancedMedia" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false"></span></p>
 
 </div><!--.wrap-->
 
