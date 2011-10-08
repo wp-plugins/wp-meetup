@@ -46,6 +46,7 @@ class WP_Meetup_Events extends WP_Meetup_Model {
         foreach ($results as $key => $result) {
             $results[$key]->venue = unserialize($result->venue);
             $results[$key]->post = get_post($result->post_id);
+            $results[$key]->group = $this->groups->get($result->group_id);
         }
         //pr($results);
         return $results;
@@ -70,6 +71,7 @@ class WP_Meetup_Events extends WP_Meetup_Model {
     function get_by_post_id($post_id) {
         if ($result = $this->wpdb->get_row("SELECT * FROM `{$this->table_name}` WHERE `post_id` = {$post_id}")) {
             $result->venue = unserialize($result->venue);
+            $result->group = $this->groups->get($result->group_id);
             return $result;
         } else {
             return FALSE;
