@@ -164,7 +164,7 @@ $date_select .= "</select>";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
 
-<p>Powered by <a href="http://nuancedmedia.com/">Nuanced Media</a> <span class="fb-like" data-href="http://www.facebook.com/NuancedMedia" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false"></span></p>
+<p>Powered by <a href="http://nuancedmedia.com/" title="Website design, Marketing and Online Business Consulting">Nuanced Media</a> <span class="fb-like" data-href="http://www.facebook.com/NuancedMedia" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false"></span></p>
 
 </div><!--.wrap-->
 
