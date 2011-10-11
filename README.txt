@@ -31,7 +31,7 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 
 == Changelog ==
 
-= 1.1.2 -
+= 1.1.2 =
 * Removed plug so that we can stay hosted on Wordpress.org
 
 = 1.1.1 =
