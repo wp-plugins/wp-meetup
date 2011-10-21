@@ -3,7 +3,7 @@
 //print_r($events);
 $events_by_date = array();
 foreach ($events as $event) {
-    $event_time = $event->time + $event->utc_offset/1000;
+    $event_time = $event->time + $event->utc_offset;
     $event_date = mktime(0, 0, 0, date('n', $event_time), date('j', $event_time), date('Y', $event_time));
     $date_key = date('Y-m-d', $event_date);
     
@@ -59,10 +59,10 @@ if (count($events_by_date) > 0) {
                     foreach ($events_by_date[$date_key] as $event) {
                         $ul_contents .= $this->element('li',
                             $this->element('a',
-                                $this->element('span', date("g:i A", $event->time + $event->utc_offset/1000)) . $event->name,
+                                $this->element('span', date("g:i A", $event->time + $event->utc_offset)) . $event->name,
                                 array('href' => get_permalink($event->post->ID))
                             ),
-                            array('class' => (time() < $event->time + $event->utc_offset/1000 ? 'upcoming' : 'past') . " " . $event->group->url_name)
+                            array('class' => (time() < $event->time + $event->utc_offset ? 'upcoming' : 'past') . " " . $event->group->url_name)
                         );
                     }
                     $td_contents .= $this->element('ul', $ul_contents);

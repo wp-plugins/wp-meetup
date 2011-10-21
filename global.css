@@ -104,3 +104,56 @@
 #wp-meetup-widget-calendar th, #wp-meetup-widget-calendar td {
     padding: 3px;
 }
+
+#publishing-options {
+    margin-left: 3em;
+}
+#publishing-options input[type=radio] {
+    float: left;
+    margin-left: -2em;
+}
+#wp-meetup-container {
+    margin-left: 370px;
+}
+#wp-meetup-container.no-events {
+    margin-left: 0px;
+}
+#wp-meetup-container > div {
+    float: left;
+}
+#wp-meetup-options {
+    width: 350px;
+    margin-left: -370px;
+}
+.no-events #wp-meetup-options {
+    width: auto;
+    margin-left: 0px;
+}
+
+.wp-meetup-caption {
+    border: 1px solid #ccc;
+    padding: 20px;
+    -moz-box-shadow: 2px 2px 2px #ccc;
+    -webkit-box-shadow: 2px 2px 2px #ccc;
+    box-shadow: 2px 2px 2px #ccc;
+    background: #fff;
+}
+.wp-meetup-caption img {
+    width: 268px;
+}
+.wp-meetup-caption p {
+    margin-bottom: 0;
+    color: #000;
+}
+#wp-meetup-events {
+    
+}
+#fb-root {
+    clear: both;
+}
+
+.wrap.bad-person #wp-meetup-support-us {
+    background: #c33;
+    padding: 20px;
+    color: #fff;
+}

@@ -9,6 +9,7 @@ class WP_Meetup_Events extends WP_Meetup_Model {
         $this->wpdb = &$wpdb;
         $this->table_name = $this->table_prefix . "events";
         $this->import_model('groups');
+        $this->import_model('event_posts');
     }
     
     function create_table() {
@@ -65,17 +66,29 @@ class WP_Meetup_Events extends WP_Meetup_Model {
     }
     
     function get($event_id) {
-        return $this->wpdb->get_row("SELECT * FROM `{$this->table_name}` WHERE `id` = {$event_id}");
+        return $this->wpdb->get_row($this->wpdb->prepare("SELECT * FROM `{$this->table_name}` WHERE `id` = %s", array($event_id)));
     }
     
     function get_by_post_id($post_id) {
-        if ($result = $this->wpdb->get_row("SELECT * FROM `{$this->table_name}` WHERE `post_id` = {$post_id}")) {
+        if ($result = $this->wpdb->get_row($this->wpdb->prepare("SELECT * FROM `{$this->table_name}` WHERE `post_id` = %s", array($post_id)))) {
             $result->venue = unserialize($result->venue);
             $result->group = $this->groups->get($result->group_id);
             return $result;
         } else {
             return FALSE;
         }
+    }
+    
+    function get_by_group_id($group_id) {
+        $results = $this->wpdb->get_results($this->wpdb->prepare("SELECT * FROM `{$this->table_name}` WHERE `group_id` = %d", array($group_id)), "OBJECT");
+        //$this->pr($results);
+        foreach ($results as $key => $result) {
+            $results[$key]->venue = unserialize($result->venue);
+            $results[$key]->post = get_post($result->post_id);
+            $results[$key]->group = $this->groups->get($result->group_id);
+        }
+        //pr($results);
+        return $results;
     }
     
     function save($event) {
@@ -103,7 +116,7 @@ class WP_Meetup_Events extends WP_Meetup_Model {
                 'visibility' => $event->visibility,
                 'status' => $event->status,
                 'time' => $event->time,
-                'utc_offset' => $event->utc_offset,
+                'utc_offset' => $event->utc_offset/1000,
                 'event_url' => $event->event_url,
                 'venue' => property_exists($event, 'venue') ? $event->venue : NULL,
                 'rsvp_limit' => property_exists($event, 'rsvp_limit') ? $event->rsvp_limit : NULL,
@@ -133,14 +146,26 @@ class WP_Meetup_Events extends WP_Meetup_Model {
         $this->wpdb->query($sql);
     }
     
+    function remove($event_id) {
+        $event = $this->get($event_id);
+        $this->event_posts->remove($event->post_id);
+        $this->wpdb->query($this->wpdb->prepare("DELETE FROM {$this->table_name} WHERE `id` = %s", array($event_id)));
+    }
+    
     function remove_all() {
         $sql = "TRUNCATE TABLE `{$this->table_name}`";
-        
         $this->wpdb->query($sql);
     }
     
     function remove_by_group_id($group_id) {
-        $this->wpdb->query($this->wpdb->prepare("DELETE FROM {$this->table_name} WHERE `group_id` = %d", array($group_id)));
+        
+        $events = $this->get_by_group_id($group_id);
+        foreach ($events as $event) {
+            //$this->pr('deleting event ' . $event->id);
+            //$this->pr($this->get($event->id));
+            $this->remove($event->id);
+        }
+        
     }
 
 }

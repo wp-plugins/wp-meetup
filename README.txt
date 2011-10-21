@@ -4,7 +4,7 @@ Donate link: http://nuancedmedia.com/wordpress-meetup-plugin/
 Tags: meetup,meetup.com
 Requires at least: 3.2
 Tested up to: 3.2.1
-Stable tag: 1.1.2
+Stable tag: 1.2
 
 WP Meetup fetches event information from Meetup.com and creates posts for each event.
 
@@ -31,6 +31,9 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 
 == Changelog ==
 
+= 1.2 =
+* Added custom post type generation.  Instead of generating standand posts, you can set the plugin to generate a custom post type so developers can create their own custom archive and single templates.
+
 = 1.1.2 =
 * Removed plug so that we can stay hosted on Wordpress.org
 
@@ -50,3 +53,8 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 
 = 1.0 =
 * Initial release
+
+== Upgrade Notice ==
+
+= 1.2 =
+This version is incompatible with previous versions--deactivate and reactivate from the plugins menu.

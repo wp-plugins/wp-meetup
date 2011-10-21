@@ -3,7 +3,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 1.1.2
+Version: 1.2
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -28,6 +28,7 @@ include(dirname(__FILE__) . DIRECTORY_SEPARATOR . "model.php");
 include(dirname(__FILE__) . DIRECTORY_SEPARATOR . "models/event-posts.php");
 include(dirname(__FILE__) . DIRECTORY_SEPARATOR . "models/events.php");
 include(dirname(__FILE__) . DIRECTORY_SEPARATOR . "models/groups.php");
+include(dirname(__FILE__) . DIRECTORY_SEPARATOR . "models/group-taxonomy.php");
 include(dirname(__FILE__) . DIRECTORY_SEPARATOR . "models/options.php");
 include(dirname(__FILE__) . DIRECTORY_SEPARATOR . "models/api.php");
 include(dirname(__FILE__) . DIRECTORY_SEPARATOR . "controller.php");
@@ -57,11 +58,12 @@ class WP_Meetup {
     public $dir;
     public $admin_page_url;
     public $feedback = array('error' => array(), 'message' => array());
-    public $show_plug = FALSE; // set to FALSE to remove "Meetup.com integration powered by..." from posts
+    public $plugin_url;
 
     function __construct() {
 	
         $this->dir = WP_PLUGIN_DIR . "/wp-meetup/";
+	$this->plugin_url = plugins_url('/', __FILE__);
 	$this->admin_page_url = admin_url("options-general.php?page=wp_meetup");
 	
     }
@@ -147,8 +149,12 @@ class WP_Meetup {
 	if ($attributes) {
 	    $html_string = "<$tag_name";
 	    foreach ($attributes as $key => $value) {
-		if ($value != '')
+		if (in_array($key, array('selected', 'checked'))) {
+		    if ($value)
+			$html_string .= " {$key}=\"{$key}\"";
+		} else if ($value != '') {
 		    $html_string .= " {$key}=\"{$value}\"";
+		}
 	    }
 	    $html_string .= ">";
 	} else {
