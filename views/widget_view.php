@@ -3,7 +3,7 @@
 //print_r($events);
 $events_by_date = array();
 foreach ($events as $event) {
-    $event_time = $event->time + $event->utc_offset/1000;
+    $event_time = $event->time + $event->utc_offset;
     $event_date = mktime(0, 0, 0, date('n', $event_time), date('j', $event_time), date('Y', $event_time));
     $date_key = date('Y-m-d', $event_date);
     
