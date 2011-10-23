@@ -23,6 +23,8 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 1. Visit the options page located at Settings -> WP Meetup and follow the instructions.
 1. To include the event calendar on a page, create a new page and in the content editor, enter `[wp-meetup-calendar]` where you want the calendar to appear on the page.
 
+**Important: If you're upgrading from a version prior to 1.2, make sure to disable the plugin and re-enable it.**
+
 == Screenshots ==
 
 1. Admin area of the plugin found under Settings -> WP Meetup
