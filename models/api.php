@@ -17,7 +17,6 @@ class WP_Meetup_Api extends WP_Meetup_Model {
 	}
 
 	if (count($group_url_names) == 0 || !$this->options->get('api_key')) {
-	    $this->pr($group_url_names);
 	    return FALSE;
 	}
 	

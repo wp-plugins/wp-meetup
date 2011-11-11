@@ -4,7 +4,7 @@ Donate link: http://nuancedmedia.com/wordpress-meetup-plugin/
 Tags: meetup,meetup.com
 Requires at least: 3.2
 Tested up to: 3.2.1
-Stable tag: 1.1
+Stable tag: 1.3
 
 WP Meetup fetches event information from Meetup.com and creates posts for each event.
 
@@ -13,8 +13,6 @@ WP Meetup fetches event information from Meetup.com and creates posts for each e
 WP Meetup fetches event information from Meetup.com and creates posts for each event.  Additionally, WP Meetup provides an event calendar for displaying upcoming events either on a page or as a widget.
 
 Uses the [Meetup PHP API](https://github.com/wizonesolutions/meetup_api) developed by wizonesolutions.
-
-By using this plugin you the user are "Explicitly" granting permission to embed a link to "Nuanced Media". We are not getting crazy with this. We have setup the plugin to only have a 10% chance to display a link to Nuanced Media's website when you post an event from Meetup. If you really really hate giving us a link, feel free to take it out of the code. However, when we starving at night because no one knows who we are, we will be thinking of you ;p
 
 For more detailed information visit the plugin homepage at [Nuanced Media](http://nuancedmedia.com/wordpress-meetup-plugin/).
 
@@ -25,6 +23,8 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 1. Visit the options page located at Settings -> WP Meetup and follow the instructions.
 1. To include the event calendar on a page, create a new page and in the content editor, enter `[wp-meetup-calendar]` where you want the calendar to appear on the page.
 
+**Important: If you're upgrading from a version prior to 1.2, make sure to disable the plugin and re-enable it.**
+
 == Screenshots ==
 
 1. Admin area of the plugin found under Settings -> WP Meetup
@@ -32,6 +32,20 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 3. Event calendar
 
 == Changelog ==
+
+= 1.3 =
+* Separated admin screens into multiple pages
+* Added color coding for groups
+* Fixed auto-updating bug
+
+= 1.2 =
+* Added custom post type generation.  Instead of generating standand posts, you can set the plugin to generate a custom post type so developers can create their own custom archive and single templates.
+
+= 1.1.2 =
+* Removed plug so that we can stay hosted on Wordpress.org
+
+= 1.1.1 =
+* Added group name to event meta on posts
 
 = 1.1 =
 * Added support for multiple meetup groups
@@ -46,3 +60,8 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 
 = 1.0 =
 * Initial release
+
+== Upgrade Notice ==
+
+= 1.2 =
+This version is incompatible with previous versions--deactivate and reactivate from the plugins menu.
