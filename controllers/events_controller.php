@@ -45,16 +45,9 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 		wp_die( __('You do not have sufficient permissions to access this page.') );
 	}
 	
-	if (!empty($_POST)) $this->handle_post_data();
+	//if (!empty($_POST)) $this->handle_post_data();
 	
-	if (!empty($_GET) && array_key_exists('remove_group_id', $_GET)) {
-	    if ($group = $this->groups->get($_GET['remove_group_id'])) {
-		
-		$this->group_taxonomy->remove($group->name);
-		$this->groups->remove($group->id);
-		
-	    }
-	}
+	
         
         $data = array();
         $data['has_api_key'] = $this->options->get('api_key') != FALSE;
@@ -68,6 +61,54 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
         echo $this->render("options-page.php", $data);
         
     }
+    
+    function show_upcoming() {
+	if (!current_user_can('manage_options'))  {
+		wp_die( __('You do not have sufficient permissions to access this page.') );
+	}
+	
+	//if (!empty($_POST)) $this->handle_post_data();
+	
+	$data = array();
+	$data['events'] = $this->events->get_all_upcoming();
+	
+	echo $this->render("admin-events.php", $data);
+    }
+    
+    function show_groups() {
+	if (!current_user_can('manage_options'))  {
+		wp_die( __('You do not have sufficient permissions to access this page.') );
+	}
+	
+	//if (!empty($_POST)) $this->handle_post_data();
+	
+	if (!empty($_GET) && array_key_exists('remove_group_id', $_GET)) {
+	    if ($group = $this->groups->get($_GET['remove_group_id'])) {
+		
+		$this->group_taxonomy->remove($group->name);
+		$this->groups->remove($group->id);
+		
+	    }
+	}
+	
+	$data = array();
+	$data['groups'] = $this->groups->get_all();
+	echo $this->render("admin-groups.php", $data);
+    }
+    
+    function dev_support() {
+	if (!current_user_can('manage_options'))  {
+		wp_die( __('You do not have sufficient permissions to access this page.') );
+	}
+	
+	//if (!empty($_POST)) $this->handle_post_data();
+	
+	$data = array();
+	$data['show_plug'] = $this->options->get('show_plug');
+	$data['show_plug_probability'] = $this->options->get('show_plug_probability');
+	
+	echo $this->render("admin-dev-support.php", $data);
+    }
 
     
     function handle_post_data() {
@@ -75,7 +116,7 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
         if (array_key_exists('api_key', $_POST) && $_POST['api_key'] != $this->options->get('api_key')) {
 
 		$this->options->set('api_key', $_POST['api_key']);
-		$this->feedback['message'][] = "Successfullly updated your API key!";
+		$this->feedback['message'][] = "Successfully updated your API key!";
 
         }
 	
@@ -87,7 +128,7 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 	    }
 	    $this->regenerate_events();
 	    
-	    $this->feedback['message'][] = "Successfullly updated your publishing option.";
+	    $this->feedback['message'][] = "Successfully updated your publishing option.";
 	    
 	}
 	
@@ -114,7 +155,7 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 			// add the group to the custom taxonomy if applicable
 			$this->group_taxonomy->save($group_data->name, array('description' => $group_data->description));
 			
-			$this->feedback['message'][] = "Successfullly added your group";
+			$this->feedback['message'][] = "Successfully added your group";
 		    } else {
 			$this->feedback['error'][] = "The Group URL you entered isn't valid.";
 		    }
@@ -125,12 +166,18 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 	    }
         }
 	
+	if(array_key_exists('groups', $_POST)) {
+	    foreach ($_POST['groups'] as $group) {
+		$this->groups->save($group);
+	    }
+	}
+	
 	if (array_key_exists('category', $_POST) && $_POST['category'] != $this->options->get_category()) {
 	    
 	    $this->options->set_category($_POST['category']);
 	    $this->recategorize_event_posts();
 
-	    $this->feedback['message'][] = "Successfullly updated your event category.";
+	    $this->feedback['message'][] = "Successfully updated your event category.";
 	}
 	
 	if (array_key_exists('publish_buffer', $_POST) && $_POST['publish_buffer'] != $this->options->get('publish_buffer')) {
@@ -139,14 +186,14 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 
 	    $this->update_post_statuses();
 	    
-	    $this->feedback['message'][] = "Successfullly updated your publishing buffer.";
+	    $this->feedback['message'][] = "Successfully updated your publishing buffer.";
 	}
 	
 	if (array_key_exists('show_plug', $_POST)) {
 	    $show_plug_option = $_POST['show_plug'] == 'true';
 	    if ($show_plug_option != $this->options->get('show_plug')) {
 		$this->options->set('show_plug', $show_plug_option);
-		$this->feedback['message'][] = "Successfullly updated your support for the developers.";
+		$this->feedback['message'][] = "Successfully updated your support for the developers.";
 	    }
 	}
 	
@@ -154,13 +201,12 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 	    && $_POST['show_plug_probability'] != $this->options->get('show_plug_probability')) {
 	    //$this->pr($this->options->get('show_plug_probability'), $_POST['show_plug_probability']);
 	    $this->options->set('show_plug_probability', $_POST['show_plug_probability']);
-	    $this->feedback['message'][] = "Successfullly updated the probability of Nuanced Media's link appearing on your event posts";
+	    $this->feedback['message'][] = "Successfully updated the probability of Nuanced Media's link appearing on your event posts";
 	}
 	
 	if (array_key_exists('update_events', $_POST)) {
-
 	    $this->update_events();
-	    $this->feedback['message'][] = "Successfullly updated event posts.";
+	    $this->feedback['message'][] = "Successfully updated event posts.";
 	}
 	
     }
@@ -237,7 +283,7 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 	    
 	    $plug = "";
 	    if ($show_plug)
-		$plug .= "<p class=\"wp-meetup-plug\">Meetup.com integration powered by <a href=\"http://nuancedmedia.com/\" title=\"Website design, Marketing and Online Business Consulting\">Nuanced Media</a>.</p>";
+		$plug .= "<p class=\"wp-meetup-plug\">Meetup.com integration powered by <a href=\"http://nuancedmedia.com/\" title=\"Website design, Online Marketing and Business Consulting\">Nuanced Media</a>.</p>";
 	    
 	    return $event_meta . "\n" . $content . "\n" . $plug;
 	
@@ -246,7 +292,7 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
     }
     
     function cron_update_events() {
-	if ($this->options->get('api_key') && $this->options->get('group_url_name')) {
+	if ($this->options->get('api_key')) {
 	    $this->update_events();
 	    return TRUE;
 	}

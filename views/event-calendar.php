@@ -1,5 +1,15 @@
 <?php
 
+$group_ul_contents = "";
+foreach ($groups as $group) {
+    $group_ul_contents .= $this->element(
+        'li',
+        $this->element('a', $group->name, array('href' => $group->link, 'style' => 'border-left: 20px solid ' . $group->color)),
+        array()
+    );
+}
+echo $this->element('ul', $group_ul_contents, array('id' => 'wp-meetup-groups'));
+
 //print_r($events);
 $events_by_date = array();
 foreach ($events as $event) {
@@ -56,13 +66,20 @@ if (count($events_by_date) > 0) {
                 $date_key = date('Y-m-d', $current_date);
                 if (array_key_exists($date_key, $events_by_date)) {
                     $ul_contents = "";
+                    
+                    
                     foreach ($events_by_date[$date_key] as $event) {
+                        $event_status = time() < $event->time + $event->utc_offset ? 'upcoming' : 'past';
+                        $anchor_attributes = array('href' => get_permalink($event->post->ID));
+                        if ($event_status == 'upcoming')
+                            $anchor_attributes['style'] = 'background-color:' . $event->group->color;
+                        
                         $ul_contents .= $this->element('li',
                             $this->element('a',
                                 $this->element('span', date("g:i A", $event->time + $event->utc_offset)) . $event->name,
-                                array('href' => get_permalink($event->post->ID))
+                                $anchor_attributes
                             ),
-                            array('class' => (time() < $event->time + $event->utc_offset ? 'upcoming' : 'past') . " " . $event->group->url_name)
+                            array('class' => ($event_status) . " " . $event->group->url_name)
                         );
                     }
                     $td_contents .= $this->element('ul', $ul_contents);
