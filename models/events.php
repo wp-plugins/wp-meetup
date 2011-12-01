@@ -65,6 +65,18 @@ class WP_Meetup_Events extends WP_Meetup_Model {
         return $results;
     }
     
+    function get_upcoming($limit = 5) {
+        $today = mktime(0, 0, 0, date('n'), date('j'), date('Y'));
+        $results = $this->wpdb->get_results("SELECT * FROM `{$this->table_name}` WHERE `time` >= '{$today}' ORDER BY `time` LIMIT {$limit}", "OBJECT");
+        foreach ($results as $key => $result) {
+            $results[$key]->venue = unserialize($result->venue);
+            $results[$key]->post = get_post($result->post_id);
+            $results[$key]->group = $this->groups->get($result->group_id);
+        }
+        //pr($results);
+        return $results;
+    }
+    
     function get($event_id) {
         return $this->wpdb->get_row($this->wpdb->prepare("SELECT * FROM `{$this->table_name}` WHERE `id` = %s", array($event_id)));
     }

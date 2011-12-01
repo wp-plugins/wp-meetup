@@ -126,6 +126,40 @@ ul#wp-meetup-groups li a {
 }
 
 /**
+ * Upcoming events widget
+ */
+#wp-meetup-upcoming-events-list {
+    list-style: none;
+}
+#wp-meetup-upcoming-events-list li {
+    margin-bottom: 1.5em;
+    margin-left: 55px;
+    clear: both;
+}
+#wp-meetup-upcoming-events-list li div {
+    margin-left: -55px;
+    float: left;
+    background: #e51937;
+    color: #fff;
+    width: 40px;
+    margin-bottom: 1.5em;
+    border-radius: 5px;
+    padding: 3px;
+    box-shadow: 0 0 5px 1px rgba(0,0,0,.3);
+}
+#wp-meetup-upcoming-events-list li div span {
+    display: block;
+    text-align: center;
+}
+#wp-meetup-upcoming-events-list li div span.month {
+    font-weight: bold;
+}
+#wp-meetup-upcoming-events-list li div span.date {
+    font-size: 2em;
+    line-height: 1em;
+}
+
+/**
  * Admin area
  */
 #wp-meetup-container {
@@ -150,12 +184,8 @@ ul#wp-meetup-groups li a {
 }
 
 /* Page: WP Meetup */
-#publishing-options {
-    margin-left: 3em;
-}
-#publishing-options input[type=radio] {
-    float: left;
-    margin-left: -2em;
+.publish_options_info {
+    color: #666;
 }
 #wp-meetup-social {
     

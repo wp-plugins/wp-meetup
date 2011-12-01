@@ -29,13 +29,12 @@ class WP_Meetup_Event_Posts extends WP_Meetup_Model {
     }
 
     
-    function save_event($event, $publish_buffer, $category_id) {
-        $cpt = $this->options->get('publish_option') == 'cpt';
+    function save_event($event, $publish_buffer) {
+        $cpt = TRUE; //$this->options->get('publish_option') == 'cpt';
         $event_adjusted_time = $event->time + $event->utc_offset;
-        $post_status = ($event->post_id) ? $event->post->post_status : $this->get_post_status($event_adjusted_time, $publish_buffer);
+        $post_status = ($event->post_id) ? $event->post->post_status : $this->get_post_status($event_adjusted_time, $publish_buffer, FALSE);
 
         $post = array(
-            'post_category' => array($category_id),
             'post_content' => $event->description,
             'post_title' => $event->name,
             'post_status' => $post_status,
@@ -88,11 +87,11 @@ class WP_Meetup_Event_Posts extends WP_Meetup_Model {
 	wp_delete_post($post_id);
     }
     
-    function recategorize($post_id, $category_id) {
+    /*function recategorize($post_id, $category_id) {
         $new_post = (array) get_post($post_id);
         $new_post['post_category'] = array($category_id);
         wp_update_post($new_post);
-    }
+    }*/
     
     function set_date($post_id, $event_time, $event_utc_offset, $publish_buffer) {
 	$event_adjusted_time = $event_time + $event_utc_offset;

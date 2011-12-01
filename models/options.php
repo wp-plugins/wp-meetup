@@ -4,27 +4,28 @@ class WP_Meetup_Options extends WP_Meetup_Model {
     private $option_key = 'wp_meetup_options';
     private $default_value = array(
 	'api_key' => NULL,
-	'category_id' => NULL,
 	'publish_buffer' => '2 weeks',
-	'publish_option' => 'post',
 	'show_plug' => FALSE,
-	'show_plug_probability' => 0.1
+	'show_plug_probability' => 0.1,
+	'include_home_page' => TRUE,
+	'display_event_info' => TRUE
     );
-    private $default_category = 'events';
     
     function __construct() {
 
 	parent::__construct();
 	
-	if (!$this->get('category_id')) {
+	/*if (!$this->get('category_id')) {
 	    $this->set_category($this->default_category);
-	}
+	}*/
 	
 	//print_r(get_option($this->option_key, $this->default_value));
 	
     }
     
     function get($option_key) {
+	/*if (!in_array($option_key, array_keys($this->default_value)))
+	    throw new Exception('Reference to invalid option');*/
 	$options = get_option($this->option_key, $this->default_value);
 	if (array_key_exists($option_key, $options)) {
 	    return $options[$option_key];
@@ -32,12 +33,14 @@ class WP_Meetup_Options extends WP_Meetup_Model {
     }
     
     function set($key, $value) {
+	/*if (!in_array($option_key, array_keys($this->default_value)))
+	    throw new Exception('Reference to invalid option');*/
 	$options = get_option($this->option_key, $this->default_value);
 	$options[$key] = $value;
 	update_option($this->option_key, $options);
     }
     
-    function get_category() {
+    /*function get_category() {
 	$category_id = $this->get('category_id');
 	return get_cat_name($category_id);
     }
@@ -52,7 +55,7 @@ class WP_Meetup_Options extends WP_Meetup_Model {
 	    $this->set('category_id', $cat_id);
 	}
 	return $cat_id;
-    }
+    }*/
     
     function delete_all() {
 	delete_option($this->option_key);

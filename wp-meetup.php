@@ -3,7 +3,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 1.3
+Version: 1.4
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -32,7 +32,8 @@ include(dirname(__FILE__) . DIRECTORY_SEPARATOR . "models/group-taxonomy.php");
 include(dirname(__FILE__) . DIRECTORY_SEPARATOR . "models/options.php");
 include(dirname(__FILE__) . DIRECTORY_SEPARATOR . "models/api.php");
 include(dirname(__FILE__) . DIRECTORY_SEPARATOR . "controller.php");
-include(dirname(__FILE__) . DIRECTORY_SEPARATOR . "controllers/widget.php");
+include(dirname(__FILE__) . DIRECTORY_SEPARATOR . "controllers/calendar_widget.php");
+include(dirname(__FILE__) . DIRECTORY_SEPARATOR . "controllers/events_widget.php");
 include(dirname(__FILE__) . DIRECTORY_SEPARATOR . "controllers/events_controller.php");
 
 $meetup = new WP_Meetup();
@@ -41,6 +42,7 @@ register_activation_hook( __FILE__, array($meetup, 'activate') );
 register_deactivation_hook( __FILE__, array($meetup, 'deactivate') );
 
 add_action( 'widgets_init', create_function( '', 'return register_widget("WP_Meetup_Calendar_Widget");' ) );
+add_action( 'widgets_init', create_function( '', 'return register_widget("WP_Meetup_Events_Widget");' ) );
 add_action('admin_menu', array($meetup, 'admin_menu'));
 add_filter( 'the_content', array($meetup, 'the_content_filter') );
 
@@ -51,11 +53,16 @@ wp_enqueue_style( 'wp-meetup' );
 wp_register_style('farbtastic', plugins_url('/js/farbtastic/farbtastic.css', __FILE__));
 wp_enqueue_style( 'farbtastic' );
 
+/*wp_register_script('meetup-rsvp-button', 'https://secure.meetup.com/23444295387103/script/api/mu.btns.js?id=pg60tveii1isd0d9ajeihekofa');
+wp_enqueue_script('meetup-rsvp-button');*/
+
 add_action('update_events_hook', array($meetup, 'cron_update'));
 
 add_action('admin_init', array($meetup, 'admin_init'));
 
 add_action('admin_notices', array($meetup, 'admin_notices'), 12);
+
+add_filter( 'pre_get_posts', array($meetup, 'modify_pre_posts') );
 
 class WP_Meetup {
     
@@ -245,6 +252,18 @@ class WP_Meetup {
 	endforeach;
 
 	endforeach;
+    }
+    
+    function modify_pre_posts( $query ) {
+	$this->import_model('options');
+	if ($this->options->get('include_home_page')) {
+	    $current = $query->get('post_type');
+	    $current = is_array($current) ? $current : (!empty($current) ? array($current) : array());
+	
+	    if ( is_front_page() || is_home())
+		$query->set( 'post_type', array_merge(array('wp_meetup_event'), $current) );
+	}
+	return $query;
     }
 
 }

@@ -46,9 +46,9 @@ if (count($events_by_date) > 0) {
         
         $tbody_contents = '';
         $current_date = $date_start;
+        
         $i = 0;
         while ($current_date < $end_date) {
-        
             $tr_contents = '';
             
             for ($j = 0; $j < 7; $j++) {
@@ -85,7 +85,7 @@ if (count($events_by_date) > 0) {
                     $td_contents .= $this->element('ul', $ul_contents);
                 }
                 
-                if (date('n', $current_date) == $current_month) {
+                if (date('n', $current_date) == date('n', $first_of_the_month)) {
                     $tr_contents .= $this->element('td', $td_contents, array('class' => implode(' ', $td_classes)));
                 } else {
                     $tr_contents .= $this->element('td', "", array('class' => 'out-of-range'));
