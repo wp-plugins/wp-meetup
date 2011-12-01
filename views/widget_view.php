@@ -3,7 +3,7 @@
 //print_r($events);
 $events_by_date = array();
 foreach ($events as $event) {
-    $event_time = $event->time + $event->utc_offset/1000;
+    $event_time = $event->time + $event->utc_offset;
     $event_date = mktime(0, 0, 0, date('n', $event_time), date('j', $event_time), date('Y', $event_time));
     $date_key = date('Y-m-d', $event_date);
     
@@ -89,8 +89,10 @@ if (count($events_by_date) > 0) {
     }
     
     $table_caption = $this->element('caption', date('F Y', $first_of_the_month));
-    $div_contents .= $this->element('table', $table_caption . $this->element('thead', $thead_contents) . $this->element('tbody', $tbody_contents), array('cellpadding' => 0, 'cellspacing' => 0));
-    
+    $div_contents .= $this->element('table', $table_caption . $this->element('thead', $thead_contents, array('style' => 'background-color: ' . $header_color)) . $this->element('tbody', $tbody_contents), array('cellpadding' => 0, 'cellspacing' => 0));
+    if (!empty($linked_page)) {
+        $div_contents .= $this->element('a', 'View all events', array('href' => get_permalink($linked_page)));
+    }
     echo $this->element('div', $div_contents, array('id' => 'wp-meetup-widget-calendar'));
 } else {
     echo $this->element('p', "No events listed.");
