@@ -52,29 +52,19 @@ if (count($events_by_date) > 0) {
             if ($current_date == $today)
                 $td_classes[] = 'today';
             
-            $td_contents = "";
+            $td_contents = date('j', $current_date);
             $date_key = date('Y-m-d', $current_date);
             if (array_key_exists($date_key, $events_by_date)) {
-                /*$ul_contents = "";
-                foreach ($events_by_date[$date_key] as $event) {
-                    $ul_contents .= $this->element('li',
-                        $this->element('a',
-                            $this->element('span', date("g:i A", $event->time + $event->utc_offset/1000)) . $event->name,
-                            array('href' => get_permalink($event->post->ID))
-                        ),
-                        array('class' => $event->status)
-                    );
-                }
-                $td_contents .= $this->element('ul', $ul_contents);*/
-                $event = $events_by_date[$date_key][0];
-                $td_contents = $this->element('a', date('j', $current_date), array(
-                    'href' => get_permalink($event->post->ID),
-                    'title' => $event->name
-                ));
                 
-            } else {
-                $td_contents = date('j', $current_date);
-            }
+                $event = $events_by_date[$date_key][0];
+                //$this->pr($event->post);
+                if ($event->post->post_status == 'publish') {
+                    $td_contents = $this->element('a', date('j', $current_date), array(
+                        'href' =>  get_permalink($event->post->ID),
+                        'title' => $event->name
+                    ));
+                } 
+            } 
             
             if (date('n', $current_date) == $current_month) {
                 $tr_contents .= $this->element('td', $td_contents, array('class' => implode(' ', $td_classes)));

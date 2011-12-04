@@ -120,7 +120,8 @@
             $options = array(
                 '1 week' => '1 weeks',
                 '2 weeks' => '2 weeks',
-                '1 month' => '1 month'
+                '1 month' => '1 month',
+                '2 months' => '2 months'
             );
             foreach ($options as $label => $value) {
                 $date_select .= "<option value=\"{$value}\"" . ($this->options->get('publish_buffer') == $value ? ' selected="selected"' : "") . ">$label</option>";

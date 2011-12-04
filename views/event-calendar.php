@@ -74,13 +74,20 @@ if (count($events_by_date) > 0) {
                         if ($event_status == 'upcoming')
                             $anchor_attributes['style'] = 'background-color:' . $event->group->color;
                         
-                        $ul_contents .= $this->element('li',
-                            $this->element('a',
+                        if ($event->post->post_status == 'publish') {
+                            $ul_contents .= $this->element('li',
+                                $this->element('a',
+                                    $this->element('span', date("g:i A", $event->time + $event->utc_offset)) . $event->name,
+                                    $anchor_attributes
+                                ),
+                                array('class' => ($event_status) . " " . $event->group->url_name)
+                            );
+                        } else {
+                            $ul_contents .= $this->element('li',
                                 $this->element('span', date("g:i A", $event->time + $event->utc_offset)) . $event->name,
-                                $anchor_attributes
-                            ),
-                            array('class' => ($event_status) . " " . $event->group->url_name)
-                        );
+                                array('class' => ($event_status) . " " . $event->group->url_name)
+                            );
+                        }
                     }
                     $td_contents .= $this->element('ul', $ul_contents);
                 }
