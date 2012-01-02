@@ -3,7 +3,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 1.4.1
+Version: 1.4.2
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -135,10 +135,11 @@ class WP_Meetup {
 	$events_controller = new WP_Meetup_Events_Controller();
 	$events_controller->handle_post_data();
 	$pages = array();
-	$pages[] = add_menu_page('WP Meetup', 'WP Meetup', 'manage_options', 'wp_meetup', array($events_controller, 'admin_options'), FALSE, 30);
+	$pages[] = add_menu_page('WP Meetup', 'WP Meetup', 'manage_options', 'wp_meetup', array($events_controller, 'admin_options'), FALSE);
 	if ($this->options->get('api_key')) {
 	    $pages[] = add_submenu_page('wp_meetup', 'WP Meetup Groups', 'Groups', 'manage_options', 'wp_meetup_groups', array($events_controller, 'show_groups'));
 	    $pages[] = add_submenu_page('wp_meetup', 'WP Meetup Events', 'Events', 'manage_options', 'wp_meetup_events', array($events_controller, 'show_upcoming'));
+	    //$pages[] = add_submenu_page('wp_meetup', 'WP Meetup RSVP Button', 'RSVP Button', 'manage_options', 'wp_meetup_rsvp_button', array($events_controller, 'rsvp_button'));
 	    $pages[] = add_submenu_page('wp_meetup', 'WP Meetup Developer Support', 'Dev Support', 'manage_options', 'wp_meetup_dev_support', array($events_controller, 'dev_support'));
 	}
 	//$page = add_options_page('WP Meetup Options', 'WP Meetup', 'manage_options', 'wp_meetup', array($events_controller, 'admin_options'));
@@ -257,11 +258,8 @@ class WP_Meetup {
     function modify_pre_posts( $query ) {
 	$this->import_model('options');
 	if ($this->options->get('include_home_page')) {
-	    $current = $query->get('post_type');
-	    $current = is_array($current) ? $current : (!empty($current) ? array($current) : array());
-	
 	    if ( is_front_page() || is_home())
-		$query->set( 'post_type', array_merge(array('wp_meetup_event'), $current) );
+		$query->set('post_type', array('wp_meetup_event', 'post'));
 	}
 	return $query;
     }

@@ -8,7 +8,9 @@ class WP_Meetup_Options extends WP_Meetup_Model {
 	'show_plug' => FALSE,
 	'show_plug_probability' => 0.1,
 	'include_home_page' => TRUE,
-	'display_event_info' => TRUE
+	'display_event_info' => TRUE,
+	'use_rsvp_button' => FALSE,
+	'button_script_url' => FALSE
     );
     
     function __construct() {
