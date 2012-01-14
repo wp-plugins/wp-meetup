@@ -22,6 +22,9 @@
     color: #fff;
     margin: 0 0 1.625em;
 }
+.wp-meetup-event a.wp-meetup-event-link-small {
+	vertical-align: top;
+}
 .wp-meetup-event dl.wp-meetup-event-details {
     margin: 0;
 }

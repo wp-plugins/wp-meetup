@@ -29,25 +29,30 @@ $post_status_map = array(
 );
 
 $headings = array(
+NULL,
     'Group',
     'Event Name',
     'Event Date',
     'Date Posted',
-    'RSVP Count'
+    'RSVP Count',
+'Action'
 );
 $rows = array();
 //$this->pr($events);
 foreach ($events as $event) {
     $rows[] = array(
-        $this->element('a', $event->group->name, array('href' => $event->group->link)),
+        $this->element('input', NULL, array('type' => 'checkbox', 'name' => 'posts[]', 'value' => $event->post_id)),
+	$this->element('a', $event->group->name, array('href' => $event->group->link)),
         $this->element('a', $event->name, array('href' => get_permalink($event->post_id))),
         date('D M j, Y, g:i A', $event->time + $event->utc_offset),
         date('Y/m/d', strtotime($event->post->post_date)) . "<br />" . $post_status_map[$event->post->post_status],
-        $event->yes_rsvp_count . " going"
+        $event->yes_rsvp_count . " going",
+	$this->element('a', "Edit", array('href' => get_edit_post_link($event->post_id)))
     );
 }
 echo $this->data_table($headings, $rows);
 
+echo $this->element('p', $this->element('input', NULL, array('type' => 'submit', 'name' => 'trash_selected', 'value' => 'Trash Selected', 'class' => 'button-primary')));
 ?>
 
 

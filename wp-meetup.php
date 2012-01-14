@@ -3,7 +3,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 1.4.2
+Version: 1.4.3
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -48,13 +48,7 @@ add_filter( 'the_content', array($meetup, 'the_content_filter') );
 
 add_shortcode( 'wp-meetup-calendar', array($meetup, 'handle_shortcode') );
 
-wp_register_style('wp-meetup', plugins_url('global.css', __FILE__));
-wp_enqueue_style( 'wp-meetup' );
-wp_register_style('farbtastic', plugins_url('/js/farbtastic/farbtastic.css', __FILE__));
-wp_enqueue_style( 'farbtastic' );
-
-/*wp_register_script('meetup-rsvp-button', 'https://secure.meetup.com/23444295387103/script/api/mu.btns.js?id=pg60tveii1isd0d9ajeihekofa');
-wp_enqueue_script('meetup-rsvp-button');*/
+add_action('wp_enqueue_scripts', array($meetup, 'register_styles'));
 
 add_action('update_events_hook', array($meetup, 'cron_update'));
 
@@ -96,6 +90,8 @@ class WP_Meetup {
     function deactivate() {
 	$events_model = new WP_Meetup_Events();
 	$events_model->drop_table();
+	$event_posts_model = new WP_Meetup_Event_Posts();
+	$event_posts_model->remove_all();
 	$groups_model = new WP_Meetup_Groups();
 	$groups_model->drop_table();
 	$options_model = new WP_Meetup_Options();
@@ -103,8 +99,21 @@ class WP_Meetup {
 	
 	wp_clear_scheduled_hook('update_events_hook');
     }
+
+    function register_styles() {
+	$this->import_model('options');
+	wp_register_style('wp-meetup', plugins_url('global.css', __FILE__));
+	wp_enqueue_style( 'wp-meetup' );
+	if ($this->options->get('use_rsvp_button') == TRUE) {
+	    wp_register_script('meetup-rsvp-button', $this->options->get('button_script_url'));
+	    wp_enqueue_script('meetup-rsvp-button');
+	}
+    }
     
     function admin_init() {
+	$this->register_styles();
+	wp_register_style('farbtastic', plugins_url('/js/farbtastic/farbtastic.css', __FILE__));
+	wp_enqueue_style( 'farbtastic' );
 	wp_register_script('farbtastic', plugins_url('/js/farbtastic/farbtastic.js', __FILE__), array('jquery'));
 	wp_register_script('options-page', plugins_url('/js/options-page.js', __FILE__), array('jquery', 'farbtastic'));
     }
@@ -139,7 +148,7 @@ class WP_Meetup {
 	if ($this->options->get('api_key')) {
 	    $pages[] = add_submenu_page('wp_meetup', 'WP Meetup Groups', 'Groups', 'manage_options', 'wp_meetup_groups', array($events_controller, 'show_groups'));
 	    $pages[] = add_submenu_page('wp_meetup', 'WP Meetup Events', 'Events', 'manage_options', 'wp_meetup_events', array($events_controller, 'show_upcoming'));
-	    //$pages[] = add_submenu_page('wp_meetup', 'WP Meetup RSVP Button', 'RSVP Button', 'manage_options', 'wp_meetup_rsvp_button', array($events_controller, 'rsvp_button'));
+	    $pages[] = add_submenu_page('wp_meetup', 'WP Meetup RSVP Button', 'RSVP Button', 'manage_options', 'wp_meetup_rsvp_button', array($events_controller, 'rsvp_button'));
 	    $pages[] = add_submenu_page('wp_meetup', 'WP Meetup Developer Support', 'Dev Support', 'manage_options', 'wp_meetup_dev_support', array($events_controller, 'dev_support'));
 	}
 	//$page = add_options_page('WP Meetup Options', 'WP Meetup', 'manage_options', 'wp_meetup', array($events_controller, 'admin_options'));

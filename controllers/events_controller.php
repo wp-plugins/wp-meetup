@@ -116,7 +116,6 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 
     
     function handle_post_data() {
-        
         if (array_key_exists('api_key', $_POST) && $_POST['api_key'] != $this->options->get('api_key')) {
 
 		$this->options->set('api_key', $_POST['api_key']);
@@ -219,6 +218,15 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 	    $this->update_events();
 	    $this->feedback['message'][] = "Successfully updated event posts.";
 	}
+
+	if (array_key_exists('trash_selected', $_POST)) {
+		if (array_key_exists('posts', $_POST)) {
+			foreach ($_POST['posts'] as $post) {
+				wp_trash_post($post);
+			}
+			$this->feedback['message'][] = "Trashed " . count($_POST['posts']) . " posts.";
+		}
+	}
 	
     }
     
@@ -276,15 +284,18 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
     }
     
     function the_content_filter($content) {
-	
 	if (($event = $this->events->get_by_post_id($GLOBALS['post']->ID)) && $this->options->get('display_event_info')) {
 	    //$this->pr($event);
 	    $show_plug = $this->options->get('show_plug') ? rand(0,100)/100 <= $this->options->get('show_plug_probability') : FALSE;
 	    $event_adjusted_time = $event->time + $event->utc_offset;
 	    //$this->pr($event);
 	    $event_meta = "<div class=\"wp-meetup-event\">";
-	    $event_meta .= "<a href=\"{$event->event_url}\" class=\"wp-meetup-event-link\">View event on Meetup.com</a>";
-	    //$event_meta .= $this->element('a', 'RSVP', array('href' => $event->event_url, 'data-event' => $event->id, 'class' => 'mu-rsvp-btn'));
+	    if ($this->options->get('use_rsvp_button') == TRUE) {
+		$event_meta .= $this->element('a', 'RSVP', array('href' => $event->event_url, 'data-event' => $event->id, 'class' => 'mu-rsvp-btn'));
+		$event_meta .= " <a href=\"{$event->event_url}\" class=\"wp-meetup-event-link-small\">View event on Meetup</a>";
+	    } else {
+		$event_meta .= "<a href=\"{$event->event_url}\" class=\"wp-meetup-event-link\">View event on Meetup.com</a>";
+	    }
 	    $event_meta .= "<dl class=\"wp-meetup-event-details\">";
 	    if ($this->groups->count() > 1)
 		$event_meta .= "<dt>Group</dt><dd>{$event->group->name}</dd>";
