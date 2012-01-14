@@ -56,8 +56,8 @@ class WP_Meetup_Events extends WP_Meetup_Model {
     function get_all_upcoming() {
         $today = mktime(0, 0, 0, date('n'), date('j'), date('Y'));
         $results = $this->wpdb->get_results("SELECT * FROM `{$this->table_name}` WHERE `time` >= '{$today}' ORDER BY `time`", "OBJECT");
-        foreach ($results as $key => $result) {
-            $results[$key]->venue = unserialize($result->venue);
+	foreach ($results as $key => $result) {
+	    $results[$key]->venue = unserialize($result->venue);
             $results[$key]->post = get_post($result->post_id);
             $results[$key]->group = $this->groups->get($result->group_id);
         }

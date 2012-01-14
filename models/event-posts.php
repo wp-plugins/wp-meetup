@@ -86,6 +86,10 @@ class WP_Meetup_Event_Posts extends WP_Meetup_Model {
     function remove($post_id = FALSE) {
 	wp_delete_post($post_id);
     }
+
+function remove_all() {
+	$this->wpdb->query("DELETE FROM {$this->wpdb->posts} WHERE `post_type` = 'wp_meetup_event';");
+}
     
     /*function recategorize($post_id, $category_id) {
         $new_post = (array) get_post($post_id);
