@@ -33,6 +33,7 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 	    'query_var' => true,
 	    'rewrite' => array( 'slug' => 'group' )
 	));
+
     }
     
     function admin_options() {
@@ -118,9 +119,13 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
     function handle_post_data() {
         if (array_key_exists('api_key', $_POST) && $_POST['api_key'] != $this->options->get('api_key')) {
 
-		$this->options->set('api_key', $_POST['api_key']);
-		$this->feedback['message'][] = "Successfully updated your API key!";
-
+		$is_key_valid = $this->api->is_valid_key($_POST['api_key']);
+		if ($is_key_valid == TRUE) {
+			$this->options->set('api_key', $_POST['api_key']);
+			$this->feedback['message'][] = "Successfully updated your API key!";
+		} else {
+			$this->feedback['error'][] = 'Your API key is invalid';
+		}
         }
 	
         if (array_key_exists('group_url', $_POST)) {
