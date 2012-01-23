@@ -50,6 +50,10 @@ class WP_Meetup_Groups extends WP_Meetup_Model {
         return $this->wpdb->get_col("SELECT `url_name` FROM `{$this->table_name}`");
     }
     
+    function count() {
+        return $this->wpdb->get_var($this->wpdb->prepare("SELECT COUNT(*) FROM `{$this->table_name}`"));
+    }
+    
     function save($group) {
         
         $data = (array) $group;

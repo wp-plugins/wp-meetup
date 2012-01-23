@@ -33,6 +33,7 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 	    'query_var' => true,
 	    'rewrite' => array( 'slug' => 'group' )
 	));
+
     }
     
     function admin_options() {
@@ -92,6 +93,13 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 	$data['groups'] = $this->groups->get_all();
 	echo $this->render("admin-groups.php", $data);
     }
+
+	function rsvp_button() {
+		if (!current_user_can('manage_options'))  {
+			wp_die( __('You do not have sufficient permissions to access this page.') );
+		}
+		echo $this->render("admin-rsvp-button.php");
+	}
     
     function dev_support() {
 	if (!current_user_can('manage_options'))  {
@@ -109,12 +117,15 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 
     
     function handle_post_data() {
-        
         if (array_key_exists('api_key', $_POST) && $_POST['api_key'] != $this->options->get('api_key')) {
 
-		$this->options->set('api_key', $_POST['api_key']);
-		$this->feedback['message'][] = "Successfully updated your API key!";
-
+		$is_key_valid = $this->api->is_valid_key($_POST['api_key']);
+		if ($is_key_valid == TRUE) {
+			$this->options->set('api_key', $_POST['api_key']);
+			$this->feedback['message'][] = "Successfully updated your API key!";
+		} else {
+			$this->feedback['error'][] = 'Your API key is invalid';
+		}
         }
 	
         if (array_key_exists('group_url', $_POST)) {
@@ -189,10 +200,37 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 	    }
 	    $this->feedback['message'][] = "Successfully updated your publishing options";
 	}
+	
+	if (array_key_exists('button_script_html', $_POST)) {
+		$pattern = '/src=\\\"(.*?)\\\"/';
+		preg_match($pattern, $_POST['button_script_html'], $matches);
+		if (count($matches) == 2) {
+			$script_url = $matches[1];
+			$this->options->set('button_script_url', $script_url);
+			$this->feedback['message'][] = "Successfully added rsvp buttons.";
+		} else {
+			$this->feedback['error'][] = "Error parsing script contents. Copy and paste script information again.";
+		}
+		
+		if (array_key_exists('use_rsvp_button', $_POST)) {
+		    $this->options->set('use_rsvp_button', TRUE);
+		} else {
+		    $this->options->set('use_rsvp_button', FALSE);
+		}
+	}
 
 	if (array_key_exists('update_events', $_POST)) {
 	    $this->update_events();
 	    $this->feedback['message'][] = "Successfully updated event posts.";
+	}
+
+	if (array_key_exists('trash_selected', $_POST)) {
+		if (array_key_exists('posts', $_POST)) {
+			foreach ($_POST['posts'] as $post) {
+				wp_trash_post($post);
+			}
+			$this->feedback['message'][] = "Trashed " . count($_POST['posts']) . " posts.";
+		}
 	}
 	
     }
@@ -251,18 +289,21 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
     }
     
     function the_content_filter($content) {
-	
 	if (($event = $this->events->get_by_post_id($GLOBALS['post']->ID)) && $this->options->get('display_event_info')) {
-	    
 	    //$this->pr($event);
 	    $show_plug = $this->options->get('show_plug') ? rand(0,100)/100 <= $this->options->get('show_plug_probability') : FALSE;
 	    $event_adjusted_time = $event->time + $event->utc_offset;
 	    //$this->pr($event);
 	    $event_meta = "<div class=\"wp-meetup-event\">";
-	    $event_meta .= "<a href=\"{$event->event_url}\" class=\"wp-meetup-event-link\">View event on Meetup.com</a>";
-	    //$event_meta .= $this->element('a', 'RSVP', array('href' => $event->event_url, 'data-event' => $event->id, 'class' => 'mu-rsvp-btn'));
+	    if ($this->options->get('use_rsvp_button') == TRUE) {
+		$event_meta .= $this->element('a', 'RSVP', array('href' => $event->event_url, 'data-event' => $event->id, 'class' => 'mu-rsvp-btn'));
+		$event_meta .= " <a href=\"{$event->event_url}\" class=\"wp-meetup-event-link-small\">View event on Meetup</a>";
+	    } else {
+		$event_meta .= "<a href=\"{$event->event_url}\" class=\"wp-meetup-event-link\">View event on Meetup.com</a>";
+	    }
 	    $event_meta .= "<dl class=\"wp-meetup-event-details\">";
-	    $event_meta .= "<dt>Group</dt><dd>{$event->group->name}</dd>";
+	    if ($this->groups->count() > 1)
+		$event_meta .= "<dt>Group</dt><dd>{$event->group->name}</dd>";
 	    $event_meta .= "<dt>Date</dt><dd>" . date("l, F j, Y, g:i A", $event_adjusted_time) . "</dd>";
 	    $event_meta .= ($event->venue) ? "<dt>Venue</dt><dd>" .  $event->venue->name . "</dd>" : "";
 	    $event_meta .= "</dl>";

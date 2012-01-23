@@ -65,5 +65,20 @@ class WP_Meetup_Api extends WP_Meetup_Model {
         return (count($group_info->results) > 0) ? $group_info->results[0] : FALSE;
         
     }
+	
+	function is_valid_key($api_key) {
+        	error_reporting(0);
+		$test_group_url = 'tucsonhiking';
+		
+		$this->mu_api = new MeetupAPIBase($api_key, 'groups');
+		$this->mu_api->setQuery( array('group_urlname' => $test_group_url) ); 
+		set_time_limit(0);
+		$this->mu_api->setPageSize(200);
+		$this->mu_api->setFormat('json-alt');
+		
+		$response = $this->mu_api->getResponse();
+//		$this->pr($response);
+		return !property_exists($response, 'problem');
+	}
     
 }

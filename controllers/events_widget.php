@@ -35,7 +35,13 @@ class WP_Meetup_Events_Widget extends WP_Widget {
         if ( $title )
             echo $before_title . $title . $after_title;
         $limit = empty($instance['limit']) ? 3 : $instance['limit'];
-	$events = $this->core->events->get_upcoming($limit);
+	$upcoming_events = $this->core->events->get_upcoming($limit);
+	$events = array();
+	foreach ($upcoming_events as $event) {
+		$post = get_post($event->post_id);
+		if ($post->post_status == 'publish') 
+			$events[] = $event;
+	}
         echo $this->core->render('events-widget.php', array('events' => $events));
         
         echo $after_widget;
