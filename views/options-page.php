@@ -14,7 +14,7 @@
     
     <div class="sidebar">
         
-        <a href="http://nuancedmedia.com/" title="Website design, Online Marketing and Business Consulting"><img width=160 src="<?php echo $this->plugin_url . "images/NM_logo_banner.png"; ?>" alt="Nuanced Media" /></a>
+        <a href="http://nuancedmedia.com/" title="Website design, Online Marketing and Business Consulting"><img width=160 src="<?php echo $this->plugin_url . "images/NM_logo_banner.png"; ?>" alt="Nuanced Media" /></img></a>
         
         <div id="fb-root"></div>
         <script>(function(d, s, id) {
