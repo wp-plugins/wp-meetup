@@ -51,7 +51,7 @@ class WP_Meetup_Groups extends WP_Meetup_Model {
     }
     
     function count() {
-        return $this->wpdb->get_var($this->wpdb->prepare("SELECT COUNT(*) FROM `{$this->table_name}`"));
+        return $this->wpdb->get_var($this->wpdb->prepare("SELECT COUNT(*) FROM `{%d}`",$this->table_name));
     }
     
     function save($group) {
