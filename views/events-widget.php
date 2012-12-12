@@ -12,6 +12,6 @@ if (count($events) > 0) {
     echo $this->element('p', __('No upcoming events.'));
 }
 if ($this->options->get('show_nm_link')) {
-	echo "<p align=\"right\"><a href=\"http://nuancedmedia.com/\" title=\"Powered by Nuanced Media\"><img width=40 src=\"" . $this->plugin_url . "images/NM_logo_mini.png\"></img></a></p>";
+	echo "<p align=\"right\"><a href=\"http://nuancedmedia.com/\" title=\"Powered by Nuanced Media\"><img width=40 src=\"" . $this->plugin_url . "images/NM_logo_mini.png\"></a></p>";
 }
 ?>
