@@ -2,9 +2,9 @@
 Contributors: Nuanced Media,cjlarose
 Donate link: http://nuancedmedia.com/wordpress-meetup-plugin/
 Tags: meetup,meetup.com
-Requires at least: 3.2
-Tested up to: 3.5
-Stable tag: 1.4.7
+Requires at least: 3.5
+Tested up to: 3.5.1
+Stable tag: 1.4.8
 
 WP Meetup fetches event information from Meetup.com and creates posts for each event.
 
@@ -33,6 +33,10 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 3. Event calendar
 
 == Changelog ==
+
+= 1.4.8 =
+* Fixed the endless "multiple primary keys defined" error message
+* Fixed the bug where the fifth week of a month sometimes doesn't show up
 
 = 1.4.7 =
 * Updated plugin to work with Wordpress 3.5
@@ -100,6 +104,9 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 * Initial release
 
 == Upgrade Notice ==
+
+= 1.4.8 =
+* We are attempting to wade through all the various bugs that have been introduced since we first created this plugin. We have eliminated many of them, so please let us know if you find any more!
 
 = 1.2 =
 This version is incompatible with previous versions--deactivate and reactivate from the plugins menu.
