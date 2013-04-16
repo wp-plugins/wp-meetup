@@ -87,6 +87,14 @@
         
         
         
+        <h3>Instructions</h3>
+        <p>Once you have any groups added, your event posts will automatically start showing up (as described below). There is one shortcode, [wp-meetup-calendar], which has a few options for you to play with.</p>
+        <ul>
+            <li><b>[wp-meetup-calendar]</b> will create a calendar showing the next two months worth of events, linking to each one, and splitting groups up into different colors.</li>
+            <li><b>[wp-meetup-calendar number_of_months=5]</b> will create a calendar showing the next 5 months (or however many months you specify!) of events.</li>
+            <li><b>[wp-meetup-calendar start_month=-2 end_month=3]</b> - the values for these shortcode options are relative to the current month. Since start_month is negative here, then the calendar will show the previous two months' worth of events, as well as the next 3 months' worth of events. Note that this will show 5 months total worth of events! (2 previous months plus the 3 next months).</li>
+            <li><b>[wp-meetup-calendar start_month=-1 number_of_months=3]</b> - the three shortcode attributes can be combined in various intuitive ways. This example shows a total of three months worth of events, starting with the previous month's.</li>
+        </ul>
         
         <h3>Publishing Options</h3>
         <div id="publishing-options">
@@ -132,7 +140,8 @@
                 '1 week' => '1 weeks',
                 '2 weeks' => '2 weeks',
                 '1 month' => '1 month',
-                '2 months' => '2 months'
+                '2 months' => '2 months',
+                '12 months' => '12 months'
             );
             foreach ($options as $label => $value) {
                 $date_select .= "<option value=\"{$value}\"" . ($this->options->get('publish_buffer') == $value ? ' selected="selected"' : "") . ">$label</option>";

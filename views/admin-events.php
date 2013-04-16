@@ -58,7 +58,7 @@ echo $this->element('p', $this->element('input', NULL, array('type' => 'submit',
 
 
 
-<?php elseif(count($groups) > 0): ?>
+<?php elseif(count($events) > 0): ?>
 
 <p>There are no available events listed for this group.</p>
 

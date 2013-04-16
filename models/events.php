@@ -13,7 +13,10 @@ class WP_Meetup_Events extends WP_Meetup_Model {
     }
     
     function create_table() {
-        $sql = "CREATE TABLE `{$this->table_name}` (
+        global $wpdb;
+        $tableSearch = $wpdb->get_var("SHOW TABLES LIKE '$this->table_name'");
+        if ($tableSearch != $this->table_name) {
+            $sql = "CREATE TABLE `{$this->table_name}` (
   `id` tinytext NOT NULL,
   `group_id` int(11) NOT NULL,
   `post_id` int(11) DEFAULT NULL,
@@ -31,9 +34,11 @@ class WP_Meetup_Events extends WP_Meetup_Model {
   PRIMARY KEY (`id`(16)),
   KEY `group_id` (`group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+            dbDelta($sql);
+        }
           
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
+        
     }
     
     function drop_table() {

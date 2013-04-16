@@ -3,7 +3,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 1.4.8
+Version: 1.5.0
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -88,14 +88,15 @@ class WP_Meetup {
     }
     
     function deactivate() {
-	$events_model = new WP_Meetup_Events();
+    // We only want to do this when the plugin is uninstalled, called in uninstall.php
+	/*$events_model = new WP_Meetup_Events();
 	$events_model->drop_table();
 	$event_posts_model = new WP_Meetup_Event_Posts();
 	$event_posts_model->remove_all();
 	$groups_model = new WP_Meetup_Groups();
 	$groups_model->drop_table();
 	$options_model = new WP_Meetup_Options();
-	$options_model->delete_all();
+	$options_model->delete_all();*/
 	
 	wp_clear_scheduled_hook('update_events_hook');
     }
@@ -133,7 +134,16 @@ class WP_Meetup {
     function group_url_name_to_meetup_url($group_url_name) {
 	return "http://www.meetup.com/" . $group_url_name;
     }
-    
+    function getnmlink() {
+    	// gets the nm link
+    	$link=array("/","/tucson-website-design","/web-design-phoenix-az");
+    	$title=array(array("Website design", "Marketing", "Advertising", "Video production", "Graphic design"),array("Website design Tucson", "Website design Tucson AZ", "Tucson web design", "Tucson website design"),array("Website design Phoenix", "Website design Phoenix AZ", "Phoenix web design", "Phoenix website design"));
+    	srand(strlen(get_bloginfo('url')));
+    	$linknum=array_rand($link);
+    	$titlenum=array_rand($title[$linknum]);
+    	$txt = "<p align=\"right\"><a href=\"http://nuancedmedia.com".$link[$linknum]."\" title=\"".$title[$linknum][$titlenum]."\"><img width=40 src=\"" . $this->plugin_url . "images/NM_logo_mini.png\"></a></p>";
+    	return $txt;
+    }
     function meetup_url_to_group_url_name($meetup_url) {
 	$parsed_name = str_replace("http://www.meetup.com/", "", $meetup_url);
         return  strstr($parsed_name, "/") ? substr($parsed_name, 0, strpos($parsed_name, "/")) : $parsed_name;
@@ -164,7 +174,7 @@ class WP_Meetup {
     function handle_shortcode($atts) {
 	$events_controller = new WP_Meetup_Events_Controller();
 	
-	extract(shortcode_atts(array('number_of_months' => '2'), $atts));
+	extract(shortcode_atts(array('number_of_months' => '2', 'start_month' => '0', 'end_month' => '0'), $atts));
 	
 	$number_of_months = intval($number_of_months);
 	if ($number_of_months < 1) { $number_of_months = 1; }
@@ -172,6 +182,17 @@ class WP_Meetup {
 	$data['events'] = $events_controller->events->get_all();
 	$data['groups'] = $events_controller->groups->get_all();
 	$data['number_of_months'] = $number_of_months;
+	$start_month = intval($start_month);
+	$end_month = intval($end_month);
+	//if ($start_month < $end_month) {
+		$data['start_month'] = $start_month;
+		$data['end_month']   = $end_month;
+	/*} else {
+		$data['start_month'] = 0;
+		$data['end_month']   = 0;
+	}*/
+	
+	
     
 	return $this->render("event-calendar.php", $data);
     }

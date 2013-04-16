@@ -4,7 +4,7 @@ Donate link: http://nuancedmedia.com/wordpress-meetup-plugin/
 Tags: meetup,meetup.com
 Requires at least: 3.5
 Tested up to: 3.5.1
-Stable tag: 1.4.8
+Stable tag: 1.5.0
 
 WP Meetup fetches event information from Meetup.com and creates posts for each event.
 
@@ -22,7 +22,8 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Visit the options page located at Settings -> WP Meetup and follow the instructions.
 4. To include the event calendar on a page, create a new page and in the content editor, enter `[wp-meetup-calendar]` where you want the calendar to appear on the page.
-5. To include a variable number of months on the event calender, use shortcode, e.g. `[wp-meetup-calender number_of_months='4']` by default the calender displays two months (the current, and the next).
+5. To include a variable number of months on the event calender, use shortcode, e.g. `[wp-meetup-calendar number_of_months='4']` by default the calender displays two months (the current, and the next).
+6. Starting with version 1.5.0, you now have the ability to show any number of previous and future events! Try, for example, [wp-meetup-calendar start_month=-2 end_month=2]. This will show a total of 4 months (2 previous months, and the next 2 months, all relative to the current month). Play around with it, it's great to be able to have this variable calendar showing!
 
 **Important: If you're upgrading from a version prior to 1.2, make sure to disable the plugin and re-enable it.**
 
@@ -33,6 +34,13 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 3. Event calendar
 
 == Changelog ==
+
+= 1.5.0 =
+* Revised the way the calendar works - you now have a ton of control to show events from previous and future months!
+* Now automatically grabs the previous year's worth of events, and you can now choose to grab the next year's worth of events (up from just 2 months)
+* Changed it so that events and groups are deleted from the database when the plugin is uninstalled, not just deactivated!
+* Fixed a typo in the instructions
+* Refixed lost changes from 1.4.8 update
 
 = 1.4.8 =
 * Fixed the endless "multiple primary keys defined" error message
@@ -104,6 +112,9 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 * Initial release
 
 == Upgrade Notice ==
+
+= 1.5.0 =
+* Starting with version 1.5.0, you now have the ability to show any number of previous and future events! Try, for example, [wp-meetup-calendar start_month=-2 end_month=2]. This will show a total of 4 months (2 previous months, and the next 2 months, all relative to the current month). Play around with it, it's great to be able to have this variable calendar showing!
 
 = 1.4.8 =
 * We are attempting to wade through all the various bugs that have been introduced since we first created this plugin. We have eliminated many of them, so please let us know if you find any more!

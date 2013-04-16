@@ -9,5 +9,4 @@ class WP_Meetup_Model extends WP_Meetup {
         global $wpdb;
 	$this->table_prefix = $wpdb->prefix . "wpmeetup_";
     }
-    
 }

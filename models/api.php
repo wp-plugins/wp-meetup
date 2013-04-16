@@ -8,10 +8,10 @@ class WP_Meetup_Api extends WP_Meetup_Model {
 	$this->import_model('options');
     }
     
-    function get_events($group_url_names = array(), $start = FALSE, $end = "2m") {
+    function get_events($group_url_names = array(), $start = FALSE, $end = "12m") {
 	
 	if ($start === FALSE) {
-	    $start = mktime(0, 0, 0, date('n'), 1, date('Y'));
+	    $start = mktime(0, 0, 0, date('n'), 1, date('Y')-1);
 	    $start *= 1000;
 	    $start = number_format($start, 0, '.', '');
 	}

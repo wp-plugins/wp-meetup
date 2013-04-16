@@ -160,6 +160,7 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 		    $this->feedback['error'][] = "The group URL you entered refers to a group you've already added.";
 		}
 	    }
+	    $this->update_events(); // update events no matter what: fixes the rare bug where event posts are not created
         }
 	
 	if(array_key_exists('groups', $_POST)) {
@@ -339,7 +340,6 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 			}
 			$plug .= $plug_alt_text;
 			$plug .= "\">Nuanced Media</a>.</p>";
-			//$plug .= date('w',$event->time) . "<p class=\"wp-meetup-plug\">Meetup.com integration powered by <a href=\"http://nuancedmedia.com/\" title=\"Website design, Online Marketing and Business Consulting\">Nuanced Media</a>.</p>";
 		}
 	    
 	    return $event_meta . "\n" . $content . "\n" . $plug;

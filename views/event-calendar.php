@@ -31,11 +31,30 @@ if (count($events_by_date) > 0) {
     $today = mktime(0, 0, 0, date('n'), date('j'), date('Y'));
     
     $div_contents = "";
-    for ($m = 0; $m < $number_of_months; $m++) { // 'm' counts the months, 'i' counts the weeks, 'j' counts the days in that week
+    $this_start_month = 0;
+    $this_end_month = $number_of_months;
+    if ($start_month != 0) { 
+        if ($end_month != 0) {
+            $this_start_month = $start_month;
+            $this_end_month = $end_month;
+        } else {
+            $this_start_month = $start_month;
+            $this_end_month = $this_start_month + $number_of_months;
+        }
+    } else {
+        if ($end_month > 0) {
+            $this_start_month = 0;
+            $this_end_month = $end_month;
+        } else {
+            $this_start_month = 0;
+            $this_end_month = $number_of_months;
+        }
+    }
+    for ($m = $this_start_month; $m < $this_end_month; $m++) { // 'm' counts the months, 'i' counts the weeks, 'j' counts the days in that week
         $current_month = date('n') + $m;
         $first_of_the_month = mktime(0, 0, 0, $current_month, 1, date('Y'));
         $date_start = mktime(0, 0, 0, $current_month, 1-date('w', $first_of_the_month), date('Y')); // monday of the first week of the month (which may not lie in the same month)
-        $end_date = mktime(0, 0, 0, $current_month+1, -1, date('Y')); // last day of the current month
+        $end_date = mktime(0, 0, 0, $current_month+1, 0, date('Y')); // last day of the current month
 		
         $theadrow_contents = '';
         foreach (array('Su', 'M', 'T', 'W', 'Th', 'F', 'Sa') as $day) {
@@ -47,7 +66,7 @@ if (count($events_by_date) > 0) {
         $current_date = $date_start;
         
         $i = 0;
-        while ($current_date < $end_date) {
+        while ($current_date <= $end_date) {
             $tr_contents = '';
             
             for ($j = 0; $j < 7; $j++) {

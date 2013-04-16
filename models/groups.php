@@ -12,7 +12,10 @@ class WP_Meetup_Groups extends WP_Meetup_Model {
     }
     
     function create_table() {
-        $sql = "CREATE TABLE {$this->table_name} (
+        global $wpdb;
+        $tableSearch = $wpdb->get_var("SHOW TABLES LIKE '$this->table_name'");
+        if ($tableSearch != $this->table_name) {
+            $sql = "CREATE TABLE {$this->table_name} (
   id tinytext NOT NULL,
   name text NOT NULL,
   url_name tinytext NOT NULL,
@@ -20,9 +23,9 @@ class WP_Meetup_Groups extends WP_Meetup_Model {
   color varchar(7) NOT NULL DEFAULT '#E51937',
   PRIMARY KEY  (`id`(16))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
-          
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
+            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+            dbDelta($sql);
+        }
     }
     
     function drop_table() {
@@ -51,7 +54,7 @@ class WP_Meetup_Groups extends WP_Meetup_Model {
     }
     
     function count() {
-        return $this->wpdb->get_var($this->wpdb->prepare("SELECT COUNT(*) FROM `{%d}`",$this->table_name));
+        return $this->wpdb->get_var("SELECT COUNT(*) FROM `{$this->table_name}`");
     }
     
     function save($group) {

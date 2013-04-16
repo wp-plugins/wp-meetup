@@ -249,7 +249,7 @@
 	{
 		// optimization creep: this is quite costly. Is there any better way to achieve it?
 		// also note that json does not really allow comments...
-    if ($options['truncate_comments_buggy'] === TRUE) {
+    if (get_option('truncate_comments_buggy') && $options['truncate_comments_buggy'] === TRUE) {
       $data = preg_replace(array(
         // eliminate single line comments in '// ...' form
         // REMOVED BECAUSE OF BUGS: 1-does not match at end of non-empty line, 2-eats inside strings, too
