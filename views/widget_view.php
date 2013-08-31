@@ -1,5 +1,4 @@
 <?php
-
 //print_r($events);
 $events_by_date = array();
 foreach ($events as $event) {
@@ -57,12 +56,19 @@ if (count($events_by_date) > 0) {
             if (array_key_exists($date_key, $events_by_date)) {
                 
                 $event = $events_by_date[$date_key][0];
-                //$this->pr($event->post);
+
                 if ($event->post->post_status == 'publish') {
-                    $td_contents = $this->element('a', date('j', $current_date), array(
-                        'href' =>  get_permalink($event->post->ID),
-                        'title' => $event->name
-                    ));
+                    if ($event->post_id == NULL) {
+                        $td_contents = $this->element('a', date('j', $current_date), array(
+                            'href' =>  $event->event_url,
+                            'title' => $event->name
+                        ));
+                    } else {
+                        $td_contents = $this->element('a', date('j', $current_date), array(
+                            'href' =>  get_permalink($event->post->ID),
+                            'title' => $event->name
+                        ));
+                    }
                 } 
             } 
             

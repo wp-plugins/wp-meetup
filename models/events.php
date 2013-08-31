@@ -1,4 +1,11 @@
 <?php
+
+/**
+ * Dump helper. Functions to dump variables to the screen, in a nicley formatted manner.
+ * @author Joost van Veen
+ * @version 1.0
+ */
+
 class WP_Meetup_Events extends WP_Meetup_Model {
 
     private $wpdb;
@@ -55,6 +62,7 @@ class WP_Meetup_Events extends WP_Meetup_Model {
             $results[$key]->group = $this->groups->get($result->group_id);
         }
         //pr($results);
+        //$results = $this->rescue_orphaned_events($results);
         return $results;
     }
     
@@ -67,6 +75,7 @@ class WP_Meetup_Events extends WP_Meetup_Model {
             $results[$key]->group = $this->groups->get($result->group_id);
         }
         //pr($results);
+        //$results = $this->rescue_orphaned_events($results);
         return $results;
     }
     
@@ -79,6 +88,7 @@ class WP_Meetup_Events extends WP_Meetup_Model {
             $results[$key]->group = $this->groups->get($result->group_id);
         }
         //pr($results);
+        //$results = $this->rescue_orphaned_events($results);
         return $results;
     }
     
@@ -104,6 +114,7 @@ class WP_Meetup_Events extends WP_Meetup_Model {
             $results[$key]->post = get_post($result->post_id);
             $results[$key]->group = $this->groups->get($result->group_id);
         }
+        //$results = $this->rescue_orphaned_events($results);
         //pr($results);
         return $results;
     }
@@ -111,14 +122,13 @@ class WP_Meetup_Events extends WP_Meetup_Model {
     function save($event) {
         $data = (array) $event;
         $data['venue'] = $event->venue ? serialize($event->venue) : NULL;
-        
+
         if ($row = $this->get($event->id)) {
             unset($data['id']);
             $this->wpdb->update($this->table_name, $data, array('id' => $event->id));
         } else {
             $this->wpdb->insert($this->table_name, $data);
         }
-        
     }
     
     function save_all($events = array()) {
@@ -175,14 +185,43 @@ class WP_Meetup_Events extends WP_Meetup_Model {
     }
     
     function remove_by_group_id($group_id) {
-        
         $events = $this->get_by_group_id($group_id);
         foreach ($events as $event) {
             //$this->pr('deleting event ' . $event->id);
             //$this->pr($this->get($event->id));
             $this->remove($event->id);
         }
-        
     }
 
+
+    function rescue_orphaned_events($events) {
+        // This doesn't work! :-(
+        global $wpdb;
+        $good_events= array();
+
+        foreach ($events as $event){
+            // check to see if event lacks post id
+            if ($event->post_id == NULL || $event->post_id == ''){
+                $post_title = $event->name;
+                $post_description = $event->description;
+                $posts_table = $wpdb->prefix . 'posts';
+                // try to get (published) posts with the same title and description using mysql query
+                $query_result = $wpdb->get_results("SELECT * FROM `" . $wpdb->prefix . "posts` LIMIT 10");
+
+                
+                /*if ($query_result != NULL && count($query_result) == 1){
+                    $event->post_id = $query_result[0]->ID;
+                    $good_events[] = $event;
+                } else {
+
+                    echo '<div style="display: none"><pre>' . print_r($event, true) . '</pre></div>';
+                }*/
+            } else {
+                $good_events[] = $event;
+            }
+        }
+        return $good_events;
+    }
 }
+
+

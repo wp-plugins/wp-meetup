@@ -85,10 +85,15 @@ if (count($events_by_date) > 0) {
                 if (array_key_exists($date_key, $events_by_date)) {
                     $ul_contents = "";
                     
-                    
                     foreach ($events_by_date[$date_key] as $event) {
                         $event_status = time() < $event->time + $event->utc_offset ? 'upcoming' : 'past';
-                        $anchor_attributes = array('href' => get_permalink($event->post->ID));
+                        
+                        if ($event->post_id == NULL) {
+                            $anchor_attributes = array('href' => $event->event_url);
+                        } else {
+                            $anchor_attributes = array('href' => get_permalink($event->post->ID));
+                        }
+
                         if ($event_status == 'upcoming')
                             $anchor_attributes['style'] = 'background-color:' . $event->group->color;
                         
@@ -109,7 +114,7 @@ if (count($events_by_date) > 0) {
                     }
                     $td_contents .= $this->element('ul', $ul_contents);
                 } else {
-					$td_contents .= $this->element('ul',$this->element('li',$this->element('span',"&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp ")));
+					$td_contents .= $this->element('ul',$this->element('li', '', array('style'=>'min-height: 60px;')));
 				}
                 
                 if ((date('n', $current_date) % 12) == ($current_month % 12)) { // evaluating mod 12 fixes bug of months in later years all being 'out of range'
@@ -136,4 +141,3 @@ if (count($events_by_date) > 0) {
     echo $this->element('p', "No events listed.");
 }
 
-?>

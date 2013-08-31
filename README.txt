@@ -4,7 +4,7 @@ Donate link: http://nuancedmedia.com/wordpress-meetup-plugin/
 Tags: meetup,meetup.com
 Requires at least: 3.5
 Tested up to: 3.6
-Stable tag: 1.5.1
+Stable tag: 1.5.2
 
 WP Meetup fetches event information from Meetup.com and creates posts for each event.
 
@@ -34,6 +34,10 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 3. Event calendar
 
 == Changelog ==
+
+= 1.5.2 =
+* Band-aid fix: if, for some reason, an event does not have a post then it will be linked to the meetup event instead of the non-existant post.
+* In the calendar view, if there are no events on a day it no longer fills up that space with "nbsp" 's.
 
 = 1.5.1 =
 * Hotfix to make plugin work with WordPress 3.6 (and hopefully resolve some of the other issues users have been having!)
