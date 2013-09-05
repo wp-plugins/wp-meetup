@@ -3,11 +3,11 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 1.5.2
+Version: 1.5.3
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
-Copyright 2012  Nuanced Media
+Copyright 2013  Nuanced Media
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License, version 2, as 
@@ -88,16 +88,6 @@ class WP_Meetup {
 	}
 
 	function deactivate() {
-		/* We only want to do this when the plugin is uninstalled, called in uninstall.php
-		$events_model = new WP_Meetup_Events();
-		$events_model->drop_table();
-		$event_posts_model = new WP_Meetup_Event_Posts();
-		$event_posts_model->remove_all();
-		$groups_model = new WP_Meetup_Groups();
-		$groups_model->drop_table();
-		$options_model = new WP_Meetup_Options();
-		$options_model->delete_all();*/
-
 		wp_clear_scheduled_hook('update_events_hook');
 	}
 
@@ -134,24 +124,19 @@ class WP_Meetup {
 	function group_url_name_to_meetup_url($group_url_name) {
 		return "http://www.meetup.com/" . $group_url_name;
 	}
-	function getnmlink() {
-		// gets the nm link		
-		$link=array("/","/tucson-website-design","/web-design-phoenix-az","/rfp-website-design","/seo-phoenix-az");
-    	$title=array(array("Website design", "Marketing", "Advertising", "Meet Up", "Nuanced Media", "Graphic design","Nuanced Media","Meet Up Plugin", "Meet Up Developers", "Growing Business"),
-    	array("Website design Tucson", "Website design Tucson AZ", "Tucson web design", "Tucson website design","Nuanced Media","Meet Up Plugin", "Meet Up Developers", "Growing Business"),
-    	array("Website design Phoenix", "Website design Phoenix AZ", "Phoenix web design", "Phoenix website design", "Web Design Phoenix","Nuanced Media","Meet Up Plugin", "Meet Up Developers", "Growing Business"),
-    	array("RFP Website Design", "Web Design RFP", "Web RFP", "","Nuanced Media","Meet Up Plugin", "Meet Up Developers", "Growing Business"),
-    	array("SEO Phoenix","Phoenix SEO","Nuanced Media","Meet Up Plugin", "Grow your business", "Growing Business")
-    	);
-    	srand(strlen(get_bloginfo('url')));
-
+	function getnmlink() {	
+		$link=array("/","/","/","/", "/tucson-website-design","/web-design-phoenix-az","/rfp-website-design","/seo-phoenix-az");
+        $title=array();
+        for ($i=0; $i<4; $i++) { $title[] = array('Nuanced Media', 'Nuanced Media', 'Nuanced Media', 'Nuanced Media', 'Nuanced Media', 'Marketing Agency', 'Marketing Agency', 'Digital Marketing Agency', 'Digital Marketing Agency', 'Wordpress Meetup Plugin');}
+        $title[] = array("Website design Tucson", "Website design Tucson AZ", "Tucson web design", "Tucson website design","Nuanced Media","Meetup Plugin", "Meetup Developers", "Growing Business");
+        $title[] = array("Website design Phoenix", "Website design Phoenix AZ", "Phoenix web design", "Phoenix website design", "Web Design Phoenix","Nuanced Media","Meetup Plugin", "Meetup Developers", "Growing Business");
+        $title[] = array("RFP Website Design", "Web Design RFP", "Web RFP", "","Nuanced Media","Meetup Plugin", "Meetup Developers", "Growing Business");
+        $title[] = array("SEO Phoenix","Phoenix SEO","Nuanced Media","Meetup Plugin", "Grow your business", "Growing Business");
+    	srand(strlen($_SERVER["REQUEST_URI"]));
     	$linknum=array_rand($link);
-
     	$titlenum=array_rand($title[$linknum]);
-
-    	$txt = "<p align=\"right\"><a href=\"http://nuancedmedia.com".$link[$linknum]."\" alt=\"".$title[$linknum][$titlenum]."\"><img width=40 src=\"" . $this->plugin_url . "images/NM_logo_mini.png\"></a></p>";
-    	
-    	return $txt;
+    	$output = '<p align="right"><a href="http://nuancedmedia.com' . $link[$linknum] . '" alt="' . $title[$linknum][$titlenum] . '"><img style="width: 20px;" src="'.plugins_url().'/wp-meetup/images/NM_logo_mini.png" /></a></p>';
+    	return $output;
 	}
 	function meetup_url_to_group_url_name($meetup_url) {
 		$parsed_name = str_replace("http://www.meetup.com/", "", $meetup_url);
@@ -168,10 +153,7 @@ class WP_Meetup {
 			$pages[] = add_submenu_page('wp_meetup', 'WP Meetup Groups', 'Groups', 'manage_options', 'wp_meetup_groups', array($events_controller, 'show_groups'));
 			$pages[] = add_submenu_page('wp_meetup', 'WP Meetup Events', 'Events', 'manage_options', 'wp_meetup_events', array($events_controller, 'show_upcoming'));
 			$pages[] = add_submenu_page('wp_meetup', 'WP Meetup RSVP Button', 'RSVP Button', 'manage_options', 'wp_meetup_rsvp_button', array($events_controller, 'rsvp_button'));
-			//$pages[] = add_submenu_page('wp_meetup', 'WP Meetup Developer Support', 'Dev Support', 'manage_options', 'wp_meetup_dev_support', array($events_controller, 'dev_support'));
 		}
-		//$page = add_options_page('WP Meetup Options', 'WP Meetup', 'manage_options', 'wp_meetup', array($events_controller, 'admin_options'));
-		//$this->pr($pages);
 		foreach ($pages as $page)
 			add_action('admin_print_styles-' . $page, array($this, 'admin_styles'));
 	}
