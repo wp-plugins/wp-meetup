@@ -314,8 +314,8 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 	    $plug = "";
 		$plug_alt_text = "";
 	    if ($show_nm_link) {
-			$plug .= "<p class=\"wp-meetup-plug\">Meetup.com integration powered by <a href=\"http://nuancedmedia.com/\" title=\"";
-			switch (date('w',$event->time)) {
+			$plug .= $this->getnmlink();//"<p class=\"wp-meetup-plug\">Meetup.com integration powered by <a href=\"http://nuancedmedia.com/\" title=\"";
+			/*switch (date('w',$event->time)) {
 				case 0:
 					$plug_alt_text = "marketing tucson";
 					break;
@@ -339,7 +339,7 @@ class WP_Meetup_Events_Controller extends WP_Meetup_Controller {
 					break;
 			}
 			$plug .= $plug_alt_text;
-			$plug .= "\">Nuanced Media</a>.</p>";
+			$plug .= "\">Nuanced Media</a>.</p>";*/
 		}
 	    
 	    return $event_meta . "\n" . $content . "\n" . $plug;
