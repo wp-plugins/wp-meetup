@@ -114,6 +114,38 @@ class WP_Meetup_Admin {
 								<input type="submit" value="Update Events Now">
 								</form>
 							</div>
+							<h3>Email List</h3>
+							<p>Stay updated on new releases and future features for the WP Meetup Plugin by joining the email list below.</p>
+							<div class="meetup-mailing-list-form">
+								<script>
+								jQuery(function(){
+								});
+								</script>
+								<form method="POST" action="http://nuancedmedia.com/wordpress-meetup-plugin/">
+									<table>
+										<tr>
+											<td>
+												Email:
+											</td>
+											<td>
+												<input name="input_2" id="input_10_2" type="text" value="" class="medium" tabindex="1">
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<input type="submit" id="gform_submit_button_10" class="button gform_button" value="Join" tabindex="2" onclick="if(window[&quot;gf_submitting_10&quot;]){return false;}  window[&quot;gf_submitting_10&quot;]=true; ">
+												<input type="hidden" class="gform_hidden" name="is_submit_10" value="1">
+												<input type="hidden" class="gform_hidden" name="gform_submit" value="10">
+												<input type="hidden" class="gform_hidden" name="gform_unique_id" value="">
+												<input type="hidden" class="gform_hidden" name="state_10" value="WyJhOjA6e30iLCI3MzgxZDc3NTA3OTk0MDMwMTI4MTM4ZDczZTU1MzNkMSJd">
+												<input type="hidden" class="gform_hidden" name="gform_target_page_number_10" id="gform_target_page_number_10" value="0">
+												<input type="hidden" class="gform_hidden" name="gform_source_page_number_10" id="gform_source_page_number_10" value="1">
+												<input type="hidden" name="gform_field_values" value="">
+											</td>
+										</tr>
+									</table>
+								</form>
+							</div>
 						</div>
 						<div class="clear"></div>
 					</div>

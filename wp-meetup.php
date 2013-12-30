@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 2.0.0
+Version: 2.0.1
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -23,6 +23,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+
+
+
+/* ----------  Dump function for debug ----------  */
+if (!function_exists('dump')) {function dump ($var, $label = 'Dump', $echo = TRUE){ob_start();var_dump($var);$output = ob_get_clean();$output = preg_replace("/\]\=\>\n(\s+)/m", "] => ", $output);$output = '<pre style="background: #FFFEEF; color: #000; border: 1px dotted #000; padding: 10px; margin: 10px 0; text-align: left;">' . $label . ' => ' . $output . '</pre>';if ($echo == TRUE) {echo $output;}else {return $output;}}}if (!function_exists('dump_exit')) {function dump_exit($var, $label = 'Dump', $echo = TRUE) {dump ($var, $label, $echo);exit;}}
 
 
 /* ----------  WP Meetup ----------  */
@@ -50,7 +55,7 @@ class WP_Meetup {
 		$this->sqltable      = $wpdb->prefix . $this->sqltable;
 		$this->sqltable_cron = $wpdb->prefix . $this->sqltable_cron;
 		$this->sqltable_posts = $wpdb->prefix . $this->sqltable_posts;
-		$version             = array( 'version' => '2.0.0' );
+		$version             = array( 'version' => '2.0.1' );
 		$currentVersion = get_option($this->wpm_version_control);
 		update_option($this->wpm_version_control, $version);
 
@@ -58,8 +63,28 @@ class WP_Meetup {
 		add_filter('plugin_action_links_' . plugin_basename(__FILE__), array(&$this, 'add_plugin_settings_link') );
 
 		$currentVersion = $currentVersion['version'];
-		if ($currentVersion !== "2.0.0") {
-			$this->back_capat(); // account for version 1.x.x upgrades
+		if (isset($current_version)) {
+			$this->version_check($currentVersion);
+		}
+		dump(wp_strip_all_tags(NULL));
+		
+	}
+
+	function version_check($version) {
+
+		require_once( ABSPATH . 'wp-admin/includes/plugin.php');
+		$version_array = explode('.', $version);
+		$plugin_data    = get_plugin_data( __FILE__ );
+		$current_version = $plugin_data['Version'];
+		$current_version_array = explode('.', $current_version);
+
+		if ($version_array['0'] < '2' && $current_version_array['0'] === '2') {
+			$this->back_capat();  // account for version 1.x.x upgrades
+		}
+		elseif ($version_array['0'] === '2') {
+			if ($version_array['2'] === '0' && $current_version_array['2'] === '1') {
+				$this->maybe_update_event_posts(TRUE);
+			}
 		}
 	}
 
@@ -99,6 +124,7 @@ class WP_Meetup {
 			$run = $wpdb->get_var( "SELECT `run` FROM $this->sqltable_cron WHERE `id`=1" );
 		} else {
 			$run = $forceRun;
+			//$run = TRUE;
 		}
 		if ($run) {
 			$event_array_2 = $this->multigroup_events();
@@ -381,9 +407,10 @@ class WP_Meetup {
 
 	function dateMatching($day, $today) {
 		/* Matches the dates on the calendar with the links to the event pages for that date. This is done by checks if event start time is within the timeframe of today. */ 
-		$offset = get_option('gmt_offset');
-
+		
 		global $wpdb;
+
+		$offset = get_option('gmt_offset');
 		if ($today['mon'] < 10) {
 			$thisday  = $today['year'] . '-0' . $today['mon'] . '-' . $day . ' 00:00:00';
 			$tomorrow = $today['year'] . '-0' . $today['mon'] . '-' . $day . ' 23:59:59';
@@ -406,9 +433,9 @@ class WP_Meetup {
 				'today'     => FALSE,
 			);
 		}
-
-		$thisday = strtotime($thisday);
-		$tomorrow = strtotime($tomorrow);
+		$second_offset = $offset * 3600;
+		$thisday = strtotime($thisday) - $second_offset;
+		$tomorrow = strtotime($tomorrow) - $second_offset;
 		$wp_post_id_array = $wpdb->get_results("SELECT `wp_post_id` FROM $this->sqltable WHERE `event_time`>'$thisday' AND `event_time`<'$tomorrow'");
 		if ($wp_post_id_array != NULL) {
 			foreach($wp_post_id_array as $wp_post_id) {
@@ -467,6 +494,8 @@ class WP_Meetup {
 			// Put day of month as 0'th element of day array
 			$day = $i;
 			if ($i > $days_in_month) {
+				$i = $i - $days_in_month;
+				$end = $end - $days_in_month;
 				$today['mon'] =  $today['mon'] + 1;
 				$end = $end - $days_in_month;
 				$day = $day - $days_in_month;
@@ -474,10 +503,10 @@ class WP_Meetup {
 					$today['mon'] = $today['mon'] - 12;
 					$today['year'] = $today['year'] + 1;
 				}
-				$mktime = mktime(0, 0, 0, 12, 1, $today['year']);
+				$mktime = mktime(0, 0, 0, $today['mon'], $i, $today['year']);
 				$next_month = date('F', $mktime);
-				$output .= '<div class="meetup-event-list-month"><h3>' . $next_month . '</h3></div>' ;
 				$days_in_month = cal_days_in_month(CAL_GREGORIAN, $today['mon'], $today['year']);
+				$today['month'] = $next_month;
 			}
 			$day = $this->dateMatching($day, $today);
 			if (!$day['has_event'] == false) {
@@ -628,6 +657,7 @@ class WP_Meetup {
 	function widgetDateMatching($day, $today) {
 		/* Matches the dates on the calendar with the links to the event pages for that date. This is done by checks if event start time is within the timeframe of today. */ 
 		global $wpdb;
+		$offset = get_option('gmt_offset');
 		if ($today['mon'] < 10) {
 			$thisday= $today['year'] . '-0' . $today['mon'] . '-' . $day . ' 00:00:00';
 			$tomorrow= $today['year'] . '-0' . $today['mon'] . '-' . $day . ' 23:59:59';
@@ -650,9 +680,9 @@ class WP_Meetup {
 				'today'     => FALSE,
 			);
 		}
-
-		$thisday = strtotime($thisday);
-		$tomorrow = strtotime($tomorrow);
+		$second_offset = $offset * 3600;
+		$thisday = strtotime($thisday) - $second_offset;
+		$tomorrow = strtotime($tomorrow) - $second_offset;
 		$wp_post_id = $wpdb->get_var("SELECT `wp_post_id` FROM $this->sqltable WHERE `event_time`>'$thisday' AND `event_time`<'$tomorrow'");
 		if (isset($wp_post_id) && $wp_post_id != NULL) {
 			$content = $this->widget_day_build($date, $day, $today, $wp_post_id);
@@ -746,7 +776,7 @@ class WP_Meetup {
 		$post = array( 
 			"post_type"    => 'wpm_event',
 			'post_status'  => 'publish',
-			'post_content' => wp_strip_all_tags($event->description),
+			'post_content' => $event->description,
 			"post_title"   => $event->name,
 			'start_time'   => $event->time,
 		);
@@ -762,11 +792,11 @@ class WP_Meetup {
 		$post_update = array(
 			'ID'           =>$wp_post_id,
 			'post_type'    => 'wpm_event',
-			'post_content' => wp_strip_all_tags($event->description),
+			'post_content' => $event->description,
 			'post_title'   => $event->name,
 			'start_time'   => $event->time,
 		);
-		wp_update_post($post_update);
+		$value = wp_update_post($post_update);
 	}
 
 	/* ----------  Get Events ---------- */
@@ -856,6 +886,3 @@ class WP_Meetup {
 	}
 
 }
-
-/* ----------  Dump function for debug ----------  */
-if (!function_exists('dump')) {function dump ($var, $label = 'Dump', $echo = TRUE){ob_start();var_dump($var);$output = ob_get_clean();$output = preg_replace("/\]\=\>\n(\s+)/m", "] => ", $output);$output = '<pre style="background: #FFFEEF; color: #000; border: 1px dotted #000; padding: 10px; margin: 10px 0; text-align: left;">' . $label . ' => ' . $output . '</pre>';if ($echo == TRUE) {echo $output;}else {return $output;}}}if (!function_exists('dump_exit')) {function dump_exit($var, $label = 'Dump', $echo = TRUE) {dump ($var, $label, $echo);exit;}}
