@@ -472,7 +472,6 @@ class WP_Meetup_Admin {
 		$remote_get = wp_remote_get($url);
         $result = wp_remote_retrieve_body($remote_get);
         $result_array = json_decode($result);
-        dump($result_array, 'Result Array (get_group_id)');
 	    $manyResult = $result_array->results;
 	    if (isset($manyResult['0'])) {
 	        $singleResult = $manyResult['0'];
