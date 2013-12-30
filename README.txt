@@ -1,18 +1,16 @@
 === WP Meetup ===
-Contributors: Nuanced Media,cjlarose
+Contributors: Nuanced Media
 Donate link: http://nuancedmedia.com/wordpress-meetup-plugin/
 Tags: meetup,meetup.com
-Requires at least: 3.5
-Tested up to: 3.6
-Stable tag: 1.5.3
+Requires at least: 3.7
+Tested up to: 3.8
+Stable tag: 2.0.0
 
 WP Meetup fetches event information from Meetup.com and creates posts for each event.
 
 == Description ==
 
 WP Meetup fetches event information from Meetup.com and creates posts for each event.  Additionally, WP Meetup provides an event calendar for displaying upcoming events either on a page or as a widget.
-
-Uses the [Meetup PHP API](https://github.com/wizonesolutions/meetup_api) developed by wizonesolutions.
 
 For more detailed information visit the plugin homepage at [Nuanced Media](http://nuancedmedia.com/wordpress-meetup-plugin/).
 
@@ -34,6 +32,12 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 3. Event calendar
 
 == Changelog ==
+
+= 2.0.0 =
+* Complete, from scratch rewrite of plugin.
+* Using internal Meetup API functionality
+* Migration system to ensure backwards compatibility with past versions of WP-Meetup
+* Cleaner code base
 
 = 1.5.3 =
 * Small tweaks to ensure that the band-aid fix is working. Our next step is basically to rewrite the plugin from scratch and change the way it handles event posts, since this band-aid is not ideal!
@@ -124,6 +128,9 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 * Initial release
 
 == Upgrade Notice ==
+
+= 2.0.0 =
+* Important upgrade! We have completely overhauled the plugin, all the while ensuring it will work with your current WP-Meetup version and all your events. The new version is quicker, cleaner, and has more transparent update notices and error reporting, so that we can better help people with errors remotely.
 
 = 1.5.0 =
 * Starting with version 1.5.0, you now have the ability to show any number of previous and future events! Try, for example, [wp-meetup-calendar start_month=-2 end_month=2]. This will show a total of 4 months (2 previous months, and the next 2 months, all relative to the current month). Play around with it, it's great to be able to have this variable calendar showing!
