@@ -66,7 +66,6 @@ class WP_Meetup {
 		if (isset($current_version)) {
 			$this->version_check($currentVersion);
 		}
-		dump(wp_strip_all_tags(NULL));
 		
 	}
 
