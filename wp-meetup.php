@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 2.0.1
+Version: 2.0.2
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -23,11 +23,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-
-
-
-/* ----------  Dump function for debug ----------  */
-if (!function_exists('dump')) {function dump ($var, $label = 'Dump', $echo = TRUE){ob_start();var_dump($var);$output = ob_get_clean();$output = preg_replace("/\]\=\>\n(\s+)/m", "] => ", $output);$output = '<pre style="background: #FFFEEF; color: #000; border: 1px dotted #000; padding: 10px; margin: 10px 0; text-align: left;">' . $label . ' => ' . $output . '</pre>';if ($echo == TRUE) {echo $output;}else {return $output;}}}if (!function_exists('dump_exit')) {function dump_exit($var, $label = 'Dump', $echo = TRUE) {dump ($var, $label, $echo);exit;}}
 
 
 /* ----------  WP Meetup ----------  */
@@ -76,7 +71,6 @@ class WP_Meetup {
 		$plugin_data    = get_plugin_data( __FILE__ );
 		$current_version = $plugin_data['Version'];
 		$current_version_array = explode('.', $current_version);
-
 		if ($version_array['0'] < '2' && $current_version_array['0'] === '2') {
 			$this->back_capat();  // account for version 1.x.x upgrades
 		}
@@ -185,6 +179,15 @@ class WP_Meetup {
 		$strtotime = strtotime($localtime);
 		$today = getdate($strtotime);
 		return $today;
+	}
+
+	function print_credit() {
+		$permission = get_option($this->credit_permission);
+		if ($permission['permission_value']==='checked') {
+			$output = '<div class="credit-line"><p>Brought to you by <a href="http://www.nuancedmedia.com">Nuanced Media</a>.</p></div>';
+			$output .= '<style>.credit-line p{ font-size:8px; }</style>' . PHP_EOL;
+		}
+		return $output;
 	}
 
 	/* ----------  Shortcodes ---------- */
@@ -484,7 +487,7 @@ class WP_Meetup {
 	}
 
 	function events_widget_execute($today) {
-		$output = '<div class="meetup-widget_event_list">';
+		$output = '<div class="meetup-widget-event-list">';
 		$i = $today['mday'];
 		$end = $today['mday'] + 7;
 		$days_in_month = cal_days_in_month(CAL_GREGORIAN, $today['mon'], $today['year']);
@@ -507,20 +510,117 @@ class WP_Meetup {
 				$days_in_month = cal_days_in_month(CAL_GREGORIAN, $today['mon'], $today['year']);
 				$today['month'] = $next_month;
 			}
-			$day = $this->dateMatching($day, $today);
-			if (!$day['has_event'] == false) {
-				$output .= '<div class="widget-meetup-event-list-day"><div class="widget-month-display">' . $today['month'] . '-' . '</div> ' . $day['content'] . '</div>';
+			$day_array = $this->eventListDateMatching($day, $today);
+			foreach ($day_array as $day) {
+				if (!$day['has_event'] == false) {
+					$output .= $day['day'];
+					$output .= '<div class="widget-meetup-event-list-day">' . $day['content'] . '</div><div class="clear"></div>';;
+				}
 			}	
 			// check and see if there's an event on this day.
 			// add it to the day's array.
 			// add day to week
 			$week[] = $day;
 			$i = $i+1;
-			// If we have added 7 days to the week . . .
 		}
+		// Credit permission and styles
+		$output .= $this->print_credit();
+		$grouplist = get_option($this->group_options_name);
+		$colorlist = get_option($this->color_options_name);
+		$style = get_option($this->options_name);
+		$output .= '<style>';
+		$output .= '.wp-meetup-widget-calendar { width:300px;}' . PHP_EOL;
+		$colorlist = $colorlist['colors'];
+		if (isset($grouplist) and $grouplist!=NULL) {
+			foreach ($grouplist as $group) {
+				$color_input = 'wpm_calendar_' . $group['name'] . '_color';
+				if (isset($colorlist[$color_input])) {
+					$output .= '.group' . $group['group_id'] . '{ background-color:' . $colorlist[$color_input] . ';}' . PHP_EOL;
+
+				}
+				else {
+					$colorlist[$color_input] = '#CCCCCC';
+					$output .= '.group' . $group['group_id'] . '{ background-color:' . $colorlist[$color_input] . ';}' . PHP_EOL;
+				}
+			}
+		}
+		$output .= '</style>' . PHP_EOL;
+
 		$output .= '</div>';
 		return $output;
 
+	}
+
+	function eventListDateMatching($day, $today) {
+		/* Matches the dates on the calendar with the links to the event pages for that date. This is done by checks if event start time is within the timeframe of today. */ 
+		
+		global $wpdb;
+
+		$offset = get_option('gmt_offset');
+		if ($today['mon'] < 10) {
+			$thisday  = $today['year'] . '-0' . $today['mon'] . '-' . $day . ' 00:00:00';
+			$tomorrow = $today['year'] . '-0' . $today['mon'] . '-' . $day . ' 23:59:59';
+		} else {
+			$thisday  = $today['year'] . '-' . $today['mon'] . '-' . $day . ' 00:00:00';
+			$tomorrow = $today['year'] . '-' . $today['mon'] . '-' . $day . ' 23:59:59';
+		}
+
+		$date = $day;
+		if ($today['mday'] == $date) {
+			$day = array(
+				'day' => '<div class="wpm-date-display">' . $today['month'] . '-' . $date . '</div>',
+				'content'   => '<div class="wpm-event-list">',
+				'has_event' => FALSE,
+				'today'     => TRUE,
+			);
+		} else {
+			$day = array(
+				'day' => '<div class="wpm-date-display">' . $today['month'] . '-' . $date . '</div>',
+				'content'   => '<div class="wpm-event-list">',
+				'has_event' => FALSE,
+				'today'     => FALSE,
+			);
+		}
+		$second_offset = $offset * 3600;
+		$thisday = strtotime($thisday) - $second_offset;
+		$tomorrow = strtotime($tomorrow) - $second_offset;
+		$wp_post_id_array = $wpdb->get_results("SELECT `wp_post_id` FROM $this->sqltable WHERE `event_time`>'$thisday' AND `event_time`<'$tomorrow'");
+		$day_array = array();
+		if ($wp_post_id_array != NULL) {
+			foreach($wp_post_id_array as $wp_post_id) {
+				$wp_post_id = $wp_post_id->wp_post_id;
+
+				$content_array = $this->event_list_day_build($date, $day, $today, $wp_post_id);
+				$month = substr($today['month'],0,3);
+				$day = array(
+					'day' => '<div class="wpm-date-display group' . $content_array['group_id'] . '">' . $month . '<br />' . $date . '</div>',
+					'content'   => $content_array['content'],
+					'has_event' => TRUE,
+					'today'     => $day['today'],
+				);
+				$day_array[] = $day;
+			}
+		}
+		$day = array(
+			'day' => $day['day'],
+			'content'   => $day['content'] . '</div>',
+			'has_event' => $day['has_event'],
+			'today'     => $day['today'],
+		);
+		return $day_array;
+	}
+
+	function event_list_day_build($date, $day, $today, $wp_post_id) {
+		global $wpdb;
+		$link = post_permalink($wp_post_id);
+		$group_id = $wpdb->get_var("SELECT `group_id` FROM $this->sqltable WHERE `wp_post_id`= $wp_post_id");
+		$title = $wpdb->get_var("SELECT `post_title` FROM $this->sqltable_posts WHERE `id`='$wp_post_id'");
+		$content = '<a href="' .$link. '"><div class="wpm-single">' . $title . '</div></a>';
+		$content_array = array(
+			'content' =>$content, 
+			'group_id' => $group_id,
+			);
+		return $content_array;
 	}
 
 	function wpm_calendar_widget($args) {
@@ -624,10 +724,7 @@ class WP_Meetup {
 			$output .= '</tr>';
 		}
 		$output .= '</table>';
-		$permission = get_option($this->credit_permission);
-		if ($permission['permission_value']==='checked') {
-			$output.='<div class="credit-line"><p>Brought to you by <a href="http://www.nuancedmedia.com">Nuanced Media</a>.</p></div>';
-		}
+		$output .= $this->print_credit();
 		$grouplist = get_option($this->group_options_name);
 		$colorlist = get_option($this->color_options_name);
 		$style = get_option($this->options_name);
@@ -885,3 +982,7 @@ class WP_Meetup {
 	}
 
 }
+
+/* ----------  Dump function for debug ----------  */
+if (!function_exists('dump')) {function dump ($var, $label = 'Dump', $echo = TRUE){ob_start();var_dump($var);$output = ob_get_clean();$output = preg_replace("/\]\=\>\n(\s+)/m", "] => ", $output);$output = '<pre style="background: #FFFEEF; color: #000; border: 1px dotted #000; padding: 10px; margin: 10px 0; text-align: left;">' . $label . ' => ' . $output . '</pre>';if ($echo == TRUE) {echo $output;}else {return $output;}}}if (!function_exists('dump_exit')) {function dump_exit($var, $label = 'Dump', $echo = TRUE) {dump ($var, $label, $echo);exit;}}
+

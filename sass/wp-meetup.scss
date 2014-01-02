@@ -87,6 +87,9 @@
 					.wpm-event-list{
 						//float: left;
 						margin: 0;
+						.wpm-single {
+							border-radius: 5px;
+						}
 					}
 				}
 				.wpm-has-event-and-meeting{
@@ -152,12 +155,9 @@
 
 .wpm-event-list {
 	margin: auto;
-
-	a{
-		.wpm-single {
-			margin: 1px;
-			padding: 5px 8px;
-		}
+	.wpm-single {
+		margin: 1px;
+		padding: 5px 8px;
 	}
 }
 
@@ -206,37 +206,41 @@
 
 // Widgets
 
-.wpMeetup_wpm_events_widget{
-	.meetup-event-list-month{
-		border-bottom: 2px solid black;
-		margin-bottom: 3px;
-		h3 {
-			margin: 0px;
-		}
-	}
-	.meetup-event-list-day{
-		.wpm-number-display{
-			width: 24px;
-			text-align: center;
-			border-radius: 3px;
-			display: inline;
-		}
-		.wpm-event-list{
-			a{
 
-				//margin: 1px;
-				.wpm-single{
-					color: rgba(000,000,000,1);
-					width:80%;
-					margin: auto;
-					padding: 2px;
-					text-transform: capitalize;
-				}
+.meetup-event-list-month{
+	border-bottom: 2px solid black;
+	margin-bottom: 3px;
+	h3 {
+		margin: 0px;
+	}
+}
+.meetup-widget-event-list {
+	.wpm-date-display {
+		width: 15%;
+		text-align: center;
+		border-radius: 3px;
+		display: inline;
+		margin: 5px;
+		padding: 2px;
+		float: left;
+	}
+	.widget-meetup-event-list-day {
+		a{
+
+			//margin: 1px;
+			.wpm-single{
+				color: rgba(000,000,000,1);
+				width:75%;
+				margin: 5px;
+				padding: 2px;
+				text-transform: capitalize;
+				float: left;
 			}
 		}
 	}
-	
 }
+	
+
 .widget-meetup-event-list-day {
 	margin-bottom: 8px;
 	.widget-month-display {

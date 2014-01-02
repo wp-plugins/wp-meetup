@@ -4,7 +4,7 @@ Donate link: http://nuancedmedia.com/wordpress-meetup-plugin/
 Tags: meetup,meetup.com
 Requires at least: 3.7
 Tested up to: 3.8
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 
 WP Meetup fetches event information from Meetup.com and creates posts for each event.
 
@@ -32,6 +32,9 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 3. Event calendar
 
 == Changelog ==
+
+= 2.0.2 =
+* Styling edit: Improving the event list widget display.
 
 = 2.0.1 =
 * Hotfixes, such as editing date comparisons and correcting event widget errors. Also added a option to join a email list.
