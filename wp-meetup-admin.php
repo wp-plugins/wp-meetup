@@ -41,6 +41,17 @@ class WP_Meetup_Admin {
 			'wp_meetup_debug',
 			array($this, 'create_debug_submenu')
 		);
+
+		$event_page_name = $this->wp_meetup->custom_post_type;
+		$event_page_name = ucfirst($event_page_name);
+		add_submenu_page(
+			'wp_meetup_settings',
+			$event_page_name,
+			$event_page_name,
+			'administrator',
+			'wp_meetup_events',
+			array($this, 'create_events_submenu')
+		);
 	}
 
 	// Options page callback
@@ -114,38 +125,7 @@ class WP_Meetup_Admin {
 								<input type="submit" value="Update Events Now">
 								</form>
 							</div>
-							<h3>Email List</h3>
-							<p>Stay updated on new releases and future features for the WP Meetup Plugin by joining the email list below.</p>
-							<div class="meetup-mailing-list-form">
-								<script>
-								jQuery(function(){
-								});
-								</script>
-								<form method="POST" action="http://nuancedmedia.com/wordpress-meetup-plugin/">
-									<table>
-										<tr>
-											<td>
-												Email:
-											</td>
-											<td>
-												<input name="input_2" id="input_10_2" type="text" value="" class="medium" tabindex="1">
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<input type="submit" id="gform_submit_button_10" class="button gform_button" value="Join" tabindex="2" onclick="if(window[&quot;gf_submitting_10&quot;]){return false;}  window[&quot;gf_submitting_10&quot;]=true; ">
-												<input type="hidden" class="gform_hidden" name="is_submit_10" value="1">
-												<input type="hidden" class="gform_hidden" name="gform_submit" value="10">
-												<input type="hidden" class="gform_hidden" name="gform_unique_id" value="">
-												<input type="hidden" class="gform_hidden" name="state_10" value="WyJhOjA6e30iLCI3MzgxZDc3NTA3OTk0MDMwMTI4MTM4ZDczZTU1MzNkMSJd">
-												<input type="hidden" class="gform_hidden" name="gform_target_page_number_10" id="gform_target_page_number_10" value="0">
-												<input type="hidden" class="gform_hidden" name="gform_source_page_number_10" id="gform_source_page_number_10" value="1">
-												<input type="hidden" name="gform_field_values" value="">
-											</td>
-										</tr>
-									</table>
-								</form>
-							</div>
+							<?php $this->insert_mailing_list(); ?>
 						</div>
 						<div class="clear"></div>
 					</div>
@@ -195,6 +175,43 @@ class WP_Meetup_Admin {
 			</div>
 		<?php
 
+	}
+
+	function insert_mailing_list() {
+		?>
+		<h3>Email List</h3>
+		<p>Stay updated on new releases and future features for the WP Meetup Plugin by joining the email list below.</p>
+		<div class="meetup-mailing-list-form">
+			<script>
+			jQuery(function(){
+			});
+			</script>
+			<form method="POST" action="http://nuancedmedia.com/wordpress-meetup-plugin/">
+				<table>
+					<tr>
+						<td>
+							Email:
+						</td>
+						<td>
+							<input name="input_2" id="input_10_2" type="text" value="" class="medium" tabindex="1">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="submit" id="gform_submit_button_10" class="button gform_button" value="Join" tabindex="2" onclick="if(window[&quot;gf_submitting_10&quot;]){return false;}  window[&quot;gf_submitting_10&quot;]=true; ">
+							<input type="hidden" class="gform_hidden" name="is_submit_10" value="1">
+							<input type="hidden" class="gform_hidden" name="gform_submit" value="10">
+							<input type="hidden" class="gform_hidden" name="gform_unique_id" value="">
+							<input type="hidden" class="gform_hidden" name="state_10" value="WyJhOjA6e30iLCI3MzgxZDc3NTA3OTk0MDMwMTI4MTM4ZDczZTU1MzNkMSJd">
+							<input type="hidden" class="gform_hidden" name="gform_target_page_number_10" id="gform_target_page_number_10" value="0">
+							<input type="hidden" class="gform_hidden" name="gform_source_page_number_10" id="gform_source_page_number_10" value="1">
+							<input type="hidden" name="gform_field_values" value="">
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<?php
 	}
 
 	function update_all_options() {
@@ -266,12 +283,10 @@ class WP_Meetup_Admin {
 				'urlname' => $_POST['urlname'],
 				);
 			update_option($this->wp_meetup->options_name, $meetup_options);
-			$group_name = $_POST['urlname'];
-			$group_name = str_replace('/', '', $group_name);
-			$new_group=array(
-				'name' => $group_name,
-				'group_id' => $this->get_group_id($group_name)
-			);
+			$new_group = array(
+				'name' => $_POST['urlname'],
+				'group_id' => $this->get_group_id($_POST['urlname'])
+				);
 			$groups[] = $new_group;
 			update_option('wp_meetup_groups', $groups);
 			$this->demand_update_cron();
@@ -365,11 +380,9 @@ class WP_Meetup_Admin {
 
 		if (isset($_POST['submitted']) && $_POST['submitted'] == 'wpmMainSecrets' && $_POST['add_wpm_urlname'] != NULL) {
 			$wpmgroups = get_option('wp_meetup_groups');
-			$group_name = $_POST['add_wpm_urlname'];
-			$group_name = str_replace('/', '', $group_name);
 			$new_group=array(
-				'name' => $group_name,
-				'group_id' => $this->get_group_id($group_name)
+				'name' => $_POST['add_wpm_urlname'],
+				'group_id' => $this->get_group_id($_POST['add_wpm_urlname'])
 			);
 			if (!in_array($new_group, $wpmgroups) && $new_group['name'] != NULL) {
 				$wpmgroups[] = $new_group;
@@ -397,6 +410,7 @@ class WP_Meetup_Admin {
 	function create_debug_submenu() {
 		global $wpdb, $meetup, $nmcron;
 
+		$this->emergency_update_apikey();
 		$groups = get_option($this->wp_meetup->group_options_name);
 		$colors = get_option($this->wp_meetup->color_options_name);
 		$options = get_option($this->wp_meetup->options_name);
@@ -409,6 +423,9 @@ class WP_Meetup_Admin {
 			<div class="debug-heading">
 				<h1><?php echo $debug_heading ?></h1>
 				<p>Your stored API key is: <?php echo $apikey ?>. </p>
+				<?php
+				$this->replace_apikey();
+				?>
 			</div>
 			<br>
 			<div class="debug-body">
@@ -417,11 +434,15 @@ class WP_Meetup_Admin {
 					$lastran = $wpdb->get_results("SELECT `last_date` FROM $this->sqltable_cron");
 					$lastran = $lastran[0];
 					$lastran = $lastran->last_date;
-					$time = $this->wp_meetup->get_today();
+					$time = getdate();
 					$currenttime = $time['year'] . '-' . $time['mon'] . '-' . $time['mday'] . ' ' . $time['hours'] . ':' . $time['minutes'] .':' . $time['seconds'];
+					$currenttime = strtotime($currenttime);
+					$currenttime = date('Y-m-d H:i:s',$currenttime);
 					$future = $time['hours']+1;
 					$future = $future . ':00:00';
 					$nexttime = $time['year'] . '-' . $time['mon'] . '-' . $time['mday'] . ' ' . $future;
+					$nexttime = strtotime($nexttime);
+					$nexttime = date('Y-m-d H:i:s',$nexttime);
 					?>
 					<h3>Event Updating Information</h3>
 					<table>
@@ -467,6 +488,37 @@ class WP_Meetup_Admin {
 		<style>td{border-bottom:1px solid #000;}</style>
 		<?php
 
+	}
+
+	function replace_apikey() {
+
+		?>
+		<form method="post" action="">
+			<div class="wpm-settings">
+				<input type="hidden" name="submitted" value="apiKeySecrets" />
+				<table>
+					<tr class="wpm-register-settings-option">
+						<td><label>Manual API key update: </label></td>
+						<td><input name="apikey" type="text" autocomplete="on" /></td>
+						<td><input type="submit" value="Update" /></td>
+					</tr>
+				</table>
+			</div>
+		</form>
+		<?php
+	}
+
+	function emergency_update_apikey() {
+
+		if (isset($_POST['submitted']) && $_POST['submitted'] == 'apiKeySecrets') {
+			$_POST['submitted'] = 'not submitted';
+			$settings = get_option($this->wp_meetup->options_name);
+			$meetup_options = array(
+				'apikey' => $_POST['apikey'],
+				);
+			update_option($this->wp_meetup->options_name, $meetup_options);
+			$this->demand_update_cron();
+		}
 	}
 
 	function get_group_id($urlname) {
@@ -534,5 +586,96 @@ class WP_Meetup_Admin {
 		$pluginDirectory = trailingslashit(plugins_url(basename(dirname(__FILE__))));
 		wp_register_style('wpm-settings-styles', $pluginDirectory . 'css/wp-meetup.css');
 		wp_enqueue_style('wpm-settings-styles');
+	}
+
+	function create_events_submenu() {
+		$event_list = $this->get_all_events();
+		$total_list = array();
+		foreach ($event_list as $event) {
+			$event_data = $this->get_event_time_and_ids($event->ID);
+			
+			$event_data = $event_data['0'];
+			$event_time = date('Y-m-d H:i:s',$event_data->event_time);
+			$total_list[] = array(
+				'wp_id' => $event->ID,
+				'post_title' => $event->post_title,
+				'guid' => $event->guid,
+				'event_time' => $event_time,
+				'group_id' => $event_data->group_id,
+				'wp_meetup_id' => $event_data->id,
+				);
+		}
+		$output = $this->display_event_table($total_list);
+		echo $output;
+		
+	}
+
+	function display_event_table($event_list) {
+
+		$group_list = get_option('wp_meetup_groups');
+		$colorlist = get_option($this->wp_meetup->color_options_name);
+		$colorlist = $colorlist['colors'];
+		?>
+			<table>
+				<tr>
+					<th></th>
+					<th>Event</th>
+					<th class="padding">Event Time</th>
+					<th class="padding">Group</th>
+					<th class="padding">WP Post ID</th>
+					<th class="padding">WP-Meetup ID</th>
+				</tr>
+				<?php
+					foreach ($event_list as $event) {
+						
+						$output = '<tr>' . PHP_EOL;
+						$output .= '<td><div class="group' . $event['group_id'] . '">  </div></td>';
+						$output .= '<td class="title"><a href="' . $event['guid'] . '">' . $event['post_title'] . '</a></td>' . PHP_EOL;
+						$output .= '<td class="padding">' . $event['event_time'] . '</td>' . PHP_EOL;
+						foreach ($group_list as $group) {
+							if ($group['group_id'] == $event['group_id']) {
+								$output .= '<td class="padding">' . $group['name'] . '</td>' . PHP_EOL;
+							}
+						}
+						$output .= '<td class="padding">' . $event['wp_id'] . '</td>' . PHP_EOL;
+						$output .= '<td class="padding">' . $event['wp_meetup_id'] . '</td>' . PHP_EOL;
+						$output .= '</tr>' . PHP_EOL;
+						echo $output;
+					}
+				?>
+			</table>
+			<style>
+				td{padding:5px;} th{padding:5px;text-align:left;}.id{text-align: center;}.title{width:180px;}.title a{color:#114477;}.title a:hover{color:#4477BB;}.padding{padding:5px 25px;}
+				<?php 
+				if (isset($group_list) and $group_list!=NULL) {
+					foreach ($group_list as $single_group) {
+						$color_input = 'wpm_calendar_' . $single_group['name'] . '_color';
+						if (isset($colorlist[$color_input])) {
+							$rubik = '.group' . $single_group['group_id'] . '{ background-color:' . $colorlist[$color_input] . ';width:5px;height:5px;}' . PHP_EOL;
+
+						}
+						echo $rubik;
+					}
+				}
+				?>
+			</style>
+		<?php
+	}
+
+	function get_event_time_and_ids($event_id) {
+		global $wpdb;
+
+		$sqltable = $this->wp_meetup->sqltable;
+		$event_data = $wpdb->get_results("SELECT `id`,`event_time`,`group_id` FROM $sqltable WHERE `wp_post_id` = '$event_id'");
+		return $event_data;
+	}
+
+	function get_all_events() {
+		global $wpdb;
+
+		$sqltable_posts = $this->wp_meetup->sqltable_posts;
+		$post_type = $this->wp_meetup->custom_post_type;
+		$event_array = $wpdb->get_results("SELECT `ID`, `post_title`,`guid` FROM $sqltable_posts WHERE `post_type` = '$post_type'");
+		return $event_array;
 	}
 }

@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 2.0.3
+Version: 2.0.4
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -23,6 +23,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+
+/* ----------  Dump function for debug ----------  */
+if (!function_exists('dump')) {function dump ($var, $label = 'Dump', $echo = TRUE){ob_start();var_dump($var);$output = ob_get_clean();$output = preg_replace("/\]\=\>\n(\s+)/m", "] => ", $output);$output = '<pre style="background: #FFFEEF; color: #000; border: 1px dotted #000; padding: 10px; margin: 10px 0; text-align: left;">' . $label . ' => ' . $output . '</pre>';if ($echo == TRUE) {echo $output;}else {return $output;}}}if (!function_exists('dump_exit')) {function dump_exit($var, $label = 'Dump', $echo = TRUE) {dump ($var, $label, $echo);exit;}}
 
 
 /* ----------  WP Meetup ----------  */
@@ -43,6 +46,7 @@ class WP_Meetup {
 	var $credit_permission   = 'wpm_credit_permission';
 	var $group_options_name  = 'wp_meetup_groups';
 	var $color_options_name  = 'wp_meetup_colors';
+	var $custom_post_type    = 'events';
 
 	function __construct() {
 		global $wpdb;
@@ -50,7 +54,7 @@ class WP_Meetup {
 		$this->sqltable      = $wpdb->prefix . $this->sqltable;
 		$this->sqltable_cron = $wpdb->prefix . $this->sqltable_cron;
 		$this->sqltable_posts = $wpdb->prefix . $this->sqltable_posts;
-		$version             = array( 'version' => '2.0.3' );
+		$version             = array( 'version' => '2.0.4' );
 		$currentVersion = get_option($this->wpm_version_control);
 		update_option($this->wpm_version_control, $version);
 
@@ -61,6 +65,7 @@ class WP_Meetup {
 		if (isset($current_version)) {
 			$this->version_check($currentVersion);
 		}
+
 		
 	}
 
@@ -78,6 +83,11 @@ class WP_Meetup {
 			if ($version_array['2'] === '0' && $current_version_array['2'] === '1') {
 				$this->maybe_update_event_posts(TRUE);
 			}
+		}
+		elseif ($version_array['0'] = '2' && $version_array['2'] < $current_version_array['2']) {
+			//dump("VERSION CHECK WORKED");
+			$this->maybe_update_event_posts();
+			flush_rewrite_rules();
 		}
 	}
 
@@ -816,7 +826,7 @@ class WP_Meetup {
 /* ---------- All Post Related Functions ---------- */
 	function create_event_post_type() {
 		/*  registers the event type post with WordPress  */
-		register_post_type('wpm_event',
+		register_post_type($this->custom_post_type,
 			array(
 			'labels' => array(
 				'name' => __( 'WP Meetup Events' ),
@@ -827,6 +837,9 @@ class WP_Meetup {
 			'show_ui'   => false,
 			)
 		);
+
+		// #BOOKMARK
+		//if (!is_admin()) { echo '<div style="font-size: 30px; background: rgb(200,200,240); padding: 40px;">' . get_post_type_archive_link($this->custom_post_type) . '</div>'; }
 	}
 
 	function add_event_post($event) {
@@ -870,7 +883,7 @@ class WP_Meetup {
 		/* Creates new event posts and returns the WordPress post ID */
 		global $wpdb;
 		$post = array( 
-			"post_type"    => 'wpm_event',
+			"post_type"    => $this->custom_post_type,
 			'post_status'  => 'publish',
 			'post_content' => $event->description,
 			"post_title"   => $event->name,
@@ -886,8 +899,8 @@ class WP_Meetup {
 		global $wpdb;
 		$wp_post_id = $wpdb->get_var( "SELECT `wp_post_id` FROM $this->sqltable WHERE `wpm_event_id`='$event->id'" );
 		$post_update = array(
-			'ID'           =>$wp_post_id,
-			'post_type'    => 'wpm_event',
+			'ID'           => $wp_post_id,
+			'post_type'    => $this->custom_post_type,
 			'post_content' => $event->description,
 			'post_title'   => $event->name,
 			'start_time'   => $event->time,
@@ -983,6 +996,4 @@ class WP_Meetup {
 
 }
 
-/* ----------  Dump function for debug ----------  */
-if (!function_exists('dump')) {function dump ($var, $label = 'Dump', $echo = TRUE){ob_start();var_dump($var);$output = ob_get_clean();$output = preg_replace("/\]\=\>\n(\s+)/m", "] => ", $output);$output = '<pre style="background: #FFFEEF; color: #000; border: 1px dotted #000; padding: 10px; margin: 10px 0; text-align: left;">' . $label . ' => ' . $output . '</pre>';if ($echo == TRUE) {echo $output;}else {return $output;}}}if (!function_exists('dump_exit')) {function dump_exit($var, $label = 'Dump', $echo = TRUE) {dump ($var, $label, $echo);exit;}}
 
