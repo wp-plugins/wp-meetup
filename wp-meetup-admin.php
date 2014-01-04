@@ -283,10 +283,12 @@ class WP_Meetup_Admin {
 				'urlname' => $_POST['urlname'],
 				);
 			update_option($this->wp_meetup->options_name, $meetup_options);
-			$new_group = array(
-				'name' => $_POST['urlname'],
-				'group_id' => $this->get_group_id($_POST['urlname'])
-				);
+			$group_name = $_POST['urlname'];
+			$group_name = str_replace('/', '', $group_name);
+			$new_group=array(
+				'name' => $group_name,
+				'group_id' => $this->get_group_id($group_name)
+			);
 			$groups[] = $new_group;
 			update_option('wp_meetup_groups', $groups);
 			$this->demand_update_cron();
@@ -380,9 +382,11 @@ class WP_Meetup_Admin {
 
 		if (isset($_POST['submitted']) && $_POST['submitted'] == 'wpmMainSecrets' && $_POST['add_wpm_urlname'] != NULL) {
 			$wpmgroups = get_option('wp_meetup_groups');
+			$group_name = $_POST['add_wpm_urlname'];
+			$group_name = str_replace('/', '', $group_name);
 			$new_group=array(
-				'name' => $_POST['add_wpm_urlname'],
-				'group_id' => $this->get_group_id($_POST['add_wpm_urlname'])
+				'name' => $group_name,
+				'group_id' => $this->get_group_id($group_name)
 			);
 			if (!in_array($new_group, $wpmgroups) && $new_group['name'] != NULL) {
 				$wpmgroups[] = $new_group;
