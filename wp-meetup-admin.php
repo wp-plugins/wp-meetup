@@ -33,15 +33,6 @@ class WP_Meetup_Admin {
 			'wp_meetup_groups',
 			array($this, 'create_groups_submenu')
 		);
-		add_submenu_page(
-			'wp_meetup_settings',
-			'Debug Information',
-			'Debug Information',
-			'administrator',
-			'wp_meetup_debug',
-			array($this, 'create_debug_submenu')
-		);
-
 		$event_page_name = $this->wp_meetup->custom_post_type;
 		$event_page_name = ucfirst($event_page_name);
 		add_submenu_page(
@@ -51,6 +42,14 @@ class WP_Meetup_Admin {
 			'administrator',
 			'wp_meetup_events',
 			array($this, 'create_events_submenu')
+		);
+		add_submenu_page(
+			'wp_meetup_settings',
+			'Debug Information',
+			'Debug Information',
+			'administrator',
+			'wp_meetup_debug',
+			array($this, 'create_debug_submenu')
 		);
 	}
 
@@ -125,7 +124,8 @@ class WP_Meetup_Admin {
 								<input type="submit" value="Update Events Now">
 								</form>
 							</div>
-							<?php $this->insert_mailing_list(); ?>
+							<?php $this->insert_mailing_list(); 
+							$this->insert_link_color_checkbox(); ?>
 						</div>
 						<div class="clear"></div>
 					</div>
@@ -175,6 +175,26 @@ class WP_Meetup_Admin {
 			</div>
 		<?php
 
+	}
+
+	function insert_link_color_checkbox() {
+		$option = $this->wp_meetup->color_permission;
+		$permission = get_option($option);
+		$color_permission_val = ''; 
+		if ($permission['color_permission'] == 'checked') { 
+			$color_permission_val = 'checked'; 
+		} 
+		?>
+		<div>
+		<h3>White Link Color</h3>
+		<form method="post" action="">
+		<input type="hidden" name="update_color_permission" value="permission update" />
+		<input type="checkbox" name="color_permission" value="checked" <?php echo $color_permission_val; ?> />
+		<label>Checking this box will make all links within the calendar white instead of the color created by your theme default.</label><br />
+		<input type="submit" value="Change Link Color" />
+		</form>
+		</div>
+		<?php
 	}
 
 	function insert_mailing_list() {
@@ -237,6 +257,20 @@ class WP_Meetup_Admin {
 				'permission_value' => $permission,
 				);
 			update_option($this->wp_meetup->credit_permission, $update_permission);
+			$_POST['update_permission'] = NULL;
+		}
+		if (isset($_POST['update_color_permission']) && $_POST['update_color_permission'] == 'permission update') {
+			$current_color_permission = get_option($this->wp_meetup->color_permission);
+			if (!isset($_POST['color_permission'])) {
+				$permission = FALSE;
+			}
+			else {
+				$permission = 'checked';
+			}
+			$update_color_permission = array(
+				'color_permission' => $permission,
+				);
+			update_option($this->wp_meetup->color_permission, $update_color_permission);
 			$_POST['update_permission'] = NULL;
 		}
 	}

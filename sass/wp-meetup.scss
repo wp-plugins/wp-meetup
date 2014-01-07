@@ -24,13 +24,12 @@
 }
 
 .credit-permission {
-	padding:10px;
+	//padding:10px;
 }
 
 .wpm-logos {
 	text-align:center;
 }
-
 .wpm-calendar-legend {
 	.wpm-legend-item {
 		width: 25%;
@@ -131,7 +130,7 @@
 } */
 
 .credit-line p{ 
-	font-size:12px; 
+	text-align: right;
 }
 .wp-meetup-calendar{
 	.calendar-week{
@@ -148,9 +147,9 @@
 	float: none;
 }
 
-.wp-meetup-calendar .calendar-week .wpm2-current-day-date { 
-	border: 2px solid #ad3d3d; 
-	margin: 5px;
+.wp-meetup-calendar .calendar-week .wpm-current-day-date { 
+	//border: 2px solid #ad3d3d; 
+	//margin: 5px;
 }
 
 .wpm-event-list {
@@ -220,9 +219,10 @@
 		text-align: center;
 		border-radius: 3px;
 		display: inline;
-		margin: 5px;
+		margin: 5px auto;
 		padding: 2px;
 		float: left;
+
 	}
 	.widget-meetup-event-list-day {
 		a{
@@ -257,8 +257,4 @@
 		clear: both;
 	}
 }
-.WP_Meetup_wpm_calendar_widget {
-	td {
-		text-align: center;
-	}
-}
+

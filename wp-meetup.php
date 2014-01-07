@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 2.0.4
+Version: 2.0.5
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -44,6 +44,7 @@ class WP_Meetup {
 	var $wpm_version_control = 'wp_meetup_version';
 	var $options_name        = 'meetup_options';
 	var $credit_permission   = 'wpm_credit_permission';
+	var $color_permission    = 'wp_color_permission';
 	var $group_options_name  = 'wp_meetup_groups';
 	var $color_options_name  = 'wp_meetup_colors';
 	var $custom_post_type    = 'events';
@@ -54,7 +55,7 @@ class WP_Meetup {
 		$this->sqltable      = $wpdb->prefix . $this->sqltable;
 		$this->sqltable_cron = $wpdb->prefix . $this->sqltable_cron;
 		$this->sqltable_posts = $wpdb->prefix . $this->sqltable_posts;
-		$version             = array( 'version' => '2.0.4' );
+		$version             = array( 'version' => '2.0.5' );
 		$currentVersion = get_option($this->wpm_version_control);
 		update_option($this->wpm_version_control, $version);
 
@@ -193,8 +194,11 @@ class WP_Meetup {
 
 	function print_credit() {
 		$permission = get_option($this->credit_permission);
+		$output = "";
 		if ($permission['permission_value']==='checked') {
-			$output = '<div class="credit-line"><p>Brought to you by <a href="http://www.nuancedmedia.com">Nuanced Media</a>.</p></div>';
+			$output = '<div class="credit-line"><p><a href="http://www.nuancedmedia.com">' . PHP_EOL;
+			$output .= '<img src=' . plugins_url() . '/wp-meetup/images/nuanced_media.png>' . PHP_EOL;
+			$output .= '</a></p></div>' . PHP_EOL;
 			$output .= '<style>.credit-line p{ font-size:8px; }</style>' . PHP_EOL;
 		}
 		return $output;
@@ -275,10 +279,7 @@ class WP_Meetup {
 				$display_legend = FALSE;
 			}
 		}
-		$permission = get_option($this->credit_permission);
-		if ($permission['permission_value']==='checked'){
-			$output.='<div class="credit-line"><p>Brought to you by <a href="http://www.nuancedmedia.com">Nuanced Media</a>.<p></div>';
-		}
+		$output .= $this->print_credit();
 		return $output;
 	}
 
@@ -388,6 +389,10 @@ class WP_Meetup {
 		$colorlist = get_option($this->color_options_name);
 		$style = get_option($this->options_name);
 		$output .= '<style>';
+		$color_permission = get_option($this->color_permission);
+		if ($color_permission['color_permission'] === 'checked') {
+			$output .= '.wp-meetup-calendar .calendar-month .calendar-week .wpm-has-event a{color:#ffffff;}.wpm-calendar-legend .wpm-legend-item {color:#ffffff;}' . PHP_EOL;
+		}
 		/*
 		 * Possibly going to implement this in a future version
 		 * $output .= '.wp-meetup-calendar .wpm-current-date-display { color: ' . $style['wpm_calendar_font_color'] . '; }' . PHP_EOL;
@@ -422,7 +427,6 @@ class WP_Meetup {
 		
 		global $wpdb;
 
-		$offset = get_option('gmt_offset');
 		if ($today['mon'] < 10) {
 			$thisday  = $today['year'] . '-0' . $today['mon'] . '-' . $day . ' 00:00:00';
 			$tomorrow = $today['year'] . '-0' . $today['mon'] . '-' . $day . ' 23:59:59';
@@ -445,9 +449,8 @@ class WP_Meetup {
 				'today'     => FALSE,
 			);
 		}
-		$second_offset = $offset * 3600;
-		$thisday = strtotime($thisday) - $second_offset;
-		$tomorrow = strtotime($tomorrow) - $second_offset;
+		$thisday = strtotime($thisday);
+		$tomorrow = strtotime($tomorrow);
 		$wp_post_id_array = $wpdb->get_results("SELECT `wp_post_id` FROM $this->sqltable WHERE `event_time`>'$thisday' AND `event_time`<'$tomorrow'");
 		if ($wp_post_id_array != NULL) {
 			foreach($wp_post_id_array as $wp_post_id) {
@@ -471,9 +474,9 @@ class WP_Meetup {
 
 	function day_build($date, $day, $today, $wp_post_id) {
 		global $wpdb;
-		$link = post_permalink($wp_post_id);
 		$group_id = $wpdb->get_var("SELECT `group_id` FROM $this->sqltable WHERE `wp_post_id`= $wp_post_id");
 		$title = $wpdb->get_var("SELECT `post_title` FROM $this->sqltable_posts WHERE `id`='$wp_post_id'");
+		$link = $wpdb->get_var("SELECT `guid` FROM $this->sqltable_posts WHERE `id`='$wp_post_id'");
 		$content = '<a href="' .$link. '"><div class="wpm-single group' . $group_id . '">' . $title . '</div></a>';
 		return $content;
 	}
@@ -539,6 +542,10 @@ class WP_Meetup {
 		$colorlist = get_option($this->color_options_name);
 		$style = get_option($this->options_name);
 		$output .= '<style>';
+		$color_permission = get_option($this->color_permission);
+		if ($color_permission['color_permission'] === 'checked') {
+			$output .= '.meetup-widget-event-list .wpm-date-display {color:#ffffff;}' . PHP_EOL;
+		}
 		$output .= '.wp-meetup-widget-calendar { width:300px;}' . PHP_EOL;
 		$colorlist = $colorlist['colors'];
 		if (isset($grouplist) and $grouplist!=NULL) {
@@ -566,7 +573,6 @@ class WP_Meetup {
 		
 		global $wpdb;
 
-		$offset = get_option('gmt_offset');
 		if ($today['mon'] < 10) {
 			$thisday  = $today['year'] . '-0' . $today['mon'] . '-' . $day . ' 00:00:00';
 			$tomorrow = $today['year'] . '-0' . $today['mon'] . '-' . $day . ' 23:59:59';
@@ -591,9 +597,8 @@ class WP_Meetup {
 				'today'     => FALSE,
 			);
 		}
-		$second_offset = $offset * 3600;
-		$thisday = strtotime($thisday) - $second_offset;
-		$tomorrow = strtotime($tomorrow) - $second_offset;
+		$thisday = strtotime($thisday);
+		$tomorrow = strtotime($tomorrow);
 		$wp_post_id_array = $wpdb->get_results("SELECT `wp_post_id` FROM $this->sqltable WHERE `event_time`>'$thisday' AND `event_time`<'$tomorrow'");
 		$day_array = array();
 		if ($wp_post_id_array != NULL) {
@@ -755,6 +760,10 @@ class WP_Meetup {
 				}
 			}
 		}
+		$color_permission = get_option($this->color_permission);
+		if ($color_permission['color_permission'] === 'checked') {
+			$output .= '.WP_Meetup_wpm_calendar_widget .wpm-has-event a .wpm-single{color: #ffffff;}' . PHP_EOL;
+		}
 		$output .= '</style>' . PHP_EOL;
 		$output .= '</div>'; //  end wp-meetup widget-calendar
 		return $output;
@@ -763,7 +772,7 @@ class WP_Meetup {
 	function widgetDateMatching($day, $today) {
 		/* Matches the dates on the calendar with the links to the event pages for that date. This is done by checks if event start time is within the timeframe of today. */ 
 		global $wpdb;
-		$offset = get_option('gmt_offset');
+
 		if ($today['mon'] < 10) {
 			$thisday= $today['year'] . '-0' . $today['mon'] . '-' . $day . ' 00:00:00';
 			$tomorrow= $today['year'] . '-0' . $today['mon'] . '-' . $day . ' 23:59:59';
@@ -786,9 +795,8 @@ class WP_Meetup {
 				'today'     => FALSE,
 			);
 		}
-		$second_offset = $offset * 3600;
-		$thisday = strtotime($thisday) - $second_offset;
-		$tomorrow = strtotime($tomorrow) - $second_offset;
+		$thisday = strtotime($thisday);
+		$tomorrow = strtotime($tomorrow);
 		$wp_post_id = $wpdb->get_var("SELECT `wp_post_id` FROM $this->sqltable WHERE `event_time`>'$thisday' AND `event_time`<'$tomorrow'");
 		if (isset($wp_post_id) && $wp_post_id != NULL) {
 			$content = $this->widget_day_build($date, $day, $today, $wp_post_id);
@@ -847,17 +855,16 @@ class WP_Meetup {
 		global $wpdb;
 		$wpm_event_id_count = $wpdb->get_var("SELECT COUNT(*) FROM $this->sqltable WHERE `wpm_event_id`=\"$event->id\"");
 		/* If the event does not already exist, add the new post -- else update existing post and existing database entries.*/
+		//dump($event);
+		$event->time = $event->time + $event->utc_offset;
 		$event->time = substr($event->time, 0, -3);
 		if ($wpm_event_id_count != 1) {	
 			$post_id = $this->create_event_post($event);
 			$group = $event->group;
-			$unadjusted_time = date('U',$event->time);
-			$adjusted_offset = get_option('gmt_offset') * 3600;
-			$adjusted_time = $unadjusted_time + $adjusted_offset;
 			$newdata = array(
 				'wpm_event_id' => $event->id,
 				'wp_post_id'   => $post_id,
-				'event_time'   => $adjusted_time,
+				'event_time'   => $event->time,
 				'event_url'    => $event->event_url,
 				'group_id'     => $group->id
 			);
