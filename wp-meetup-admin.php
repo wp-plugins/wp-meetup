@@ -27,6 +27,14 @@ class WP_Meetup_Admin {
 		);
 		add_submenu_page(
 			'wp_meetup_settings',
+			'Options',
+			'Options',
+			'administrator',
+			'wp_meetup_options',
+			array($this, 'create_options_submenu')
+		);
+		add_submenu_page(
+			'wp_meetup_settings',
 			'Groups',
 			'Groups',
 			'administrator',
@@ -124,8 +132,7 @@ class WP_Meetup_Admin {
 								<input type="submit" value="Update Events Now">
 								</form>
 							</div>
-							<?php $this->insert_mailing_list(); 
-							$this->insert_link_color_checkbox(); ?>
+							<?php $this->insert_mailing_list(); ?>
 						</div>
 						<div class="clear"></div>
 					</div>
@@ -273,6 +280,20 @@ class WP_Meetup_Admin {
 			update_option($this->wp_meetup->color_permission, $update_color_permission);
 			$_POST['update_permission'] = NULL;
 		}
+		if (isset($_POST['update_redirect_link']) && $_POST['update_redirect_link'] == 'redirect link') {
+			$redirect_link_permission = get_option($this->wp_meetup->redirect_link);
+			if (!isset($_POST['redirect_link'])) {
+				$permission = FALSE;
+			}
+			else {
+				$permission = 'checked';
+			}
+			$update_redirect_link = array(
+				'redirect_link' => $permission,
+				);
+			update_option($this->wp_meetup->redirect_link, $update_redirect_link);
+			$_POST['update_redirect_link'] = NULL;
+		}
 	}
 
 
@@ -359,11 +380,23 @@ class WP_Meetup_Admin {
 						$this->update_apikey();
 						$this->update_group_options();
 						$this->display_group_colorpickers();
-						$this->display_meetup_addition();
 						?>
+						<tr>
+							<td><input type="submit" value="Save Colors"></td>
+						</tr>
 					</tbody>
 					</table>
-					<input type="submit" value="Save Colors And Add New Group">
+					<hr>
+					<table>
+					<tbody>
+						<?php
+						$this->display_meetup_addition();
+						?>
+						<tr>
+							<td><input type="submit" value="Add New Group"></td>
+						</tr>
+					</tbody>
+					</table>	
 					</form>
 				</div>
 			<?php
@@ -418,6 +451,8 @@ class WP_Meetup_Admin {
 			$wpmgroups = get_option('wp_meetup_groups');
 			$group_name = $_POST['add_wpm_urlname'];
 			$group_name = str_replace('/', '', $group_name);
+			$group_name = str_replace('#', '', $group_name);
+			$group_name = str_replace(':', '', $group_name);
 			$new_group=array(
 				'name' => $group_name,
 				'group_id' => $this->get_group_id($group_name)
@@ -481,7 +516,32 @@ class WP_Meetup_Admin {
 					$nexttime = $time['year'] . '-' . $time['mon'] . '-' . $time['mday'] . ' ' . $future;
 					$nexttime = strtotime($nexttime);
 					$nexttime = date('Y-m-d H:i:s',$nexttime);
+					$redirect_link = get_option($this->wp_meetup->redirect_link);
+					if (isset($redirect_link) && $redirect_link['redirect_link']) {
+						$redirect_link_location = 'Meetup.com.';
+					}
+					else {
+						$redirect_link_location = 'Wordpress Posts.';
+					}
+					$color_permission = get_option($this->wp_meetup->color_permission);
+					if ($color_permission['color_permission'] === 'checked') {
+						$link_color = 'White';
+					}
+					else {
+						$link_color = 'Set by theme';
+					}
 					?>
+					<h3>Option Settings</h3>
+					<table>
+						<tr>
+							<td>Your link color is:</td>
+							<td><?php echo $link_color ?></td>
+						</tr>
+						<tr>
+							<td>Calendar Links go to:</td>
+							<td><?php echo $redirect_link_location ?></td>
+						</tr>
+					</table>
 					<h3>Event Updating Information</h3>
 					<table>
 					<tr>
@@ -715,5 +775,49 @@ class WP_Meetup_Admin {
 		$post_type = $this->wp_meetup->custom_post_type;
 		$event_array = $wpdb->get_results("SELECT `ID`, `post_title`,`guid` FROM $sqltable_posts WHERE `post_type` = '$post_type'");
 		return $event_array;
+	}
+
+	function create_options_submenu() {
+		global $wpdb, $nmcron;
+		if (!current_user_can('manage_options')) {
+			wp_die( __('You do not have sufficient permissions to access this page.') );
+		}
+		$this->update_all_options();
+		if ($this->wp_meetup->is_registered()) {
+			?>
+				<div class="wrap">
+					<h1>Options</h1>
+					<div class="one-third">
+						<?php 
+						$this->insert_link_color_checkbox(); 
+						$this->insert_link_redirect_option();
+						?>
+					</div>
+				</div>
+			<?php
+		}
+		else {
+			$this->request_apikey();
+		}
+	}
+
+	function insert_link_redirect_option() {
+		$option = $this->wp_meetup->redirect_link;
+		$permission = get_option($option);
+		$redirect_link_val = ''; 
+		if ($permission['redirect_link'] == 'checked') { 
+			$redirect_link_val = 'checked'; 
+		} 
+		?>
+		<div>
+			<h3>Link Redirect</h3>
+				<form method="post" action="">
+				<input type="hidden" name="update_redirect_link" value="redirect link" />
+				<input type="checkbox" name="redirect_link" value="checked" <?php echo $redirect_link_val; ?> />
+				<label>Checking this box will make all links within the calendar and widgets direct users to the Meetup.com event page.</label><br />
+				<input type="submit" value="Update Redirect Link Option" />
+			</form>
+		</div>
+		<?php
 	}
 }

@@ -23,10 +23,6 @@
 	}
 }
 
-.credit-permission {
-	//padding:10px;
-}
-
 .wpm-logos {
 	text-align:center;
 }
@@ -38,10 +34,13 @@
 		margin: 5px;
 		border-radius: 3px;
 	}
-	.clear {
-		float: none;
-		clear: both;
-	}
+}
+
+.credit-line {
+	font-size: 8px; 
+	font-size: 0.5714rem;
+	text-transform: capitalize;
+
 }
 
 .wp-meetup-calendar {
@@ -160,7 +159,74 @@
 	}
 }
 
-//Settings Pages
+// Post Content
+
+.meetup-backlink {
+	background-color: #cdcdcd;
+	width: 300px;
+	border-radius: 5px;
+	margin: 5px;
+	//padding: 5%;
+	margin-bottom: 15px;
+	margin-right: 15px;
+	//text-align: center;
+	float: left;
+	div {
+		//text-align: center;
+		//float: left;
+		width: 90%;
+		padding: 15px;
+		//margin: auto;
+	}
+	h3 {
+		margin: 12px 0;
+	}
+	p {
+		margin: auto 0;
+	}
+	.button-wrapper {
+		text-align: center;
+		margin: auto;
+		//width: 100%;
+		.button {
+			text-align: center;
+			width: 80%;
+			border-radius: 5px;
+			background-color: #c71f24;
+			color: white;
+			padding: 8px 12px;
+			text-decoration: none;
+			text-transform: capitalize;
+			&:hover {
+				background-color: darken(#c71f24, 10%);
+			}
+		}
+		/* .credit-line {
+			width: 100%;
+			p {
+				text-align: center;
+				//width: 100%;
+				margin-top: 20px;
+			}
+		} */
+	}
+	.meetup-backlink-venue {
+		.meetup-backlink-map{
+			width: 100%;
+			a {
+				width: 100%;
+			}
+		}
+
+	}
+	.credit-line {
+		text-align: center;
+		margin-top: 10px;
+		//font-size: 10px;
+	}
+}
+
+// Settings Pages
 
 .wp-meetup-options-page { 
 	.one {
@@ -231,7 +297,7 @@
 			.wpm-single{
 				width:70%;
 				margin: 5px;
-				padding: 2px;
+				padding: 3px auto;
 				text-transform: capitalize;
 				float: left;
 			}
@@ -255,6 +321,18 @@
 	.clear {
 		float: none;
 		clear: both;
+	}
+}
+
+.widget-area {
+	.widget {
+		.credit-line {
+			p {
+				font-size: 8px; 
+				font-size: 0.5714rem;
+				text-transform: capitalize;
+			}
+		}
 	}
 }
 

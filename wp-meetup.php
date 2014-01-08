@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 2.0.6
+Version: 2.1.0
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -45,6 +45,7 @@ class WP_Meetup {
 	var $options_name        = 'meetup_options';
 	var $credit_permission   = 'wpm_credit_permission';
 	var $color_permission    = 'wp_color_permission';
+	var $redirect_link	     = 'wp_redirect_link';
 	var $group_options_name  = 'wp_meetup_groups';
 	var $color_options_name  = 'wp_meetup_colors';
 	var $custom_post_type    = 'events';
@@ -55,15 +56,14 @@ class WP_Meetup {
 		$this->sqltable      = $wpdb->prefix . $this->sqltable;
 		$this->sqltable_cron = $wpdb->prefix . $this->sqltable_cron;
 		$this->sqltable_posts = $wpdb->prefix . $this->sqltable_posts;
-		$version             = array( 'version' => '2.0.6' );
+		$version             = array( 'version' => '2.1.0' );
 		$currentVersion = get_option($this->wpm_version_control);
 		update_option($this->wpm_version_control, $version);
-
 		add_action('init', array(&$this, 'init'));
 		add_filter('plugin_action_links_' . plugin_basename(__FILE__), array(&$this, 'add_plugin_settings_link') );
 
 		$currentVersion = $currentVersion['version'];
-		if (isset($current_version)) {
+		if (isset($currentVersion)) {
 			$this->version_check($currentVersion);
 		}
 
@@ -77,19 +77,36 @@ class WP_Meetup {
 		$plugin_data    = get_plugin_data( __FILE__ );
 		$current_version = $plugin_data['Version'];
 		$current_version_array = explode('.', $current_version);
-		if ($version_array['0'] < '2' && $current_version_array['0'] === '2') {
-			$this->back_capat();  // account for version 1.x.x upgrades
-		}
-		elseif ($version_array['0'] === '2') {
-			if ($version_array['2'] === '0' && $current_version_array['2'] === '1') {
-				$this->maybe_update_event_posts(TRUE);
+		$version_number = '';
+		foreach ($version_array as $element) {
+			if (strlen($element) == '1') {
+				$version_number .= '0' . $element;
+			}
+			else {
+				$version_number .= $element;
 			}
 		}
-		elseif ($version_array['0'] = '2' && $version_array['2'] < $current_version_array['2']) {
-			//dump("VERSION CHECK WORKED");
+		$current_version_number = '';
+		foreach ($current_version_array as $element) {
+			if (strlen($element) == '1') {
+				$current_version_number .= '0' . $element;
+			}
+			else {
+				$current_version_number .= $element;
+			}
+		}
+		if ($current_version_number < '020000') {
+			$this->back_capat();
+			flush_rewrite_rules();
+		}
+		elseif ($current_version_number < '020005') {
 			$this->maybe_update_event_posts();
 			flush_rewrite_rules();
 		}
+		elseif ($current_version_number <= '020100') {
+			$this->maybe_update_event_posts();
+		}
+
 	}
 
 	function init() {
@@ -196,11 +213,52 @@ class WP_Meetup {
 		$permission = get_option($this->credit_permission);
 		$output = "";
 		if ($permission['permission_value']==='checked') {
-			$output = '<div class="credit-line"><p><a href="http://www.nuancedmedia.com">' . PHP_EOL;
-			$output .= '<img src=' . plugins_url() . '/wp-meetup/images/nuanced_media.png>' . PHP_EOL;
-			$output .= '</a></p></div>' . PHP_EOL;
-			$output .= '<style>.credit-line p{ font-size:8px; }</style>' . PHP_EOL;
+			$output = '<div class="credit-line">Supported By: <a href="http://www.nuancedmedia.com">';
+			$output .= '<img alt="Nuanced Media" src="' . plugins_url() . '/wp-meetup/images/nuanced_media.png">';
+			$output .= '</a></div>' . PHP_EOL;
 		}
+		return $output;
+	}
+
+	function build_meetup_backlink($event) {
+		//dump($event);
+		$event_link = $event->event_url;
+		$event_date = date('l, d M Y g:i',$event->time);
+		$event_suffix = date('H',$event->time);
+		if ($event_suffix >= 12) {
+			$event_suffix = ' PM';
+		}
+		else {
+			$event_suffix = ' AM';
+		}
+		$output = '';
+		$output .= '<div class="meetup-backlink">' . PHP_EOL;
+		$output .= '<div class="button-wrapper">' . PHP_EOL;
+		$output .= '<a href="' . $event_link  . '" class="button">View event on Meetup.com</a>' . PHP_EOL;
+		$output .= '</div>' . PHP_EOL;
+		$output .= '<div class="date-wrapper">' . PHP_EOL;
+		$output .= '<h3>Date</h3>' . PHP_EOL;
+		$output .= '<p>' . $event_date . $event_suffix . '</p>' . PHP_EOL;
+		$output .= '</div>' . PHP_EOL;
+		if (isset($event->venue)) {
+			$event_venue = $event->venue;
+			$event_location_name = '<strong>' . $event->venue->name . '</strong><br />';
+			$event_location = $event_location_name;
+			if (isset($event->venue->address_1) && isset($event->venue->city) && isset($event->venue->state) && isset($event->venue->zip)) {
+				$event_location_address = $event->venue->address_1 . '<br />' . $event->venue->city . ', ' . $event->venue->state . ' ' . $event->venue->zip;
+				$event_location .= $event_location_address;
+			}
+			$event_map = '<a href="https://maps.google.com/?q=' . $event->venue->lat . ',' . $event->venue->lon . '">View Map</a>';
+			//$event_location = $event_location_name . $event_location_address;
+			$output .= '<div class="meetup-backlink-venue">' . PHP_EOL;
+			$output .= '<h3>Venue</h3>' . PHP_EOL;
+			$output .= '<p>' . $event_location . '</p>' . PHP_EOL;
+			$output .= '<div class="meetup-backlink-map">' . $event_map . '</div>' . PHP_EOL;
+			$output .= '</div>' . PHP_EOL;
+			
+		}
+		$output .= $this->print_credit();
+		$output .= '</div>' . PHP_EOL;
 		return $output;
 	}
 
@@ -476,7 +534,13 @@ class WP_Meetup {
 		global $wpdb;
 		$group_id = $wpdb->get_var("SELECT `group_id` FROM $this->sqltable WHERE `wp_post_id`= $wp_post_id");
 		$title = $wpdb->get_var("SELECT `post_title` FROM $this->sqltable_posts WHERE `id`='$wp_post_id'");
-		$link = $wpdb->get_var("SELECT `guid` FROM $this->sqltable_posts WHERE `id`='$wp_post_id'");
+		$redirect_link = get_option($this->redirect_link);
+		if (isset($redirect_link) && $redirect_link['redirect_link']) {
+			$link = $wpdb->get_var("SELECT `event_url` FROM $this->sqltable WHERE `wp_post_id`='$wp_post_id'");
+		}
+		else {
+			$link = $wpdb->get_var("SELECT `guid` FROM $this->sqltable_posts WHERE `id`='$wp_post_id'");
+		}
 		$content = '<a href="' .$link. '"><div class="wpm-single group' . $group_id . '">' . $title . '</div></a>';
 		return $content;
 	}
@@ -627,9 +691,15 @@ class WP_Meetup {
 
 	function event_list_day_build($date, $day, $today, $wp_post_id) {
 		global $wpdb;
-		$link = post_permalink($wp_post_id);
 		$group_id = $wpdb->get_var("SELECT `group_id` FROM $this->sqltable WHERE `wp_post_id`= $wp_post_id");
 		$title = $wpdb->get_var("SELECT `post_title` FROM $this->sqltable_posts WHERE `id`='$wp_post_id'");
+		$redirect_link = get_option($this->redirect_link);
+		if (isset($redirect_link) && $redirect_link['redirect_link']) {
+			$link = $wpdb->get_var("SELECT `event_url` FROM $this->sqltable WHERE `wp_post_id`='$wp_post_id'");
+		}
+		else {
+			$link = $wpdb->get_var("SELECT `guid` FROM $this->sqltable_posts WHERE `id`='$wp_post_id'");
+		}
 		$content = '<a href="' .$link. '"><div class="wpm-single">' . $title . '</div></a>';
 		$content_array = array(
 			'content' =>$content, 
@@ -823,9 +893,16 @@ class WP_Meetup {
 
 	function widget_day_build($date, $day, $today, $wp_post_id) {
 		global $wpdb;
-		$link = post_permalink($wp_post_id);
+		//$link = post_permalink($wp_post_id);
 		$group_id = $wpdb->get_var("SELECT `group_id` FROM $this->sqltable WHERE `wp_post_id`= $wp_post_id");
 		$title = $wpdb->get_var("SELECT `post_title` FROM wp_posts WHERE `id`='$wp_post_id'");
+		$redirect_link = get_option($this->redirect_link);
+		if (isset($redirect_link) && $redirect_link['redirect_link']) {
+			$link = $wpdb->get_var("SELECT `event_url` FROM $this->sqltable WHERE `wp_post_id`='$wp_post_id'");
+		}
+		else {
+			$link = $wpdb->get_var("SELECT `guid` FROM $this->sqltable_posts WHERE `id`='$wp_post_id'");
+		}
 		$content = '<a href="' .$link. '"><div class="wpm-single group' . $group_id . '">' . $date. '</div></a>';
 		return $content;
 	}
@@ -858,6 +935,7 @@ class WP_Meetup {
 		//dump($event);
 		$event->time = $event->time + $event->utc_offset;
 		$event->time = substr($event->time, 0, -3);
+		$event->description = $this->build_meetup_backlink($event) . $event->description;
 		if ($wpm_event_id_count != 1) {	
 			$post_id = $this->create_event_post($event);
 			$group = $event->group;
