@@ -132,7 +132,8 @@ class WP_Meetup_Admin {
 								<input type="submit" value="Update Events Now">
 								</form>
 							</div>
-							<?php $this->insert_mailing_list(); ?>
+							<?php $this->insert_mailing_list();
+							$this->insert_review_us(); ?>
 						</div>
 						<div class="clear"></div>
 					</div>
@@ -201,6 +202,13 @@ class WP_Meetup_Admin {
 		<input type="submit" value="Change Link Color" />
 		</form>
 		</div>
+		<?php
+	}
+
+	function insert_review_us() {
+		?>
+		<h3>Review Us</h3>
+		<p>Tell us your opinion of the plugin. We are continuously working to improve your experience with the Meetup Plugin and we can do that better if we know what you like and dislike. Let us know on the Wordpress <a href="http://wordpress.org/support/view/plugin-reviews/wp-meetup">Review Page</a>. </p>
 		<?php
 	}
 
@@ -293,6 +301,17 @@ class WP_Meetup_Admin {
 				);
 			update_option($this->wp_meetup->redirect_link, $update_redirect_link);
 			$_POST['update_redirect_link'] = NULL;
+		}
+		if (isset($_POST['widget_options']) && $_POST['widget_options'] == 'Update Widget') {
+			$option_name = $this->wp_meetup->widget_options;
+			$options = array();
+			foreach ($_POST as $key=>$value) {
+				if ($key != 'widget_options') {
+					$options[$key] = $value;
+				}
+			}
+			update_option($option_name, $options);
+			$_POST['widget_options'] = NULL; 
 		}
 	}
 
@@ -530,6 +549,8 @@ class WP_Meetup_Admin {
 					else {
 						$link_color = 'Set by theme';
 					}
+					$widget_options_name = $this->wp_meetup->widget_options;
+					$widget_event_options = get_option($widget_options_name);
 					?>
 					<h3>Option Settings</h3>
 					<table>
@@ -540,6 +561,10 @@ class WP_Meetup_Admin {
 						<tr>
 							<td>Calendar Links go to:</td>
 							<td><?php echo $redirect_link_location ?></td>
+						</tr>
+						<tr>
+							<td>Event List Widget:</td>
+							<td><?php echo $widget_event_options['list_length'] ?> events shown</td>
 						</tr>
 					</table>
 					<h3>Event Updating Information</h3>
@@ -785,12 +810,19 @@ class WP_Meetup_Admin {
 		$this->update_all_options();
 		if ($this->wp_meetup->is_registered()) {
 			?>
-				<div class="wrap">
+				<div class="wp-meetup-options-page">
 					<h1>Options</h1>
-					<div class="one-third">
+					<div class="one-third meetup-options">
+						<h3>General</h3>
 						<?php 
 						$this->insert_link_color_checkbox(); 
 						$this->insert_link_redirect_option();
+						?>
+					</div>
+					<div class="one-third meetup-options">
+						<h3>Widget Options</h3>
+						<?php 
+						$this->insert_widget_options();
 						?>
 					</div>
 				</div>
@@ -816,6 +848,36 @@ class WP_Meetup_Admin {
 				<input type="checkbox" name="redirect_link" value="checked" <?php echo $redirect_link_val; ?> />
 				<label>Checking this box will make all links within the calendar and widgets direct users to the Meetup.com event page.</label><br />
 				<input type="submit" value="Update Redirect Link Option" />
+			</form>
+		</div>
+		<?php
+	}
+
+	function insert_widget_options() {
+
+		$options_name = $this->wp_meetup->widget_options;
+		$options = get_option($options_name);
+		if (!isset($options['list_length'])) {
+			$options['list_length'] = '5';
+		}
+		?>
+		<div>
+			<form method="post" action="">
+			<h3>Event List</h3>
+				<table>
+					<tbody>
+						<tr>
+							<td>
+								<label>The Event List widget should display how many events?</label>
+							</td>
+							<td>
+								<input type="number" name="list_length" value="<?php echo $options['list_length'] ?>">
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<input type="hidden" value="widget_options">
+				<input type="submit" name="widget_options" value="Update Widget">
 			</form>
 		</div>
 		<?php
