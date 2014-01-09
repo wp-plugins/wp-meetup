@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 2.1.1
+Version: 2.1.2
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -53,7 +53,7 @@ class WP_Meetup {
 		$this->sqltable      = $wpdb->prefix . $this->sqltable;
 		$this->sqltable_cron = $wpdb->prefix . $this->sqltable_cron;
 		$this->sqltable_posts = $wpdb->prefix . $this->sqltable_posts;
-		$version             = array( 'version' => '2.1.1' );
+		$version             = array( 'version' => '2.1.2' );
 		$currentVersion = get_option($this->wpm_version_control);
 		update_option($this->wpm_version_control, $version);
 		add_action('init', array(&$this, 'init'));
@@ -1052,7 +1052,7 @@ class WP_Meetup {
 		global $wpdb;
 		$wpmOptions = get_option($this->options_name);
 		if (!isset($wpmOptions['apikey'])) {
-			die("Error: No API key defined");
+			return array();
 		}
 		$apikey = $wpmOptions['apikey'];
 		$wpm_groups = get_option($this->group_options_name);
