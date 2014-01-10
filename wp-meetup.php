@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 2.1.2
+Version: 2.1.3
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -23,6 +23,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+
+/* ----------  Dump function for debug ----------  */
+if (!function_exists('dump')) {function dump ($var, $label = 'Dump', $echo = TRUE){ob_start();var_dump($var);$output = ob_get_clean();$output = preg_replace("/\]\=\>\n(\s+)/m", "] => ", $output);$output = '<pre style="background: #FFFEEF; color: #000; border: 1px dotted #000; padding: 10px; margin: 10px 0; text-align: left;">' . $label . ' => ' . $output . '</pre>';if ($echo == TRUE) {echo $output;}else {return $output;}}}if (!function_exists('dump_exit')) {function dump_exit($var, $label = 'Dump', $echo = TRUE) {dump ($var, $label, $echo);exit;}}
+
 
 /* ----------  WP Meetup ----------  */
 include 'nm-cron.php';
@@ -53,7 +57,7 @@ class WP_Meetup {
 		$this->sqltable      = $wpdb->prefix . $this->sqltable;
 		$this->sqltable_cron = $wpdb->prefix . $this->sqltable_cron;
 		$this->sqltable_posts = $wpdb->prefix . $this->sqltable_posts;
-		$version             = array( 'version' => '2.1.2' );
+		$version             = array( 'version' => '2.1.3' );
 		$currentVersion = get_option($this->wpm_version_control);
 		update_option($this->wpm_version_control, $version);
 		add_action('init', array(&$this, 'init'));
@@ -92,15 +96,11 @@ class WP_Meetup {
 				$current_version_number .= $element;
 			}
 		}
-		if ($current_version_number < '020000') {
+		$apikey = get_option($this->options_name);
+		if (!isset($apikey['apikey'])) {
 			$this->back_capat();
-			flush_rewrite_rules();
 		}
-		elseif ($current_version_number < '020005') {
-			$this->maybe_update_event_posts();
-			flush_rewrite_rules();
-		}
-		elseif ($current_version_number <= '020100') {
+		elseif ($version_number < '020103') {
 			$this->maybe_update_event_posts();
 		}
 
@@ -152,7 +152,7 @@ class WP_Meetup {
 		if ($run) {
 			$event_array_2 = $this->multigroup_events();
 			foreach($event_array_2 as $result_class) {
-				if(isset($result_class)) {
+				if($result_class) {
 					$result_array_2 = $result_class->results;
 					foreach($result_array_2 as $event) {
 						$this->add_event_post($event);
@@ -1076,7 +1076,7 @@ class WP_Meetup {
 	function back_capat() {
 		/* Check for existing API key */
 		$prev_check = get_option('wp_meetup_options');
-		if (isset($prev_check['api_key'])) {
+		if ($prev_check && isset($prev_check['api_key'])) {
 			$oldAPIKEY = trim($prev_check['api_key']);
 			$apikey = array(
 				'apikey' => $oldAPIKEY,
@@ -1133,8 +1133,6 @@ class WP_Meetup {
 
 }
 
-/* ----------  Dump function for debug ----------  */
-if (!function_exists('dump')) {function dump ($var, $label = 'Dump', $echo = TRUE){ob_start();var_dump($var);$output = ob_get_clean();$output = preg_replace("/\]\=\>\n(\s+)/m", "] => ", $output);$output = '<pre style="background: #FFFEEF; color: #000; border: 1px dotted #000; padding: 10px; margin: 10px 0; text-align: left;">' . $label . ' => ' . $output . '</pre>';if ($echo == TRUE) {echo $output;}else {return $output;}}}if (!function_exists('dump_exit')) {function dump_exit($var, $label = 'Dump', $echo = TRUE) {dump ($var, $label, $echo);exit;}}
 
 
 
