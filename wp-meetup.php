@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 2.1.3
+Version: 2.1.4
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -23,10 +23,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-
-/* ----------  Dump function for debug ----------  */
-if (!function_exists('dump')) {function dump ($var, $label = 'Dump', $echo = TRUE){ob_start();var_dump($var);$output = ob_get_clean();$output = preg_replace("/\]\=\>\n(\s+)/m", "] => ", $output);$output = '<pre style="background: #FFFEEF; color: #000; border: 1px dotted #000; padding: 10px; margin: 10px 0; text-align: left;">' . $label . ' => ' . $output . '</pre>';if ($echo == TRUE) {echo $output;}else {return $output;}}}if (!function_exists('dump_exit')) {function dump_exit($var, $label = 'Dump', $echo = TRUE) {dump ($var, $label, $echo);exit;}}
-
 
 /* ----------  WP Meetup ----------  */
 include 'nm-cron.php';
@@ -57,7 +53,7 @@ class WP_Meetup {
 		$this->sqltable      = $wpdb->prefix . $this->sqltable;
 		$this->sqltable_cron = $wpdb->prefix . $this->sqltable_cron;
 		$this->sqltable_posts = $wpdb->prefix . $this->sqltable_posts;
-		$version             = array( 'version' => '2.1.3' );
+		$version             = array( 'version' => '2.1.4' );
 		$currentVersion = get_option($this->wpm_version_control);
 		update_option($this->wpm_version_control, $version);
 		add_action('init', array(&$this, 'init'));
@@ -259,7 +255,6 @@ class WP_Meetup {
 			$output .= '</div>' . PHP_EOL;
 			
 		}
-		$output .= $this->print_credit();
 		$output .= '</div>' . PHP_EOL;
 		return $output;
 	}
@@ -574,8 +569,14 @@ class WP_Meetup {
 			$options['list_length'] = $_POST['list_length'];
 			update_option($option_name, $options);
 			$_POST['widget_options'] = NULL; 
+			$set_list_length = get_option($option_name);
 		}
-		$set_list_length = get_option($option_name);
+		else {
+			$set_list_length = array(
+				'list_length' => 3,
+				);
+		}
+		
 		?>
 
 		<label>The Event List widget should display how many events?</label><br />
@@ -607,9 +608,14 @@ class WP_Meetup {
 		//$output .= '<div class="meetup-event-list-month"><h3>' . $today['month'] . '</h3></div>' ; 
 		$event_list_array = array();
 		$widget_options = get_option($this->widget_options);
-		if (isset($widget_options)) {
+		if ($widget_options && isset($widget_options['list_length'])) {
 			$end = 100;
-			$list_length = $widget_options['list_length'];
+			$list_length = intval($widget_options['list_length']);
+			if ($list_length == 0) {
+				$list_length = 3;
+			} else if (!$list_length || $list_length < 1) {
+				$list_length = 1;
+			}
 			//$list_length = 500;
 		}
 		
@@ -987,7 +993,7 @@ class WP_Meetup {
 		//dump($event);
 		$event->time = $event->time + $event->utc_offset;
 		$event->time = substr($event->time, 0, -3);
-		$event->description = $this->build_meetup_backlink($event) . $event->description;
+		$event->description = $this->build_meetup_backlink($event) . $event->description . $this->print_credit();
 		if ($wpm_event_id_count != 1) {	
 			$post_id = $this->create_event_post($event);
 			$group = $event->group;
@@ -1133,6 +1139,8 @@ class WP_Meetup {
 
 }
 
+/* ----------  Dump function for debug ----------  */
+if (!function_exists('dump')) {function dump ($var, $label = 'Dump', $echo = TRUE){ob_start();var_dump($var);$output = ob_get_clean();$output = preg_replace("/\]\=\>\n(\s+)/m", "] => ", $output);$output = '<pre style="background: #FFFEEF; color: #000; border: 1px dotted #000; padding: 10px; margin: 10px 0; text-align: left;">' . $label . ' => ' . $output . '</pre>';if ($echo == TRUE) {echo $output;}else {return $output;}}}if (!function_exists('dump_exit')) {function dump_exit($var, $label = 'Dump', $echo = TRUE) {dump ($var, $label, $echo);exit;}}
 
 
 

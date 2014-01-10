@@ -858,7 +858,7 @@ class WP_Meetup_Admin {
 		$options_name = $this->wp_meetup->widget_options;
 		$options = get_option($options_name);
 		if (!isset($options['list_length'])) {
-			$options['list_length'] = '5';
+			$options['list_length'] = '3';
 		}
 		?>
 		<div>
