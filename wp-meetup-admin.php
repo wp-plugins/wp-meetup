@@ -589,13 +589,12 @@ class WP_Meetup_Admin {
 					$widget_event_options = get_option($widget_options_name);
 					$event_debug_string = get_option($this->wp_meetup->event_debug_string);
 					$performance_options = get_option($this->wp_meetup->performance_option_name);
-					if (isset($performance_options)) {
+					if (!isset($performance_options['max_event']) && !isset($performance_options['past_months_queried']) && !isset($performance_options['future_months_queried'])) {
 						$performance_options = array(
 							'past_months_queried' => 1,
 							'future_months_queried' => 3,
 							'max_event' => 100,
 							);
-
 					}
 					?>
 					<div class="one-half">
@@ -913,13 +912,12 @@ class WP_Meetup_Admin {
 	function insert_performance_options() {
 		$this->update_all_options();
 		$performance_options = get_option($this->wp_meetup->performance_option_name);
-		if (!isset($performance_options)) {
+		if (!isset($performance_options['max_event']) && !isset($performance_options['past_months_queried']) && !isset($performance_options['future_months_queried'])) {
 			$performance_options = array(
 				'past_months_queried' => 1,
 				'future_months_queried' => 3,
 				'max_event' => 100,
 				);
-
 		}
 		?>
 		<form method="post" action="">

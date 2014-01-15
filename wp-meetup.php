@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 2.1.5
+Version: 2.1.6
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -23,6 +23,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+
+/* ----------  Dump function for debug ----------  */
+if (!function_exists('dump')) {function dump ($var, $label = 'Dump', $echo = TRUE){ob_start();var_dump($var);$output = ob_get_clean();$output = preg_replace("/\]\=\>\n(\s+)/m", "] => ", $output);$output = '<pre style="background: #FFFEEF; color: #000; border: 1px dotted #000; padding: 10px; margin: 10px 0; text-align: left;">' . $label . ' => ' . $output . '</pre>';if ($echo == TRUE) {echo $output;}else {return $output;}}}if (!function_exists('dump_exit')) {function dump_exit($var, $label = 'Dump', $echo = TRUE) {dump ($var, $label, $echo);exit;}}
+
 
 /* ----------  WP Meetup ----------  */
 include 'nm-cron.php';
@@ -58,7 +62,7 @@ class WP_Meetup {
 		$this->sqltable      = $wpdb->prefix . $this->sqltable;
 		$this->sqltable_cron = $wpdb->prefix . $this->sqltable_cron;
 		$this->sqltable_posts = $wpdb->prefix . $this->sqltable_posts;
-		$version             = array( 'version' => '2.1.5' );
+		$version             = array( 'version' => '2.1.6' );
 		$currentVersion = get_option($this->wpm_version_control);
 		update_option($this->wpm_version_control, $version);
 		add_action('init', array(&$this, 'init'));
@@ -107,11 +111,19 @@ class WP_Meetup {
 		elseif ($version_number < '020103') {
 			$this->maybe_update_event_posts();
 		}
-
+		elseif ($version_number < '020106') {
+			$newdata = array(
+				'past_months_queried' => 1,
+				'future_months_queried' => 3,
+				'max_event' => 100,
+				);
+			update_option($this->performance_option_name, $newdata);
+		}
 	}
 
 	function init() {
 		global $wpdb, $nmcron;
+
 		$tableSearch = $wpdb->get_var("SHOW TABLES LIKE '$this->sqltable'");
 		wp_register_sidebar_widget( 'wp_meetup_calendar_widget-__i__', 'WP Meetup Calendar Widget', array(&$this, 'wpm_calendar_widget'), array('description' => 'Displays Meetup.com events in the current month on a calendar'));
 		wp_register_widget_control(
@@ -1097,7 +1109,7 @@ class WP_Meetup {
 		$this->event_debug_info = array('events_grabbed' => 0, 'groups_queried' => 0, 'events_added' => 0, 'events_deleted' => 0);
 
 		$performance_options = get_option($this->performance_option_name);
-		if (!isset($performance_options)) {
+		if (!isset($performance_options['max_event']) && !isset($performance_options['past_months_queried']) && !isset($performance_options['future_months_queried'])) {
 			$performance_options = array(
 				'past_months_queried' => 1,
 				'future_months_queried' => 3,
@@ -1194,9 +1206,5 @@ class WP_Meetup {
 	}
 
 }
-
-/* ----------  Dump function for debug ----------  */
-if (!function_exists('dump')) {function dump ($var, $label = 'Dump', $echo = TRUE){ob_start();var_dump($var);$output = ob_get_clean();$output = preg_replace("/\]\=\>\n(\s+)/m", "] => ", $output);$output = '<pre style="background: #FFFEEF; color: #000; border: 1px dotted #000; padding: 10px; margin: 10px 0; text-align: left;">' . $label . ' => ' . $output . '</pre>';if ($echo == TRUE) {echo $output;}else {return $output;}}}if (!function_exists('dump_exit')) {function dump_exit($var, $label = 'Dump', $echo = TRUE) {dump ($var, $label, $echo);exit;}}
-
 
 
