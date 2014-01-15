@@ -4,7 +4,7 @@ Donate link: http://nuancedmedia.com/wordpress-meetup-plugin/
 Tags: meetup,meetup.com
 Requires at least: 3.7
 Tested up to: 3.8
-Stable tag: 2.1.4
+Stable tag: 2.1.5
 
 WP Meetup fetches event information from Meetup.com and creates posts for each event.
 
@@ -37,7 +37,9 @@ Nuanced Media specialized in [Web Design](http://nuancedmedia.com/tucson-website
 3. Visit the options page located at Settings -> WP Meetup and follow the instructions.
 4. To include the event calendar on a page, create a new page and in the content editor, enter `[wp-meetup-calendar]` where you want the calendar to appear on the page.
 5. To include a variable number of months on the event calender, use shortcode, e.g. `[wp-meetup-calendar number_of_months='4']` by default the calender displays two months (the current, and the next).
-6. Starting with version 1.5.0, you now have the ability to show any number of previous and future events! Try, for example, [wp-meetup-calendar start_month=-2 end_month=2]. This will show a total of 4 months (2 previous months, and the next 2 months, all relative to the current month). Play around with it, it's great to be able to have this variable calendar showing!
+6. Starting with version 1.5.0, you now have the ability to show any number of previous and future events! Try, for example, [wp-meetup-calendar start_month=-2 end_month=2]. This will show a total of 4 months (2 previous months, and the next 2 months, all relative to the current month). Play around with it, it's great to be able to have this variable calendar showing! 
+
+Note: With version 2.0.0, shortcodes where added, e.g. `[meetup-calendar]` by default displays only the current month. The ability to display multiple months still exists, e.g. `[meetup-calendar past=1 future=2]` will display 4 months (1 previous month, the current month, and the next 2 months).
 
 **Important: If you're upgrading from a version prior to 1.2, make sure to disable the plugin and re-enable it.**
 
@@ -48,6 +50,11 @@ Nuanced Media specialized in [Web Design](http://nuancedmedia.com/tucson-website
 3. Event calendar
 
 == Changelog ==
+
+= 2.1.5 =
+* Added an option to display events on homepage. 
+* Fixes bug so that events deleted on Meetup.com no longer display on calendar.
+* Bug fixes and tweaks.
 
 = 2.1.4 =
 * Minor Hotfix.

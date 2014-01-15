@@ -74,7 +74,7 @@ class WP_Meetup_Admin {
 			screen_icon(); 
 
 			$this->update_all_options();
-			
+			echo '<div class="clear"></div>';
 			$wpmOptions = get_option($this->wp_meetup->options_name);
 			if ($wpmOptions['apikey'] === NULL) {   
 				// if there is no access token set, then this is run, requesting information required to generate accesss token.
@@ -173,8 +173,8 @@ class WP_Meetup_Admin {
 							
 							<h3>WP Meetup Links</h3>
 							<ul class="wp-meetup-link-list">
-							<li><a href="http://wordpress.org/extend/plugins/wp-meetup/">Wordpress.org Plugin Directory listing</a></li>
-							<li><a href="http://nuancedmedia.com/wordpress-meetup-plugin/">WP Meetup Plugin homepage</a></li>
+							<li><a href="http://wordpress.org/extend/plugins/wp-meetup/" target="_blank">Wordpress.org Plugin Directory listing</a></li>
+							<li><a href="http://nuancedmedia.com/wordpress-meetup-plugin/" target="_blank">WP Meetup Plugin homepage</a></li>
 							</ul>
 						</div>
 					</div>
@@ -256,7 +256,13 @@ class WP_Meetup_Admin {
 		}
 		if (isset($_POST['demand_update']) && $_POST['demand_update'] == 'right now') {
 			$this->demand_update_cron();
+			echo '<div class="updated">';
 			echo "<h3>Event Update Successful!</h3>";
+			$event_debug_result = get_option($this->wp_meetup->event_debug_string);
+			if ($event_debug_result && isset($event_debug_result['result'])) {
+				echo '<p>' . $event_debug_result['result'] . '</p>';
+			}
+			echo '</div><div class="clear"></div>';
 			$_POST['demand_update'] = NULL;
 		}
 		if (isset($_POST['update_permission']) && $_POST['update_permission'] == 'permission update') {
@@ -313,6 +319,29 @@ class WP_Meetup_Admin {
 			update_option($option_name, $options);
 			$_POST['widget_options'] = NULL; 
 		}
+		if (isset($_POST['update_incl_homepage']) && $_POST['update_incl_homepage'] == 'include homepage') {
+			$incl_homepage_permission = get_option($this->wp_meetup->include_homepage);
+			if (!isset($_POST['include_homepage'])) {
+				$permission = FALSE;
+			}
+			else {
+				$permission = 'checked';
+			}
+			$update_incl_homepage = array(
+				'include_homepage' => $permission,
+				);
+			update_option($this->wp_meetup->include_homepage, $update_incl_homepage);
+			$_POST['update_incl_homepage'] = NULL;
+		}
+		if (isset($_POST['perform_secret']) && $_POST['perform_secret'] == 'update_performance') {
+			$newdata = array(
+				'past_months_queried' => $_POST['past_months_queried'],
+				'future_months_queried' => $_POST['future_months_queried'],
+				'max_event' => $_POST['max_event'],
+				);
+			update_option($this->wp_meetup->performance_option_name, $newdata);
+
+		}
 	}
 
 
@@ -324,7 +353,7 @@ class WP_Meetup_Admin {
 				<div class="wpm-settings-header">
 					<h2>WP Meetup Settings</h2>
 					<p>Thank you for choosing to use the WP Meetup plugin for Wordpress. Please fill out the following before continuing. </p>
-					<p>For those who aren't familiar with API keys, <a href="http://www.meetup.com/meetup_api/key/"><strong>This link</strong></a> will take you to where you can find yours.</p>
+					<p>For those who aren't familiar with API keys, <a href="http://www.meetup.com/meetup_api/key/" target="_blank"><strong>This link</strong></a> will take you to where you can find yours.</p>
 				</div>
 				<input type="hidden" name="submitted" value="apiKeySecrets" />
 				<table>
@@ -530,9 +559,9 @@ class WP_Meetup_Admin {
 					$currenttime = $time['year'] . '-' . $time['mon'] . '-' . $time['mday'] . ' ' . $time['hours'] . ':' . $time['minutes'] .':' . $time['seconds'];
 					$currenttime = strtotime($currenttime);
 					$currenttime = date('Y-m-d H:i:s',$currenttime);
-					$future = $time['hours']+1;
-					$future = $future . ':00:00';
-					$nexttime = $time['year'] . '-' . $time['mon'] . '-' . $time['mday'] . ' ' . $future;
+					$future = $time['mday']+1;
+					$future = $future . ' 00:00:00';
+					$nexttime = $time['year'] . '-' . $time['mon'] . '-' . $future;
 					$nexttime = strtotime($nexttime);
 					$nexttime = date('Y-m-d H:i:s',$nexttime);
 					$redirect_link = get_option($this->wp_meetup->redirect_link);
@@ -549,9 +578,27 @@ class WP_Meetup_Admin {
 					else {
 						$link_color = 'Set by theme';
 					}
+					$include_events = get_option($this->wp_meetup->include_homepage);
+					if (isset($include_events['include_homepage']) && $include_events['include_homepage'] === 'checked'){
+						$include_events = "Yes";
+					}
+					else {
+						$include_events = 'No';
+					}
 					$widget_options_name = $this->wp_meetup->widget_options;
 					$widget_event_options = get_option($widget_options_name);
+					$event_debug_string = get_option($this->wp_meetup->event_debug_string);
+					$performance_options = get_option($this->wp_meetup->performance_option_name);
+					if (isset($performance_options)) {
+						$performance_options = array(
+							'past_months_queried' => 1,
+							'future_months_queried' => 3,
+							'max_event' => 100,
+							);
+
+					}
 					?>
+					<div class="one-half">
 					<h3>Option Settings</h3>
 					<table>
 						<tr>
@@ -561,6 +608,10 @@ class WP_Meetup_Admin {
 						<tr>
 							<td>Calendar Links go to:</td>
 							<td><?php echo $redirect_link_location ?></td>
+						</tr>
+						<tr>
+							<td>Include Events on homepage:</td>
+							<td><?php echo $include_events ?></td>
 						</tr>
 						<tr>
 							<td>Event List Widget:</td>
@@ -582,7 +633,25 @@ class WP_Meetup_Admin {
 						<td><?php echo $nexttime; ?></td>
 					</tr>
 					</table>
+					<h3>Meetup Query Options</h3>
+					<p><?php echo $event_debug_string['result'] ?></p>
+					<table>
+						<tr>
+							<td>Past months queried: </td>
+							<td><?php echo $performance_options['past_months_queried'] ?></td>
+						</tr>
+						<tr>
+							<td>Future months queried: </td>
+							<td><?php echo $performance_options['future_months_queried'] ?></td>
+						</tr>
+						<tr>
+							<td>Max Events per group:</td>
+							<td><?php echo $performance_options['max_event'] ?></td>
+						</tr>
+					</table>
 				</div>
+				</div>
+				<div class="one-half">
 				<?php
 				foreach ($groups as $group) {
 					$name = $group['name'];
@@ -606,6 +675,7 @@ class WP_Meetup_Admin {
 				}
 				echo $output;
 				?>
+				</div>
 			</div>
 		</div>
 		<style>td{border-bottom:1px solid #000;}</style>
@@ -813,16 +883,23 @@ class WP_Meetup_Admin {
 				<div class="wp-meetup-options-page">
 					<h1>Options</h1>
 					<div class="one-third meetup-options">
-						<h3>General</h3>
+						<h2>General</h2>
 						<?php 
 						$this->insert_link_color_checkbox(); 
 						$this->insert_link_redirect_option();
+						$this->insert_include_homepage_option();
 						?>
 					</div>
 					<div class="one-third meetup-options">
-						<h3>Widget Options</h3>
+						<h2>Widget Options</h2>
 						<?php 
 						$this->insert_widget_options();
+						?>
+					</div>
+					<div class="one-third meetup-options developer-options">
+						<h2>Meetup.com Query Options </h2>
+						<?php
+						$this->insert_performance_options();
 						?>
 					</div>
 				</div>
@@ -831,6 +908,60 @@ class WP_Meetup_Admin {
 		else {
 			$this->request_apikey();
 		}
+	}
+
+	function insert_performance_options() {
+		$this->update_all_options();
+		$performance_options = get_option($this->wp_meetup->performance_option_name);
+		if (!isset($performance_options)) {
+			$performance_options = array(
+				'past_months_queried' => 1,
+				'future_months_queried' => 3,
+				'max_event' => 100,
+				);
+
+		}
+		?>
+		<form method="post" action="">
+			<h3>Query Months</h3>
+			<table>
+				<tbody>
+					<tr>
+						<td>
+							<label>Number of past months queried: </label>
+						</td>
+						<td>
+							<input type="number" name="past_months_queried" value="<?php echo $performance_options['past_months_queried'] ?>" class="limited-width">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Number of future months queried: </label>
+						</td>
+						<td>
+							<input type="number" name="future_months_queried" value="<?php echo $performance_options['future_months_queried'] ?>" class="limited-width">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label>Max number of Events pulled per group:</label>
+						</td>
+						<td>
+							<input type="number" name="max_event" value="<?php echo $performance_options['max_event'] ?>" class="limited-width">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="hidden" name="perform_secret" value="update_performance">
+						</td>
+						<td>
+							<input type="submit" value="Update Options">
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+		<?php
 	}
 
 	function insert_link_redirect_option() {
@@ -848,6 +979,26 @@ class WP_Meetup_Admin {
 				<input type="checkbox" name="redirect_link" value="checked" <?php echo $redirect_link_val; ?> />
 				<label>Checking this box will make all links within the calendar and widgets direct users to the Meetup.com event page.</label><br />
 				<input type="submit" value="Update Redirect Link Option" />
+			</form>
+		</div>
+		<?php
+	}
+
+	function insert_include_homepage_option() {
+		$option = $this->wp_meetup->include_homepage;
+		$permission = get_option($option);
+		$incl_homepage_val = ''; 
+		if ($permission['include_homepage'] == 'checked') { 
+			$incl_homepage_val = 'checked'; 
+		} 
+		?>
+		<div>
+			<h3>Include on Homepage</h3>
+				<form method="post" action="">
+				<input type="hidden" name="update_incl_homepage" value="include homepage" />
+				<input type="checkbox" name="include_homepage" value="checked" <?php echo $incl_homepage_val; ?> />
+				<label>Would you like Events to appear on your homepage?</label><br />
+				<input type="submit" value="Update Homepage Option" />
 			</form>
 		</div>
 		<?php
@@ -871,7 +1022,7 @@ class WP_Meetup_Admin {
 								<label>The Event List widget should display how many events?</label>
 							</td>
 							<td>
-								<input type="number" name="list_length" value="<?php echo $options['list_length'] ?>">
+								<input type="number" name="list_length" value="<?php echo $options['list_length'] ?>" class="limited-width">
 							</td>
 						</tr>
 					</tbody>

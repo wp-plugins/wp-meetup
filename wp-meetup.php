@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 2.1.4
+Version: 2.1.5
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -42,10 +42,15 @@ class WP_Meetup {
 	var $credit_permission   = 'wpm_credit_permission';
 	var $color_permission    = 'wp_color_permission';
 	var $redirect_link	     = 'wp_redirect_link';
+	var $include_homepage    = 'wp_include_on_homepage';
 	var $group_options_name  = 'wp_meetup_groups';
 	var $color_options_name  = 'wp_meetup_colors';
 	var $custom_post_type    = 'events';
 	var $widget_options 	 = 'meetup-widget-options';
+
+	var $event_debug_info    = array('events_grabbed' => 0, 'groups_queried' => 0, 'events_added' => 0, 'events_deleted' => 0);
+	var $event_debug_string  = 'wp_meetup_event_debug';
+	var $performance_option_name = 'wp_performance';
 
 	function __construct() {
 		global $wpdb;
@@ -53,12 +58,15 @@ class WP_Meetup {
 		$this->sqltable      = $wpdb->prefix . $this->sqltable;
 		$this->sqltable_cron = $wpdb->prefix . $this->sqltable_cron;
 		$this->sqltable_posts = $wpdb->prefix . $this->sqltable_posts;
-		$version             = array( 'version' => '2.1.4' );
+		$version             = array( 'version' => '2.1.5' );
 		$currentVersion = get_option($this->wpm_version_control);
 		update_option($this->wpm_version_control, $version);
 		add_action('init', array(&$this, 'init'));
 		add_filter('plugin_action_links_' . plugin_basename(__FILE__), array(&$this, 'add_plugin_settings_link') );
-
+		$include_events = get_option($this->include_homepage);
+		if (isset($include_events['include_homepage']) && $include_events['include_homepage'] === 'checked'){
+			add_filter( 'pre_get_posts', array(&$this, 'include_events_in_loop') );
+		}
 		$currentVersion = $currentVersion['version'];
 		if (isset($currentVersion)) {
 			$this->version_check($currentVersion);
@@ -145,17 +153,34 @@ class WP_Meetup {
 			$run = $forceRun;
 			//$run = TRUE;
 		}
+		$id_array = array();
 		if ($run) {
 			$event_array_2 = $this->multigroup_events();
+			
 			foreach($event_array_2 as $result_class) {
 				if($result_class) {
 					$result_array_2 = $result_class->results;
 					foreach($result_array_2 as $event) {
 						$this->add_event_post($event);
+						if ($event->id) {
+							$id_array[] = $wpdb->get_var("SELECT `wp_post_id` FROM $this->sqltable WHERE `wpm_event_id` = '$event->id'");
+						}
 					}
 				}
 			}
+			$this->clean_old_events($id_array);
+			// update the debug info for what just happened
+			$this->update_event_debug_info();
 		}
+	}
+
+	function update_event_debug_info() {
+		$result_string = '';
+		$result_string .= $this->event_debug_info['events_grabbed'] . ' events were found on Meetup.com';
+		$result_string .= ' across ' . $this->event_debug_info['groups_queried'] . ' groups. ';
+		$result_string .= '<br/>';
+		$result_string .= $this->event_debug_info['events_added'] . ' new events were found and added to WordPress.';
+		update_option($this->event_debug_string, array('result' => $result_string));
 	}
 
 	function update_database() {
@@ -192,8 +217,6 @@ class WP_Meetup {
 		$pluginDirectory = trailingslashit(plugins_url(basename(dirname(__FILE__))));
 		wp_register_style('wpm-styles', $pluginDirectory . 'css/wp-meetup.css');
 		wp_enqueue_style('wpm-styles');
-		wp_register_script('events-script', $pluginDirectory . 'js/wpm.js', array('jquery'));
-		wp_enqueue_script('events-script');
 	}
 
 	function wpm_deactivate() { 
@@ -219,7 +242,6 @@ class WP_Meetup {
 	}
 
 	function build_meetup_backlink($event) {
-		//dump($event);
 		$event_link = $event->event_url;
 		$event_date = date('l, d M Y g:i',$event->time);
 		$event_suffix = date('H',$event->time);
@@ -257,6 +279,13 @@ class WP_Meetup {
 		}
 		$output .= '</div>' . PHP_EOL;
 		return $output;
+	}
+
+	function include_events_in_loop($query) {
+		if ( is_home() && $query->is_main_query() ) {
+			$query->set( 'post_type', array( 'post', 'events') );
+		}
+	return $query;
 	}
 
 	/* ----------  Shortcodes ---------- */
@@ -981,7 +1010,6 @@ class WP_Meetup {
 			)
 		);
 
-		// #BOOKMARK
 		//if (!is_admin()) { echo '<div style="font-size: 30px; background: rgb(200,200,240); padding: 40px;">' . get_post_type_archive_link($this->custom_post_type) . '</div>'; }
 	}
 
@@ -994,7 +1022,9 @@ class WP_Meetup {
 		$event->time = $event->time + $event->utc_offset;
 		$event->time = substr($event->time, 0, -3);
 		$event->description = $this->build_meetup_backlink($event) . $event->description . $this->print_credit();
-		if ($wpm_event_id_count != 1) {	
+		if ($wpm_event_id_count != 1) {
+			// we are adding a new event
+			$this->event_debug_info['events_added'] += 1;
 			$post_id = $this->create_event_post($event);
 			$group = $event->group;
 			$newdata = array(
@@ -1005,8 +1035,7 @@ class WP_Meetup {
 				'group_id'     => $group->id
 			);
 			$wpdb->insert($this->sqltable, $newdata);
-		}
-		else {
+		} else {
 			$wpm_database_id = $wpdb->get_var("SELECT `id` FROM $this->sqltable WHERE `wpm_event_id`=\"$event->id\"");
 			$group = $event->group;
 			$replace_data = array(
@@ -1063,17 +1092,44 @@ class WP_Meetup {
 		$apikey = $wpmOptions['apikey'];
 		$wpm_groups = get_option($this->group_options_name);
 		$event_array = array();
+
+		// reset debug info
+		$this->event_debug_info = array('events_grabbed' => 0, 'groups_queried' => 0, 'events_added' => 0, 'events_deleted' => 0);
+
+		$performance_options = get_option($this->performance_option_name);
+		if (!isset($performance_options)) {
+			$performance_options = array(
+				'past_months_queried' => 1,
+				'future_months_queried' => 3,
+				'max_event' => 100,
+				);
+		}
+
 		foreach ($wpm_groups as $group){
 			if (isset($group['name']) && isset($apikey)){
 				$urlname = $group['name'];
-				$url = 'https://api.meetup.com/2/events.json?key=' . $apikey . '&page=100&group_urlname=' . $urlname . '&sign=true';
+				$url = 'https://api.meetup.com/2/events.json?key=' . $apikey . '&status=past,upcoming&time=-' . $performance_options['past_months_queried'] . 'm,' . $performance_options['future_months_queried'] . 'm&page=' . $performance_options['max_event'] . '&group_urlname=' . $urlname . '&sign=true';
 				$remote_get = wp_remote_get($url);
 		        $result = wp_remote_retrieve_body($remote_get);
 		        $result_array = json_decode($result);
 		        $event_array[] = $result_array;
+
+		        $this->event_debug_info['events_grabbed'] += count($result_array->results);
+		        $this->event_debug_info['groups_queried'] += 1;
 		    }
 	    }
 		return $event_array;
+	}
+	function clean_old_events($id_array = NULL) {
+		global $wpdb;
+		$get_posts = $wpdb->get_results( "SELECT `ID` FROM $this->sqltable_posts WHERE `post_type` = '$this->custom_post_type'" );
+		foreach ($get_posts as $id_class) {
+			$id = $id_class->ID;
+			if (!in_array($id, $id_array)) {
+				wp_delete_post($id, TRUE);
+				$wpdb->delete($this->sqltable, array('wp_post_id' => $id));
+			}
+		}
 	}
 
 

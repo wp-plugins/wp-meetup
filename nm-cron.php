@@ -61,7 +61,7 @@ class NM_Cron {
 		/* compares the time at moment ran with the last time saved in database. If the two are equal them the update cron will not change the date saved and save false to the database via the update_cron function, inversely if the two are not equal, then it will update db to current date and store true, also via the update_cron function. */
 		global $wpdb;
 		//$today = date("Y-m-d H:i:s"); // Use if you need finer control over time intervals
-		$today = date("Y-m-d H:00:00");
+		$today = date("Y-m-d 00:00:00");
 		$last_date = $wpdb->get_var("SELECT last_date FROM $this->sqltable_cron WHERE `id`=1");
 		$changedate = 0;
 		if ($today != $last_date) {
@@ -78,7 +78,7 @@ class NM_Cron {
 		global $wpdb;	
 		$newdata = array(
 			//'last_date' 	=> date('Y-m-d H:i:s'),
-			'last_date'     => date("Y-m-d H:00:00"),
+			'last_date'     => date("Y-m-d 00:00:00"),
 			'run'			=> '1', 
 		);
 		$wpdb->insert($this->sqltable_cron, $newdata);
@@ -90,7 +90,7 @@ class NM_Cron {
 		if ($changedate == 1) {
 			$data = array(
 				//'last_date' => date('Y-m-d H:i:s'), // use if we need more fine grained control
-				'last_date' => date('Y-m-d H:00:00'),
+				'last_date' => date('Y-m-d 00:00:00'),
 				'run'		=> $changedate,
 			);
 			$where = array(
