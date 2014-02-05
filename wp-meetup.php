@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 2.1.6
+Version: 2.1.7
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -62,7 +62,7 @@ class WP_Meetup {
 		$this->sqltable      = $wpdb->prefix . $this->sqltable;
 		$this->sqltable_cron = $wpdb->prefix . $this->sqltable_cron;
 		$this->sqltable_posts = $wpdb->prefix . $this->sqltable_posts;
-		$version             = array( 'version' => '2.1.6' );
+		$version             = array( 'version' => '2.1.7' );
 		$currentVersion = get_option($this->wpm_version_control);
 		update_option($this->wpm_version_control, $version);
 		add_action('init', array(&$this, 'init'));
@@ -989,12 +989,12 @@ class WP_Meetup {
 
 		return $day;
 	}
-
+	// Bookmark
 	function widget_day_build($date, $day, $today, $wp_post_id) {
 		global $wpdb;
 		//$link = post_permalink($wp_post_id);
 		$group_id = $wpdb->get_var("SELECT `group_id` FROM $this->sqltable WHERE `wp_post_id`= $wp_post_id");
-		$title = $wpdb->get_var("SELECT `post_title` FROM wp_posts WHERE `id`='$wp_post_id'");
+		$title = $wpdb->get_var("SELECT `post_title` FROM $this->sqltable_posts WHERE `id`='$wp_post_id'");
 		$redirect_link = get_option($this->redirect_link);
 		if (isset($redirect_link) && $redirect_link['redirect_link']) {
 			$link = $wpdb->get_var("SELECT `event_url` FROM $this->sqltable WHERE `wp_post_id`='$wp_post_id'");
@@ -1019,10 +1019,10 @@ class WP_Meetup {
 			'public' => true,
 			'has_archive' => true,
 			'show_ui'   => false,
+			//'capability_type'    => 'post',
+            //'supports' => array('title', 'editor', 'thumbnail')
 			)
 		);
-
-		//if (!is_admin()) { echo '<div style="font-size: 30px; background: rgb(200,200,240); padding: 40px;">' . get_post_type_archive_link($this->custom_post_type) . '</div>'; }
 	}
 
 	function add_event_post($event) {
