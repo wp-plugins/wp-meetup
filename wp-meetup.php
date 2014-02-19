@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 2.1.8
+Version: 2.1.9
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -62,7 +62,7 @@ class WP_Meetup {
 		$this->sqltable      = $wpdb->prefix . $this->sqltable;
 		$this->sqltable_cron = $wpdb->prefix . $this->sqltable_cron;
 		$this->sqltable_posts = $wpdb->prefix . $this->sqltable_posts;
-		$version             = array( 'version' => '2.1.8' );
+		$version             = array( 'version' => '2.1.9' );
 		$currentVersion = get_option($this->wpm_version_control);
 		update_option($this->wpm_version_control, $version);
 		add_action('init', array(&$this, 'init'));
@@ -168,6 +168,7 @@ class WP_Meetup {
 		$id_array = array();
 		if ($run) {
 			$event_array_2 = $this->multigroup_events();
+
 			foreach($event_array_2 as $result_class) {
 				if($result_class) {
 					$result_array_2 = $result_class->results;
@@ -389,6 +390,7 @@ class WP_Meetup {
 		$colorlist = get_option($this->color_options_name);
 		$style = get_option($this->options_name);
 		if ($display_legend && isset($grouplist) and $grouplist != NULL && count($grouplist) > 1) {
+			$legend_count = 0;
 			$output .= '<div class="wpm-calendar-legend">' . PHP_EOL;
 			$output .= '<div class="wpm-legend-item">Groups:</div><div class="clear"></div>' . PHP_EOL;
 			foreach ($grouplist as $group) {
@@ -401,6 +403,11 @@ class WP_Meetup {
 					$colorlist[$color_input] = '#CCCCCC';
 					$output .= '<div class="wpm-legend-item group' . $group['group_id'] . '">' . $group['name'] .'</div>' . PHP_EOL;
 
+				}
+				$legend_count++;
+				if ($legend_count == 3) {
+					$output .= '<div class="clear"></div>';
+					$legend_count = 0;
 				}
 			}
 			$output .= '</div><div class="clear"></div>' . PHP_EOL;
@@ -1026,11 +1033,11 @@ class WP_Meetup {
 		$wpm_event_id_count = $wpdb->get_var("SELECT COUNT(*) FROM $this->sqltable WHERE `wpm_event_id`=\"$event->id\"");
 		/* If the event does not already exist, add the new post -- else update existing post and existing database entries.*/
 		//dump($event);
-		$event->time = $event->time + $event->utc_offset;
 		if (gettype($event->time) == 'double'){
 			$event->time = intval($event->time);
 		}
-		$event->time = substr($event->time, 0, -3);
+		$event->time = $event->time + intval($event->utc_offset);
+		$event->time = substr($event->time, 0, 10);
 		$event->description = $this->build_meetup_backlink($event) . $event->description . $this->print_credit();
 		if ($wpm_event_id_count != 1) {
 			// we are adding a new event
@@ -1204,4 +1211,5 @@ class WP_Meetup {
 	}
 
 }
+
 
