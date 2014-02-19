@@ -4,7 +4,7 @@ Donate link: http://nuancedmedia.com/wordpress-meetup-plugin/
 Tags: meetup,meetup.com
 Requires at least: 3.7
 Tested up to: 3.8
-Stable tag: 2.1.7
+Stable tag: 2.1.8
 
 WP Meetup fetches event information from Meetup.com and creates posts for each event.
 
@@ -50,6 +50,10 @@ Note: With version 2.0.0, shortcodes where added, e.g. `[meetup-calendar]` by de
 3. Event calendar
 
 == Changelog ==
+
+= 2.1.8 =
+* Fixes a mistake that encased widgets in heading tags.
+* Edits to the handling of data, specifically event times.  
 
 = 2.1.7 =
 * Bug fix. 
@@ -197,6 +201,9 @@ Note: With version 2.0.0, shortcodes where added, e.g. `[meetup-calendar]` by de
 * Initial release
 
 == Upgrade Notice ==
+
+= 2.1.8 =
+* Important upgrade! This corrects the handling of event times, preventing the preventing being stored as nulll.
 
 = 2.1.2 =
 * CRITICAL UPDATE: This hotfix fixes an issue where, if there is a glitch in the API key storage, then the parent site might be inaccessible.

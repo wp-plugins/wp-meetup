@@ -785,7 +785,7 @@ class WP_Meetup_Admin {
 		$total_list = array();
 		foreach ($event_list as $event) {
 			$event_data = $this->get_event_time_and_ids($event->ID);
-			
+			//dump($event_data);
 			$event_data = $event_data['0'];
 			$event_time = date('Y-m-d H:i:s',$event_data->event_time);
 			$total_list[] = array(

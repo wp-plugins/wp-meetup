@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 2.1.7
+Version: 2.1.8
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -62,7 +62,7 @@ class WP_Meetup {
 		$this->sqltable      = $wpdb->prefix . $this->sqltable;
 		$this->sqltable_cron = $wpdb->prefix . $this->sqltable_cron;
 		$this->sqltable_posts = $wpdb->prefix . $this->sqltable_posts;
-		$version             = array( 'version' => '2.1.7' );
+		$version             = array( 'version' => '2.1.8' );
 		$currentVersion = get_option($this->wpm_version_control);
 		update_option($this->wpm_version_control, $version);
 		add_action('init', array(&$this, 'init'));
@@ -168,7 +168,6 @@ class WP_Meetup {
 		$id_array = array();
 		if ($run) {
 			$event_array_2 = $this->multigroup_events();
-			
 			foreach($event_array_2 as $result_class) {
 				if($result_class) {
 					$result_array_2 = $result_class->results;
@@ -588,9 +587,7 @@ class WP_Meetup {
 	function wpm_events_widget($args) {
     	extract($args);
 		echo $before_widget; 
-		echo $before_title;
 		echo $this->events_widget_evaluated();
-		echo $after_title;
 		echo $after_widget;
 	}
 
@@ -810,9 +807,7 @@ class WP_Meetup {
 	function wpm_calendar_widget($args) {
     	extract($args);
 		echo $before_widget; 
-		echo $before_title;
 		echo $this->calendar_widget_evaluated();
-		echo $after_title;
 		echo $after_widget;
 	}
 
@@ -1032,6 +1027,9 @@ class WP_Meetup {
 		/* If the event does not already exist, add the new post -- else update existing post and existing database entries.*/
 		//dump($event);
 		$event->time = $event->time + $event->utc_offset;
+		if (gettype($event->time) == 'double'){
+			$event->time = intval($event->time);
+		}
 		$event->time = substr($event->time, 0, -3);
 		$event->description = $this->build_meetup_backlink($event) . $event->description . $this->print_credit();
 		if ($wpm_event_id_count != 1) {
@@ -1067,10 +1065,10 @@ class WP_Meetup {
 		/* Creates new event posts and returns the WordPress post ID */
 		global $wpdb;
 		$post = array( 
-			"post_type"    => $this->custom_post_type,
+			'post_type'    => $this->custom_post_type,
 			'post_status'  => 'publish',
 			'post_content' => $event->description,
-			"post_title"   => $event->name,
+			'post_title'   => $event->name,
 			'start_time'   => $event->time,
 		);
 		$post_id = wp_insert_post($post, true);
@@ -1206,5 +1204,4 @@ class WP_Meetup {
 	}
 
 }
-
 
