@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 2.1.9
+Version: 2.1.10
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /* ----------  Dump function for debug ----------  */
 if (!function_exists('dump')) {function dump ($var, $label = 'Dump', $echo = TRUE){ob_start();var_dump($var);$output = ob_get_clean();$output = preg_replace("/\]\=\>\n(\s+)/m", "] => ", $output);$output = '<pre style="background: #FFFEEF; color: #000; border: 1px dotted #000; padding: 10px; margin: 10px 0; text-align: left;">' . $label . ' => ' . $output . '</pre>';if ($echo == TRUE) {echo $output;}else {return $output;}}}if (!function_exists('dump_exit')) {function dump_exit($var, $label = 'Dump', $echo = TRUE) {dump ($var, $label, $echo);exit;}}
+
+
 
 
 /* ----------  WP Meetup ----------  */
@@ -62,7 +64,7 @@ class WP_Meetup {
 		$this->sqltable      = $wpdb->prefix . $this->sqltable;
 		$this->sqltable_cron = $wpdb->prefix . $this->sqltable_cron;
 		$this->sqltable_posts = $wpdb->prefix . $this->sqltable_posts;
-		$version             = array( 'version' => '2.1.9' );
+		$version             = array( 'version' => '2.1.10' );
 		$currentVersion = get_option($this->wpm_version_control);
 		update_option($this->wpm_version_control, $version);
 		add_action('init', array(&$this, 'init'));
@@ -168,7 +170,6 @@ class WP_Meetup {
 		$id_array = array();
 		if ($run) {
 			$event_array_2 = $this->multigroup_events();
-
 			foreach($event_array_2 as $result_class) {
 				if($result_class) {
 					$result_array_2 = $result_class->results;
@@ -486,7 +487,7 @@ class WP_Meetup {
 			}
 			$output .= '</tr>';
 		}
-		$output .= '</table>';
+		$output .= '</table></div>';
 		$grouplist = get_option($this->group_options_name);
 		$colorlist = get_option($this->color_options_name);
 		$style = get_option($this->options_name);
@@ -606,24 +607,27 @@ class WP_Meetup {
 	}
 	
 	function event_list_widget_control($args=array(), $params=array()) {
-		//dump($_POST);
 		$option_name = $this->widget_options;
 		if (isset($_POST['widget_options']) && $_POST['widget_options'] == 'Update Widget') {
-			//dump($_POST);
 			$options = array();
 			$options['list_length'] = $_POST['list_length'];
+			$options['list_title'] = $_POST['list_title'];
 			update_option($option_name, $options);
 			$_POST['widget_options'] = NULL; 
-			$set_list_length = get_option($option_name);
+			
 		}
-		else {
-			$set_list_length = array(
-				'list_length' => 3,
-				);
+		$set_list_length = get_option($option_name);
+		if (!isset($set_list_length['list_length'])) {
+			$set_list_length['list_length'] = '3';
+		}
+		if (!isset($set_list_length['list_title'])) {
+			$set_list_length['list_title'] = 'Event List';
 		}
 		
 		?>
-
+		
+		<label>Title:</label><br />
+		<input type="text" name="list_title" value="<?php echo $set_list_length['list_title'] ?>"><br />
 		<label>The Event List widget should display how many events?</label><br />
 		<input type="number" name="list_length" value="<?php echo $set_list_length['list_length'] ?>">
 		<input type="hidden" name="widget_options" value="Update Widget">
@@ -663,6 +667,14 @@ class WP_Meetup {
 			}
 			//$list_length = 500;
 		}
+		if ($widget_options && isset($widget_options['list_title'])) {
+			$list_title = $widget_options['list_title'];
+		}
+		else {
+			$list_title = 'Event List';
+		}
+
+		$output .= '<h4>' . $list_title . '</h4>';
 		
 		while ($i<=$end && count($event_list_array) < $list_length) {
 			// Put day of month as 0'th element of day array
@@ -991,7 +1003,7 @@ class WP_Meetup {
 
 		return $day;
 	}
-	// Bookmark
+
 	function widget_day_build($date, $day, $today, $wp_post_id) {
 		global $wpdb;
 		//$link = post_permalink($wp_post_id);
@@ -1032,11 +1044,11 @@ class WP_Meetup {
 		global $wpdb;
 		$wpm_event_id_count = $wpdb->get_var("SELECT COUNT(*) FROM $this->sqltable WHERE `wpm_event_id`=\"$event->id\"");
 		/* If the event does not already exist, add the new post -- else update existing post and existing database entries.*/
-		//dump($event);
-		if (gettype($event->time) == 'double'){
+		$event->time = $event->time / 1000;
+		if (gettype($event->time) == 'double') {
 			$event->time = intval($event->time);
 		}
-		$event->time = $event->time + intval($event->utc_offset);
+		$event->time = $event->time + intval($event->utc_offset / 1000);
 		$event->time = substr($event->time, 0, 10);
 		$event->description = $this->build_meetup_backlink($event) . $event->description . $this->print_credit();
 		if ($wpm_event_id_count != 1) {

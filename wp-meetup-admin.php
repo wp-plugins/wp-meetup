@@ -1009,12 +1009,23 @@ class WP_Meetup_Admin {
 		if (!isset($options['list_length'])) {
 			$options['list_length'] = '3';
 		}
+		if (!isset($options['list_title'])) {
+			$options['list_title'] = 'Event List';
+		}
 		?>
 		<div>
 			<form method="post" action="">
 			<h3>Event List</h3>
 				<table>
 					<tbody>
+						<tr>
+							<td>
+								<label>Event list title:</label>
+							</td>
+							<td>
+								<input type="text" name="list_title" value="<?php echo $options['list_title'] ?>">
+							</td>
+						</tr>
 						<tr>
 							<td>
 								<label>The Event List widget should display how many events?</label>
