@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog
-Version: 2.1.10
+Version: 2.1.11
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -64,7 +64,7 @@ class WP_Meetup {
 		$this->sqltable      = $wpdb->prefix . $this->sqltable;
 		$this->sqltable_cron = $wpdb->prefix . $this->sqltable_cron;
 		$this->sqltable_posts = $wpdb->prefix . $this->sqltable_posts;
-		$version             = array( 'version' => '2.1.10' );
+		$version             = array( 'version' => '2.1.11' );
 		$currentVersion = get_option($this->wpm_version_control);
 		update_option($this->wpm_version_control, $version);
 		add_action('init', array(&$this, 'init'));
@@ -594,7 +594,14 @@ class WP_Meetup {
 
 	function wpm_events_widget($args) {
     	extract($args);
+    	$option_name = $this->widget_options;
+    	$widget_options = get_option($option_name);
 		echo $before_widget; 
+		if ($widget_options && isset($widget_options['list_title'])) {
+			echo $before_title;
+			echo $widget_options['list_title'];
+			echo $after_title;
+		}
 		echo $this->events_widget_evaluated();
 		echo $after_widget;
 	}
@@ -667,14 +674,6 @@ class WP_Meetup {
 			}
 			//$list_length = 500;
 		}
-		if ($widget_options && isset($widget_options['list_title'])) {
-			$list_title = $widget_options['list_title'];
-		}
-		else {
-			$list_title = 'Event List';
-		}
-
-		$output .= '<h4>' . $list_title . '</h4>';
 		
 		while ($i<=$end && count($event_list_array) < $list_length) {
 			// Put day of month as 0'th element of day array
