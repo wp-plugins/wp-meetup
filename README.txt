@@ -3,8 +3,8 @@ Contributors: Nuanced Media
 Donate link: http://nuancedmedia.com/wordpress-meetup-plugin/
 Tags: meetup,meetup.com
 Requires at least: 3.7
-Tested up to: 3.8
-Stable tag: 2.1.11
+Tested up to: 3.9.1
+Stable tag: 2.2.0
 
 WP Meetup fetches event information from Meetup.com and creates posts for each event.
 
@@ -50,6 +50,20 @@ Note: With version 2.0.0, shortcodes where added, e.g. `[meetup-calendar]` by de
 3. Event calendar
 
 == Changelog ==
+
+= 2.2.0 =
+* Major rewrite.
+* Added event list shortcode. 
+* Changed execution of widgets as to be more true to WordPress's intentions.
+* Added widget usage and widget options.
+* Included legend to calendar widget. 
+* Added group specification on event list widget in addition to the color of the day.
+* Added the use of a group table in the database for better performance.
+* Abstracted out much of the plugin allowing for future changes to be easier to execute.
+* Added new dashboard for visual appeal and functionality.
+* Major fix: Correcting the handling of groups who currently have no events planned. 
+* Now displays group name in calendar legend instead of group slug. 
+* Now a single group can be displayed by each calendar shortcode.
 
 = 2.1.11 =
 * Added the widget title to the event list widget. 
@@ -211,6 +225,9 @@ Note: With version 2.0.0, shortcodes where added, e.g. `[meetup-calendar]` by de
 * Initial release
 
 == Upgrade Notice ==
+
+= 2.2.0 =
+* Added many requested features and functionality.
 
 = 2.1.10 =
 * Important upgrade! Correct handling of event times as floats.

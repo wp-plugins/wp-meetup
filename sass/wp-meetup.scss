@@ -26,6 +26,20 @@
 .wpm-logos {
 	text-align:center;
 }
+
+.widget-wrap {
+    .wpm-calendar-legend {
+        .wpm-widget-legend-title {
+            padding: 5px;
+            width: 50%;
+        }
+    }
+}
+
+.wpm-legend-title {
+    background-color: #646464;
+}
+
 .wpm-calendar-legend {
 	.wpm-legend-item {
 		width: 25%;
@@ -349,5 +363,30 @@
 			}
 		}
 	}
+}
+
+.one-half {
+    width: 50%;
+    float: left;
+}
+
+.two-thirds {
+    width: 66.666%;
+    float: left;
+}
+
+.one-third {
+    width: 33.333%;
+    float: left;
+}
+
+.one-fourth {
+    width: 25%;
+    float: left;
+}
+
+.three-fourths {
+    width: 75%;
+    float: left;
 }
 
