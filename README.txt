@@ -3,16 +3,32 @@ Contributors: Nuanced Media
 Donate link: http://nuancedmedia.com/wordpress-meetup-plugin/
 Tags: meetup,meetup.com
 Requires at least: 3.7
-Tested up to: 3.8
-Stable tag: 2.0.0
+Tested up to: 3.9.1
+Stable tag: 2.2.0
 
 WP Meetup fetches event information from Meetup.com and creates posts for each event.
 
 == Description ==
 
-WP Meetup fetches event information from Meetup.com and creates posts for each event.  Additionally, WP Meetup provides an event calendar for displaying upcoming events either on a page or as a widget.
+Meetup is used by 9.5 million members who meet over 2,000 times every single day in local communities across the nation. Unfortunately, there hasn't been an efficient way to link an organization's Meetup events easily and efficiently to their WordPress site.
 
-For more detailed information visit the plugin homepage at [Nuanced Media](http://nuancedmedia.com/wordpress-meetup-plugin/).
+Until now.
+
+Nuanced Media's WP Meetup plugin fetches event information from Meetup.com and creates posts for each event. WP Meetup also provides an event calendar for displaying events, either on a page or as a widget.
+
+New in version 2.0!
+
+• Display multiple groups on one calendar, each group with their own color highlight. Perfect for organizers of multiple, related groups!
+• Display multiple months of events, including past, present, and future events. Help your members plan ahead for special events!
+• Calendar widget that displays a small calendar in the widget area, as well as a new widget that lists seven upcoming events.
+• Increased database stability for calendar creation.
+
+It has never been so easy to aggregate and display events.
+
+For more information, visit the plugin homepage at [Nuanced Media](http://nuancedmedia.com/wordpress-meetup-plugin/).
+
+About Nuanced Media: 
+Nuanced Media specialized in [Web Design](http://nuancedmedia.com/tucson-website-design/), [Marketing](http://nuancedmedia.com/internet-marketing-tucson-az/) & [Brand](http://nuancedmedia.com/brand-tucson-az/) development. Nuanced takes pride in our hard work and dedication to drive more consumers towards client webpage. Through social media marketing, search engine optimization, and personalized web design the Nuanced Team ensures professional products.
 
 == Installation ==
 
@@ -21,7 +37,9 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 3. Visit the options page located at Settings -> WP Meetup and follow the instructions.
 4. To include the event calendar on a page, create a new page and in the content editor, enter `[wp-meetup-calendar]` where you want the calendar to appear on the page.
 5. To include a variable number of months on the event calender, use shortcode, e.g. `[wp-meetup-calendar number_of_months='4']` by default the calender displays two months (the current, and the next).
-6. Starting with version 1.5.0, you now have the ability to show any number of previous and future events! Try, for example, [wp-meetup-calendar start_month=-2 end_month=2]. This will show a total of 4 months (2 previous months, and the next 2 months, all relative to the current month). Play around with it, it's great to be able to have this variable calendar showing!
+6. Starting with version 1.5.0, you now have the ability to show any number of previous and future events! Try, for example, [wp-meetup-calendar start_month=-2 end_month=2]. This will show a total of 4 months (2 previous months, and the next 2 months, all relative to the current month). Play around with it, it's great to be able to have this variable calendar showing! 
+
+Note: With version 2.0.0, shortcodes where added, e.g. `[meetup-calendar]` by default displays only the current month. The ability to display multiple months still exists, e.g. `[meetup-calendar past=1 future=2]` will display 4 months (1 previous month, the current month, and the next 2 months).
 
 **Important: If you're upgrading from a version prior to 1.2, make sure to disable the plugin and re-enable it.**
 
@@ -32,6 +50,88 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 3. Event calendar
 
 == Changelog ==
+
+= 2.2.1 =
+* Hotfixes: Forcing int type on event times for 32-bit servers. 
+
+= 2.2.0 =
+* Major rewrite.
+* Added event list shortcode. 
+* Changed execution of widgets as to be more true to WordPress's intentions.
+* Added widget usage and widget options.
+* Included legend to calendar widget. 
+* Added group specification on event list widget in addition to the color of the day.
+* Added the use of a group table in the database for better performance.
+* Abstracted out much of the plugin allowing for future changes to be easier to execute.
+* Added new dashboard for visual appeal and functionality.
+* Major fix: Correcting the handling of groups who currently have no events planned. 
+* Now displays group name in calendar legend instead of group slug. 
+* Now a single group can be displayed by each calendar shortcode.
+
+= 2.1.11 =
+* Added the widget title to the event list widget. 
+
+= 2.1.10 =
+* Correcting the handling of the event times, taking into consideration the possibilty of float variables.
+* Bug fixes and tweaks
+
+= 2.1.9 =
+* Hotfix
+
+= 2.1.8 =
+* Fixes a mistake that encased widgets in heading tags.
+* Edits to the handling of data, specifically event times.  
+
+= 2.1.7 =
+* Bug fix. 
+
+= 2.1.6 =
+* Hotfix, correcting bug previous version. 
+
+= 2.1.5 =
+* Added an option to display events on homepage. 
+* Fixes bug so that events deleted on Meetup.com no longer display on calendar.
+* Bug fixes and tweaks.
+
+= 2.1.4 =
+* Minor Hotfix.
+
+= 2.1.3 =
+* Changed handling of version control. 
+* Bug fixes and tweaks. 
+
+= 2.1.2 =
+* Bug fixes and tweaks.
+
+= 2.1.1 =
+* Added an option for the Event List widget.
+* Tweaks.
+
+= 2.1.0 =
+* Addition of "Options" submenu.
+* Inclusion of link to Meetup.com events within event posts, as well as an option to automatically redirect.
+* Bug fixes and tweaks.
+
+= 2.0.6 =
+* Adding image.
+
+= 2.0.5 =
+* Hotfixes, such as editing date comparison and text colors. 
+
+= 2.0.4 =
+* Added the "Events" submenu.
+* Included the ability to alter API key after initial upload.
+* Hotfixes, such as the resetting of permalinks and changing of custom post type name.
+* Bug fixes and tweaks. 
+
+= 2.0.3 =
+* Hotfixes, such as editing the handling or group names.
+
+= 2.0.2 =
+* Styling edit: Improving the event list widget display.
+
+= 2.0.1 =
+* Hotfixes, such as editing date comparisons and correcting event widget errors. Also added a option to join a email list.
 
 = 2.0.0 =
 * Complete, from scratch rewrite of plugin.
@@ -128,6 +228,18 @@ For more detailed information visit the plugin homepage at [Nuanced Media](http:
 * Initial release
 
 == Upgrade Notice ==
+
+= 2.2.0 =
+* Added many requested features and functionality.
+
+= 2.1.10 =
+* Important upgrade! Correct handling of event times as floats.
+
+= 2.1.8 =
+* Important upgrade! This corrects the handling of event times, preventing the preventing being stored as null.
+
+= 2.1.2 =
+* CRITICAL UPDATE: This hotfix fixes an issue where, if there is a glitch in the API key storage, then the parent site might be inaccessible.
 
 = 2.0.0 =
 * Important upgrade! We have completely overhauled the plugin, all the while ensuring it will work with your current WP-Meetup version and all your events. The new version is quicker, cleaner, and has more transparent update notices and error reporting, so that we can better help people with errors remotely.
