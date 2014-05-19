@@ -55,7 +55,8 @@ class WPMOptions {
             'legend' => FALSE,
             'legend_title' => __('Groups:'),
             'venue' => FALSE,
-            'queue_prompt' => time() + 2419200,
+            'queue_prompt' => time() + 259200,
+            'install_count' => 3,
         );
         if ($this->get_option() == FALSE) {
             $this->set_to_defaults();
@@ -138,6 +139,15 @@ class WPMOptions {
             $_POST['update'] = NULL;
             $this->updated = 'wpm-update-prompt';
         }
+        else if (isset($_POST['update']) && $_POST['update'] === 'wpm-update-events') {
+            $_POST['update'] = NULL;
+            $this->updated = 'wpm-update-events';
+            add_action('init', array(&$this, 'button_force_update'));
+        }
+    }
+    
+    public function button_force_update() {
+        $this->core->trigger->execute_update();
     }
     
     public function apply_new_post_slug() {
@@ -300,6 +310,10 @@ class WPMOptions {
         }
         else if ($this->updated == 'wpm-update-color') {
              echo '<div class="updated">Colors have been saved and the check groups have been deleted.</div>';
+            $this->updated = FALSE;
+        }
+        else if ($this->updated == 'wpm-update-events') {
+             echo '<div class="updated">Events have been updated.</div>';
             $this->updated = FALSE;
         }
     }

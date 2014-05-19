@@ -37,8 +37,8 @@ class NMCustomPost {
                 ),
                 'public' => TRUE,
                 'has_archive' => TRUE,
-                'show_ui'   => TRUE,
-                'show_in_menu' => TRUE,
+                'show_ui'   => FALSE,
+                'show_in_menu' => FALSE,
                 'supports' => array('title', 'editor', 'revisions'),
                 'menu_position' => 5,
             );
@@ -94,6 +94,3 @@ class NMCustomPost {
         wp_update_post($post_array);
     }
 }
-
-
-

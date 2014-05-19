@@ -52,10 +52,10 @@ class Calendar {
             'width' => 'one',
             'group' => '',
             'past'             => '0',
-			'future'           => '0',
-			'number_of_months' => '1',
-			'start_month'      => '0',
-			'end_month'        => '0',
+            'future'           => '0',
+            'number_of_months' => '1',
+            'start_month'      => '0',
+            'end_month'        => '0',
             'legend' => NULL,
         );
         if (is_array($atts)) {
@@ -80,8 +80,8 @@ class Calendar {
         }
         $this->sort_events();
         $localtime = current_time('mysql');
-		$strtotime = strtotime($localtime);
-		$today = getdate($strtotime);
+        $strtotime = strtotime($localtime);
+        $today = getdate($strtotime);
         $base_month = $today['mon'];
         $base_year = $today['year'];
         $queue_front = $base_month - $this->atts['past'] + $this->atts['start_month'];
@@ -108,27 +108,27 @@ class Calendar {
     
     public function build_skeleton($month, $year) {
         // Calendar display
-		$skeleton = array();
-		$week = array();
-		$firstWeekdayOfMonth = date('w', mktime(0, 0, 0, $month, 0, $year));
-		$daysInMonth = date('d', mktime(0, 0, 0, $month+1, 0, $year));
-		if ($firstWeekdayOfMonth != 6) {
-			for ($i=0; $i<$firstWeekdayOfMonth+1; $i++) {
-				$day = '0';
-				$week[] = $day;
-			}
-		}
-		for ($i=1; $i<=$daysInMonth; $i++) {
-			$day = $i;
-			$week[] = $day;
-			if (count($week)>=7) {
-				$skeleton[] =$week;
-				$week    = array();
-			}
-		}
-		if ($week != array()) {
-			$skeleton[] = $week;
-		}
+        $skeleton = array();
+        $week = array();
+        $firstWeekdayOfMonth = date('w', mktime(0, 0, 0, $month, 0, $year));
+        $daysInMonth = date('d', mktime(0, 0, 0, $month+1, 0, $year));
+        if ($firstWeekdayOfMonth != 6) {
+            for ($i=0; $i<$firstWeekdayOfMonth+1; $i++) {
+                $day = '0';
+                $week[] = $day;
+            }
+        }
+        for ($i=1; $i<=$daysInMonth; $i++) {
+            $day = $i;
+            $week[] = $day;
+            if (count($week)>=7) {
+                $skeleton[] =$week;
+                $week    = array();
+            }
+        }
+        if ($week != array()) {
+            $skeleton[] = $week;
+        }
         return $skeleton;
     }
     
@@ -310,10 +310,18 @@ class Calendar {
                 <div class="wpm-legend-item wpm-legend-title"><?php echo __($this->core->options->get_option('legend_title')) ?></div>
                 <div class="clear"></div>
                 <?php
+                $count = 0;
                 foreach ($this->core->groups as $group) {
                     ?>
                     <div class="wpm-legend-item group<?php echo $group->group_id ?>"><?php echo __($group->group_name) ?></div>
                     <?php
+                    $count = $count + 1;
+                    if ($count >= 3) {
+                        $count = 0;
+                        ?>
+                            <div class="clear"></div>
+                        <?php
+                    }
                 }
                 ?>
             </div>

@@ -51,6 +51,9 @@ Note: With version 2.0.0, shortcodes where added, e.g. `[meetup-calendar]` by de
 
 == Changelog ==
 
+= 2.2.1 =
+* Hotfixes: Forcing int type on event times for 32-bit servers. 
+
 = 2.2.0 =
 * Major rewrite.
 * Added event list shortcode. 

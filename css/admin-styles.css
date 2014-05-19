@@ -70,23 +70,27 @@
   .nm-support-prompt .nm-support-staff-form .nm-support-staff-prompt-checkbox {
     width: 5%;
     float: left;
-    margin: 10px auto; }
+    margin: 10px auto;
+    padding: 15px; }
   .nm-support-prompt .nm-support-staff-form .nm-support-staff-prompt-label {
     width: 50%;
-    float: left; }
-  .nm-support-prompt .nm-support-staff-form > input {
-    width: 45%;
+    float: left;
+    padding: 15px; }
+    .nm-support-prompt .nm-support-staff-form .nm-support-staff-prompt-label a {
+      color: darkblue; }
+  .nm-support-prompt .nm-support-staff-form .nm-support-staff-prompt-submit {
+    margin: 30px auto;
     float: left; }
 .nm-support-prompt .nm-support-staff-prompt-exit {
   width: 10%;
-  float: left; }
+  float: right;
+  text-align: right; }
 
 .nm-error {
-  width: 70%;
-  background: #ad3d3d;
+  width: 60%;
+  background: #66AAAA;
   border-left: solid 10px #fff;
   color: #fff;
-  padding: 15px;
   margin: 10px; }
 
 .one-half {

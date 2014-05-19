@@ -205,7 +205,7 @@ class GroupsAdmin extends WPMAdminPage{
         ?>
         </table>
             <input type="hidden" name="update" value="wpm-update-color">
-            <input type="submit" value="Save Colors">
+            <input type="submit" value="Save and Delete">
         </form>
         <?php
     }

@@ -181,16 +181,19 @@ class WPMAdminPage {
                             <input type="hidden" name="update" value="wpm-update-support-prompt" />
                             <input type="hidden" name="support" value="checked" />
                             <div class="nm-support-staff-label nm-support-staff-prompt-label">
-                                <label>It has been 28 days since you installed the plugin. We work very hard to give you our plugins for free. Please help us continue to do so by supporting us!</label>
+                                <!-- <label>It has been over <?php //echo $this->core->options->get_option('install_count'); ?> days since you installed the plugin. We work very hard to give you our plugins for free. Please help us continue to do so by supporting us!</label> -->
+                                <label>It has been over <?php echo $this->core->options->get_option('install_count'); ?> days, how are you liking WP MeetUp? Please consider adding a small link to the bottom of your calendar page.  The more sites that support us the more time we can justify building a great, free plugin for thousands of meetup groups. Visit <a href="http://www.nuancedmedia.com">Nuanced Media</a> or <a href="http://wordpress.org/extend/plugins/wp-meetup/">Review our plugin</a>.</label>
                             </div>
-                            <input type="submit" class="nm-support-staff-submit button" value="Support the Staff" />
+                            <input type="submit" class="nm-support-staff-prompt-submit button" value="Improve WP Meetup" />
                             <div class="clear"></div>
                         </form>
                     </div>
                     <div class="nm-support-staff-prompt-exit">
                         <form action="" method="post">
                             <input type="hidden" name="update" value="wpm-update-prompt" />
+                            <!-- <input type="hidden" name="queue_prompt" value="<?php  //echo time() + 10; ?>" /> -->
                             <input type="hidden" name="queue_prompt" value="<?php  echo time() + 2419200; ?>" />
+                            <input type="hidden" name="install_count" value="<?php  echo $this->core->options->get_option('install_count') + 28; ?>" />
                             <input type="submit" class="button" value="X">
                         </form>
                     </div>
@@ -206,7 +209,7 @@ class WPMAdminPage {
      */
     
     public function render_header($title = NULL, $echo = TRUE) {
-		global $file;
+        global $file;
         $output = '';
         if ($title == NULL) {
             $plugin_data = get_plugin_data( $file);
@@ -214,14 +217,14 @@ class WPMAdminPage {
         } else {
             $output = '<h1>' . $title . '</h1>';
         }
-		if ($echo) {
-			echo $output;
-		} else {
-			return $output;
-		}
-	}
+        if ($echo) {
+            echo $output;
+        } else {
+            return $output;
+        }
+    }
 
-	public function render_sidebar() {
+    public function render_sidebar() {
         if (!$this->core->options->get_option('support')) {
             $this->render_postbox_open('Support the Staff');
             $this->insert_support_box();
@@ -241,96 +244,96 @@ class WPMAdminPage {
         $this->render_postbox_open('Nuanced Media');
         $this->render_nm_logos();
         $this->render_postbox_close();
-	}
+    }
 
 
 
-	public function render_tabs($echo = TRUE) {
-		/*
-		 * key value pairs of the form:
-		 * 'admin_page_slug' => 'Tab Label'
-		 * where admin_page_slug is from
-		 * the add_menu_page or add_submenu_page
-		 */
-		$tabs = array(
-			'wp_meetup_settings' => 'Dashboard',
-			'wp_meetup_options' => 'Options',
-			'wp_meetup_groups' => 'Groups',
-			'wp_meetup_events' => 'Events',
-			'wp_meetup_debug' => 'Debug',
-		);
+    public function render_tabs($echo = TRUE) {
+        /*
+         * key value pairs of the form:
+         * 'admin_page_slug' => 'Tab Label'
+         * where admin_page_slug is from
+         * the add_menu_page or add_submenu_page
+         */
+        $tabs = array(
+            'wp_meetup_settings' => 'Dashboard',
+            'wp_meetup_options' => 'Options',
+            'wp_meetup_groups' => 'Groups',
+            'wp_meetup_events' => 'Events',
+            'wp_meetup_debug' => 'Debug',
+        );
 
-		// what page did we request?
-		$current_slug = '';
-		if (isset($_GET['page'])) {
-			$current_slug = $_GET['page'];
-		}
+        // what page did we request?
+        $current_slug = '';
+        if (isset($_GET['page'])) {
+            $current_slug = $_GET['page'];
+        }
 
-		// render all the tabs
-		$output = '';
-		$output .= '<div class="tabs-container">';
-		foreach ($tabs as $slug => $label) {
-			$output .= '<div class="tab ' . ($slug == $current_slug ? 'active' : '') . '">';
-			$output .= '<a href="' . admin_url('admin.php?page='.$slug) . '">' . $label . '</a>';
-			$output .= '</div>';
-		}
-		$output .= '</div>'; // end .tabs-container
+        // render all the tabs
+        $output = '';
+        $output .= '<div class="tabs-container">';
+        foreach ($tabs as $slug => $label) {
+            $output .= '<div class="tab ' . ($slug == $current_slug ? 'active' : '') . '">';
+            $output .= '<a href="' . admin_url('admin.php?page='.$slug) . '">' . $label . '</a>';
+            $output .= '</div>';
+        }
+        $output .= '</div>'; // end .tabs-container
 
-		if ($echo) {
-			echo $output;
-		} else {
-			return $output;
-		}
-	}
+        if ($echo) {
+            echo $output;
+        } else {
+            return $output;
+        }
+    }
 
-	public function render_postbox_open($title = '') {
-		?>
-		<div class="postbox">
-			<div class="handlediv" title="Click to toggle"><br/></div>
-			<h3 class="hndle nm-hndle"><span><?php echo $title; ?></span></h3>
-			<div class="inside">
-		<?php
-	}
+    public function render_postbox_open($title = '') {
+        ?>
+        <div class="postbox">
+            <div class="handlediv" title="Click to toggle"><br/></div>
+            <h3 class="hndle nm-hndle"><span><?php echo $title; ?></span></h3>
+            <div class="inside">
+        <?php
+    }
 
-	public function render_postbox_close() {
-		echo '</div>'; // end .inside
-		echo '</div>'; // end .postbox
-	}
+    public function render_postbox_close() {
+        echo '</div>'; // end .inside
+        echo '</div>'; // end .postbox
+    }
 
-	public function render_container_open($extra_class = '', $echo = TRUE) {
-		$output = '';
-		$output .= '<div class="metabox-holder ' . $extra_class . '">';
-		$output .= '  <div class="postbox-container nm-postbox-container">';
-		$output .= '    <div class="meta-box-sortables ui-sortable">';
+    public function render_container_open($extra_class = '', $echo = TRUE) {
+        $output = '';
+        $output .= '<div class="metabox-holder ' . $extra_class . '">';
+        $output .= '  <div class="postbox-container nm-postbox-container">';
+        $output .= '    <div class="meta-box-sortables ui-sortable">';
 
-		if ($echo) {
-			echo $output;
-		} else {
-			return $output;
-		}
-	}
+        if ($echo) {
+            echo $output;
+        } else {
+            return $output;
+        }
+    }
 
-	public function render_container_close($echo = TRUE) {
-		$output = '';
-		$output .= '</div>'; // end .ui-sortable
-		$output .= '</div>'; // end .nm-postbox-container
-		$output .= '</div>'; // end .metabox-holder
+    public function render_container_close($echo = TRUE) {
+        $output = '';
+        $output .= '</div>'; // end .ui-sortable
+        $output .= '</div>'; // end .nm-postbox-container
+        $output .= '</div>'; // end .metabox-holder
 
-		if ($echo) {
-			echo $output;
-		} else {
-			return $output;
-		}
-	}
+        if ($echo) {
+            echo $output;
+        } else {
+            return $output;
+        }
+    }
 
-	public function render_checkbox($name, $val_option, $key) {
-		$checked = '';
-		if ($val_option) {
-			if (isset($val_option[$key]) && $val_option[$key] == TRUE) {
-				$checked = 'checked';
-			}
-		}
-		echo '<input type="checkbox" name="' . $name .'" value="checked" ' . $checked . '/>';
+    public function render_checkbox($name, $val_option, $key) {
+        $checked = '';
+        if ($val_option) {
+            if (isset($val_option[$key]) && $val_option[$key] == TRUE) {
+                $checked = 'checked';
+            }
+        }
+        echo '<input type="checkbox" name="' . $name .'" value="checked" ' . $checked . '/>';
     }
     
     public function render_nm_logos() {

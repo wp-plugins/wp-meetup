@@ -10,10 +10,10 @@
 
 class Factory {
 
-	/**
-	 * @var WP_Meetup $core;
-	 */
-	var $core;
+    /**
+     * @var WP_Meetup $core;
+     */
+    var $core;
 
     public function __construct($core) {
         $this->core = $core;
@@ -57,11 +57,11 @@ class Factory {
     
     public function store_individual($event) {
         $time = $event->time + $event->utc_offset;
-        $event->time = substr($time, 0, -3);
+        $event->time = intval(substr($time, 0, -3));
         $event->utc_offset = 0;
         $data = array(
             'wpm_event_id' => $event->id,
-            'event_time' => substr($time, 0 , -3),
+            'event_time' => $event->time,
             'event_url' => $event->event_url,
             'group_id' => $event->group->id,
             'event' => serialize($event),
@@ -75,7 +75,8 @@ class Factory {
     }
 
     public function update_posts() {
-        $event_array = $this->core->events;
+        $event_array = $this->core->event_db->get();
+        if (!is_array($event_array)) {$event_array = array();}
         foreach ($event_array as $event) {
             $event_raw = $event->event;
             $event_raw = unserialize($event_raw);
@@ -108,24 +109,24 @@ class Factory {
     
     function build_meetup_backlink($event) {
         $event_raw = unserialize($event->event);
-		$event_link = $event->event_url;
-		$event_date = date('l, d M Y g:i',$event->event_time);
-		$event_suffix = date('H',$event->event_time);
-		if ($event_suffix >= 12) {
-			$event_suffix = ' PM';
-		}
-		else {
-			$event_suffix = ' AM';
-		}
-		$output = '';
-		$output .= '<div class="meetup-backlink">' . PHP_EOL;
-		$output .= '<div class="button-wrapper">' . PHP_EOL;
-		$output .= '<a href="' . $event_link  . '" class="button">' . __($this->core->options->get_option('link_name')) . '</a>' . PHP_EOL;
-		$output .= '</div>' . PHP_EOL;
-		$output .= '<div class="date-wrapper">' . PHP_EOL;
-		$output .= '<h3>Date</h3>' . PHP_EOL;
-		$output .= '<p>' . $event_date . $event_suffix . '</p>' . PHP_EOL;
-		$output .= '</div>' . PHP_EOL;
+        $event_link = $event->event_url;
+        $event_date = date('l, d M Y g:i',$event->event_time);
+        $event_suffix = date('H',$event->event_time);
+        if ($event_suffix >= 12) {
+            $event_suffix = ' PM';
+        }
+        else {
+            $event_suffix = ' AM';
+        }
+        $output = '';
+        $output .= '<div class="meetup-backlink">' . PHP_EOL;
+        $output .= '<div class="button-wrapper">' . PHP_EOL;
+        $output .= '<a href="' . $event_link  . '" class="button">' . __($this->core->options->get_option('link_name')) . '</a>' . PHP_EOL;
+        $output .= '</div>' . PHP_EOL;
+        $output .= '<div class="date-wrapper">' . PHP_EOL;
+        $output .= '<h3>Date</h3>' . PHP_EOL;
+        $output .= '<p>' . $event_date . $event_suffix . '</p>' . PHP_EOL;
+        $output .= '</div>' . PHP_EOL;
         if ($this->core->options->get_option('venue')) {
             if (isset($event_raw->venue)) {
                 $event_venue = $event_raw->venue;
@@ -145,8 +146,8 @@ class Factory {
             }
         }
         $output .= $this->core->return_nm_credit();
-		$output .= '</div>' . PHP_EOL;
+        $output .= '</div>' . PHP_EOL;
         
-		return $output; 
-	}
+        return $output; 
+    }
 }

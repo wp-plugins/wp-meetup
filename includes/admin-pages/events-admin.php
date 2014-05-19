@@ -71,7 +71,7 @@ class EventsAdmin extends WPMAdminPage{
     <div class="group<?php echo $event->group_id ?>"> </div>
 </td>
 <td>
-    <a href="<?php get_permalink($event->wp_post_id) ?>"><?php echo substr($event_raw->name , 0 , 20) ?></a>
+    <a href="<?php echo get_permalink($event->wp_post_id) ?>"><?php echo substr($event_raw->name , 0 , 20) ?></a>
 </td>
 <td>
     <?php echo date('Y-m-d g:iA', $event->event_time) ?>
