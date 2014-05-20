@@ -8,7 +8,7 @@
  *      - Initial Class Creation
  */
 
-class WPMOptions {
+class WPMeetupOptions {
     
     var $options_name;
     
@@ -22,7 +22,7 @@ class WPMOptions {
     
     /**
      *
-     * @var WP_Meetup 
+     * @var WPMeetup 
      */
     var $core;
     
@@ -31,7 +31,7 @@ class WPMOptions {
     
     /**
      * 
-     * @param WP_Meetup $core
+     * @param WPMeetup $core
      */
     public function __construct($core) {
         $this->core = $core;

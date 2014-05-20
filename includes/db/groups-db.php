@@ -8,7 +8,7 @@
  *      - Initial Class Creation
  */
 
-class GroupsDB extends NMDB {
+class WPMeetupGroupsDB extends NMDB {
 
     var $sqltable = 'meetup_groups';
 
@@ -24,15 +24,15 @@ class GroupsDB extends NMDB {
         global $wpdb;
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         $sql = "CREATE TABLE $this->sqltable (
-				 `id` int(11) NOT NULL AUTO_INCREMENT,
-				 `group_name` varchar(255) NOT NULL,
-				 `group_slug` varchar(255) NOT NULL,
-				 `group_id` varchar(255) NOT NULL,
-				 `color` varchar(255) NOT NULL,
-				PRIMARY KEY (id)
-				)
-				CHARACTER SET utf8
-				COLLATE utf8_general_ci;";
+                 `id` int(11) NOT NULL AUTO_INCREMENT,
+                 `group_name` varchar(255) NOT NULL,
+                 `group_slug` varchar(255) NOT NULL,
+                 `group_id` varchar(255) NOT NULL,
+                 `color` varchar(255) NOT NULL,
+                PRIMARY KEY (id)
+                )
+                CHARACTER SET utf8
+                COLLATE utf8_general_ci;";
         dbDelta($sql);
     }
 }

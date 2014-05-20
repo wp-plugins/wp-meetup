@@ -8,11 +8,11 @@
  *      - Initial Class Creation
  */
 
-class PostType extends NMCustomPost {
+class WPMeetupPostType extends NMCustomPost {
 
     /**
      *
-     * @var WP_Meetup
+     * @var WPMeetup
      */
     var $core;
     
@@ -24,13 +24,13 @@ class PostType extends NMCustomPost {
     
     /**
      *
-     * @var PostsDB
+     * @var WPMeetupPostsDB
      */
     var $post_db;
 
     /**
      * 
-     * @param WP_Meetup $core
+     * @param WPMeetup $core
      */
     public function __construct($core) {
         $this->core = $core;

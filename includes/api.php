@@ -10,19 +10,19 @@
  *      - Introduced the get_results() method
  */
 
-class API extends ApiInteraction {
+class WPMeetupAPI extends ApiInteraction {
     
     var $key;
     
     /**
      *
-     * @var WP_Meetup
+     * @var WPMeetup
      */
     var $core;
     
     /**
      * 
-     * @param WP_Meetup $core
+     * @param WPMeetup $core
      */
     public function __construct($core) {
         $this->core = $core;
@@ -116,7 +116,5 @@ class API extends ApiInteraction {
         foreach ($parameters as $key=>$value) {
             $url .= '&' . $key . '=' . $value;
         }
-    }
-    
-    
+    }   
 }

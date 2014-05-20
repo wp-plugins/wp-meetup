@@ -21,7 +21,7 @@ class NMWidget extends WP_Widget {
             'classname' => __($this->classname),
             'description' => __($this->description),
         );
-		parent::__construct($this->slug, __($this->name), $widget_ops);
+        parent::__construct($this->slug, __($this->name), $widget_ops);
     }
 
     /**

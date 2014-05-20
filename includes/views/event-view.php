@@ -1,6 +1,6 @@
 <?php
 
-class EventView {
+class WPMeetupEventView {
     
     /**
      * Takes an single event and uses the data to create the display for the event
@@ -19,7 +19,7 @@ class EventView {
         }
         $output = '';
         if ($widget) {
-            $output .= '<a href="' . $url . '" title="' . EventView::edit_name($event_raw->name) . '">';
+            $output .= '<a href="' . $url . '" title="' . WPMeetupEventView::edit_name($event_raw->name) . '">';
             $output .= '<div class="wpm-single group' . $event->group_id . '">';
             //$output .= date( 'g:i A',$event->event_time);
             $output .= '<br />';
@@ -28,7 +28,7 @@ class EventView {
         } else {
             $output .= '<a href="' . $url . '">';
             $output .= '<div class="wpm-single group' . $event->group_id . '">';
-            $output .= date( 'g:i A',$event->event_time) . ' - ' . EventView::edit_name($event_raw->name);
+            $output .= date( 'g:i A',$event->event_time) . ' - ' . WPMeetupEventView::edit_name($event_raw->name);
             $output .= '</div></a>';
         }
         return $output;
@@ -108,4 +108,3 @@ class EventView {
         return $new_name;
     }
 }
-

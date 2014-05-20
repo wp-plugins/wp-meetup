@@ -12,11 +12,11 @@
  *      - Added Extention of WPMAdminPage
  */
 
-class MainAdmin  extends WPMAdminPage{
+class WPMeetupMainAdmin  extends WPMeetupAdminPage{
 
     /**
      *
-     * @var WP_Meetup 
+     * @var WPMeetup 
      */
     var $core;
 

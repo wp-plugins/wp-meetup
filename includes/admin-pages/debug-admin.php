@@ -10,11 +10,11 @@
  *      - Added Extention of WPMAdminPage
  */
 
-class DebugAdmin extends WPMAdminPage{
+class WPMeetupDebugAdmin extends WPMeetupAdminPage{
     
     /**
      *
-     * @var WP_Meetup 
+     * @var WPMeetup 
      */
     var $core;
 

@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog to be displayed in a calendar, list, or various widgets. 
-Version: 2.2.1
+Version: 2.2.3
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -100,47 +100,47 @@ require_once('backward-capatability.php');
 /**
  * Class WP_Meetup
  */
-class WP_Meetup {
+class WPMeetup {
 
     /**
      *
-     * @var WPMOptions 
+     * @var WPMeetupOptions 
      */
     var $options;
     
     /**
      *
-     * @var PostType 
+     * @var WPMeetupPostType 
      */
     var $pt;
     
     /**
      *
-     * @var EventsDB
+     * @var WPMeetupEventsDB
      */
     var $event_db;
 
 
     /**
-     * @var GroupsDB;
+     * @var WPMeetupGroupsDB;
      */
     var $group_db;
     
     /**
      *
-     * @var PostsDB
+     * @var WPMeetupPostsDB
      */
     var $post_db;
     
     /**
      *
-     * @var WPMAdmin
+     * @var WPMeetupAdmin
      */
     var $admin;
     
     /**
      *
-     * @var API 
+     * @var WPMeetupAPI 
      */
     var $api;
     
@@ -169,32 +169,32 @@ class WP_Meetup {
     
     /**
      *
-     * @var Trigger
+     * @var WPMeetupTrigger
      */
     var $trigger;
 
     public function __construct() {
         
         // Create - Update - Get options
-        $this->options = new WPMOptions($this);
+        $this->options = new WPMeetupOptions($this);
         $this->options->update_options();
         $this->post_type = $this->options->get_option('wpm_pt');
         
         // Create Database
-        $this->event_db = new EventsDB();
-        $this->group_db = new GroupsDB();
-        $this->post_db = new PostsDB();
+        $this->event_db = new WPMeetupEventsDB();
+        $this->group_db = new WPMeetupGroupsDB();
+        $this->post_db = new WPMeetupPostsDB();
         
-        $this->api = new API($this);
-        $this->pt = new PostType($this);
-        $this->factory = new Factory($this);
-        $this->trigger = new Trigger($this);
+        $this->api = new WPMeetupAPI($this);
+        $this->pt = new WPMeetupPostType($this);
+        $this->factory = new WPMeetupFactory($this);
+        $this->trigger = new WPMeetupTrigger($this);
                 
-        new BackCap($this);
+        new WPMeetupBackCap($this);
         
         // Execute Admin
         if (is_admin()) {
-            $this->admin = new WPMAdmin($this);
+            $this->admin = new WPMeetupAdmin($this);
         }
         
         if ($this->options->get_option('include_homepage')) {
@@ -242,7 +242,7 @@ class WP_Meetup {
             ?>
                 <div class="credit-line">
                     Supported By: 
-                    <a href="http://www.nuancedmedia.com">
+                    <a href="http://nuancedmedia.com">
                         <img alt="Nuanced Media" src="<?php echo plugins_url() ?>/wp-meetup/images/nuanced_media.png">
                     </a>
                 </div>
@@ -255,7 +255,7 @@ class WP_Meetup {
             $output = '';
             $output .= '<div class="credit-line">' . PHP_EOL;
             $output .= 'Supported By: ' . PHP_EOL;
-            $output .= '<a href="http://www.nuancedmedia.com">' . PHP_EOL;
+            $output .= '<a href="http://nuancedmedia.com">' . PHP_EOL;
             $output .= '<img alt="Nuanced Media" src="' . plugins_url() .  '/wp-meetup/images/nuanced_media.png" />' . PHP_EOL;
             $output .= '</a>' . PHP_EOL;
             $output .= '</div>' . PHP_EOL;
@@ -277,19 +277,19 @@ class WP_Meetup {
     } 
 
     public function shortcode_calendar($atts, $is_widget = FALSE) {
-        new Calendar($this, $atts, $is_widget);
+        new WPMeetupCalendar($this, $atts, $is_widget);
     }
 
     public function shortcode_list($atts, $is_widget = FALSE) {
-        new EventList($this, $atts, $is_widget);
+        new WPMeetupEventList($this, $atts, $is_widget);
     }
 
      public function register_calendar_widget() {
-        register_widget( 'CalendarWidget' );
+        register_widget( 'WPMeetupCalendarWidget' );
     }
 
     public function register_event_list_widget() {
-        register_widget( 'EventListWidget' );
+        register_widget( 'WPMeetupEventListWidget' );
     }
     
 }
@@ -297,6 +297,6 @@ class WP_Meetup {
 global $file;
 global $wp_meetup;
 $file = ABSPATH . 'wp-content/plugins/wp-meetup/wp-meetup.php';
-$wp_meetup = new WP_Meetup();
+$wp_meetup = new WPMeetup();
 
 

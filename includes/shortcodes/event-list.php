@@ -8,11 +8,11 @@
  *      - Initial Class Creation
  */
 
-class EventList {
+class WPMeetupEventList {
     
     /**
      *
-     * @var WP_Meetup 
+     * @var WPMeetup 
      */
     var $core;
     
@@ -30,7 +30,7 @@ class EventList {
     
     /**
      * 
-     * @param WP_Meetup $core
+     * @param WPMeetup $core
      * @param ARRAY $atts
      */
     public function __construct($core, $atts, $widget = FALSE) {
@@ -74,7 +74,7 @@ class EventList {
         // Check for a count limit, if no limit exists
         if (is_null($this->atts['max'])) {
             foreach ($use_events as $event) {
-                $output .= EventView::list_view($event);
+                $output .= WPMeetupEventView::list_view($event);
             }
         } 
         // Count limit exists, execute while loop
@@ -83,7 +83,7 @@ class EventList {
             $c = 0;
             while ($c <= $this->atts['max']) {
                 if (isset($use_events[$i])) {
-                    $output .= EventView::list_view($use_events[$i], $this->is_widget);
+                    $output .= WPMeetupEventView::list_view($use_events[$i], $this->is_widget);
                 }
                 $c++;
                 $i++;
@@ -110,15 +110,15 @@ class EventList {
         if ($this->core->options->get_option('link_color')) {
             ?>
 .wp-meetup-calendar a {
-    color: #ffffff;
+    color: #ffffff !important;
 }
 
 .wpm-legend-item {
-    color: #ffffff;
+    color: #ffffff !important;
 }
 
 .wpm-date-display {
-    color: #ffffff;
+    color: #ffffff !important;
 }
             <?php
         }

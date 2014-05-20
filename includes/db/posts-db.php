@@ -1,7 +1,7 @@
 <?php
 
 
-class PostsDB extends NMDB {
+class WPMeetupPostsDB extends NMDB {
 
     var $sqltable = 'posts';
 

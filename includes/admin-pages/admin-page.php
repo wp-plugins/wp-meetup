@@ -9,7 +9,7 @@
  *      - Initial Class Creation
  */
 
-class WPMAdminPage {
+class WPMeetupAdminPage {
     
     var $title = '';
     

@@ -8,10 +8,10 @@
  *      - Initial Class Creation
  */
 
-class Factory {
+class WPMeetupFactory {
 
     /**
-     * @var WP_Meetup $core;
+     * @var WPMeetup $core;
      */
     var $core;
 
@@ -57,7 +57,10 @@ class Factory {
     
     public function store_individual($event) {
         $time = $event->time + $event->utc_offset;
-        $event->time = intval(substr($time, 0, -3));
+        $event->time = $time/1000;
+        if (gettype($event->time) == 'double') {
+            $event->time = intval($event->time);
+        }
         $event->utc_offset = 0;
         $data = array(
             'wpm_event_id' => $event->id,

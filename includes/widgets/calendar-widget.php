@@ -8,7 +8,7 @@
  *      - Initial Class Creation
  */
 
-class CalendarWidget extends NMWidget {
+class WPMeetupCalendarWidget extends NMWidget {
 
     /**
      *
@@ -41,8 +41,8 @@ class CalendarWidget extends NMWidget {
         global $wp_meetup;
         extract($args);
         echo $before_widget;
-		if ( $instance['title'] ) {
-			echo $before_title . $instance['title'] . $after_title;
+        if ( $instance['title'] ) {
+            echo $before_title . $instance['title'] . $after_title;
         }
         $atts = array(
             'legend' => $instance['widget_legend'],
@@ -62,11 +62,11 @@ class CalendarWidget extends NMWidget {
         $title = strip_tags($instance['title']);
         $legend = strip_tags($instance['widget_legend']);
         ?>
-		<p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
-		<input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" /></p>
+        <p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
+        <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" /></p>
         
         <p><label for="<?php echo $this->get_field_id('widget_legend'); ?>"><?php _e('Display Legend:'); ?></label>
-		<input class="widefat" id="<?php echo $this->get_field_id('widget_legend'); ?>" name="<?php echo $this->get_field_name('widget_legend'); ?>" type="checkbox" value="checked"<?php echo esc_attr($legend); ?> /></p>
+        <input class="widefat" id="<?php echo $this->get_field_id('widget_legend'); ?>" name="<?php echo $this->get_field_name('widget_legend'); ?>" type="checkbox" value="checked"<?php echo esc_attr($legend); ?> /></p>
         <?php
     }
 
@@ -82,10 +82,10 @@ class CalendarWidget extends NMWidget {
      */
     public function update( $new_instance, $old_instance ) {
         $instance = $old_instance;
-		$instance['title'] = strip_tags($new_instance['title']);
+        $instance['title'] = strip_tags($new_instance['title']);
         $instance['widget_legend'] = strip_tags($new_instance['widget_legend']);
 
-		return $instance;
+        return $instance;
     }
 
 }

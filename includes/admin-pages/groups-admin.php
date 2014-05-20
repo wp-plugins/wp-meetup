@@ -10,17 +10,17 @@
  *      - Added Extention of WPMAdminPage
  */
 
-class GroupsAdmin extends WPMAdminPage{
+class WPMeetupGroupsAdmin extends WPMeetupAdminPage{
 
     /**
      *
-     * @var WP_Meetup 
+     * @var WPMeetup 
      */
     var $core;
     
     /**
      *
-     * @var API 
+     * @var WPMeetupAPI 
      */
     var $api;
     
@@ -32,7 +32,7 @@ class GroupsAdmin extends WPMAdminPage{
     
     /**
      * 
-     * @param WP_Meetup $core
+     * @param WPMeetup $core
      */
     public function __construct($core) {
         $this->core = $core;

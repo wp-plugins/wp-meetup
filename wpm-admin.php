@@ -8,11 +8,11 @@
  *      - Initial Class Creation
  */
 
-class WPMAdmin {
+class WPMeetupAdmin {
     
     /**
      *
-     * @var WP_Meetup
+     * @var WPMeetup
      */
     var $core;
     
@@ -24,7 +24,7 @@ class WPMAdmin {
 
     /**
      * 
-     * @param WP_Meetup $core
+     * @param WPMeetup $core
      */
     public function __construct($core) {
         $this->core = $core;
@@ -37,11 +37,11 @@ class WPMAdmin {
      * Creates each new admin page.
      */
     public function add_admin_pages() {
-        new MainAdmin($this->core);
-        new OptionsAdmin($this->core);
-        new GroupsAdmin($this->core);
-        new EventsAdmin($this->core);
-        new DebugAdmin($this->core);
+        new WPMeetupMainAdmin($this->core);
+        new WPMeetupOptionsAdmin($this->core);
+        new WPMeetupGroupsAdmin($this->core);
+        new WPMeetupEventsAdmin($this->core);
+        new WPMeetupDebugAdmin($this->core);
     }
     
     public function build_page_array() {
@@ -50,10 +50,10 @@ class WPMAdmin {
     
     public function load_settings_styles() {
         $pluginDirectory = trailingslashit(plugins_url(basename(dirname(__FILE__))));
-		wp_register_style('wpm-admin-styles', $pluginDirectory . 'css/admin-styles.css');
-		wp_enqueue_style('wpm-admin-styles');
+        wp_register_style('wpm-admin-styles', $pluginDirectory . 'css/admin-styles.css');
+        wp_enqueue_style('wpm-admin-styles');
         wp_register_script('wpm-admin-script', $pluginDirectory . 'js/coffee/nm-dashboard-script.js');
-		wp_enqueue_script('wpm-admin-script');
+        wp_enqueue_script('wpm-admin-script');
     }
     
 }

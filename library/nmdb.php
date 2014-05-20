@@ -103,22 +103,22 @@ class NMDB {
     function offset($offset) {
         $this->offset = ' OFFSET ' . $offset;
     }
-	
-	/**
-	 * Builds a query based on previous inputs and method calls and
-	 * retrieves and returns the data. If $var is TRUE, it will just get
-	 * a 'var' result. 
-	 * Otherwise:
-	 * If $id is not NULL or if $single is TRUE, then it will return a single
-	 * row. Otherwise, it will return an array of objects (representing each
-	 * row, of course.)
-	 * 
-	 * @global WPDB $wpdb
-	 * @param INT $id
-	 * @param BOOL $single
-	 * @param BOOL $var
-	 * @return MIXED either an array of objects, an object, or NULL
-	 */
+    
+    /**
+     * Builds a query based on previous inputs and method calls and
+     * retrieves and returns the data. If $var is TRUE, it will just get
+     * a 'var' result. 
+     * Otherwise:
+     * If $id is not NULL or if $single is TRUE, then it will return a single
+     * row. Otherwise, it will return an array of objects (representing each
+     * row, of course.)
+     * 
+     * @global WPDB $wpdb
+     * @param INT $id
+     * @param BOOL $single
+     * @param BOOL $var
+     * @return MIXED either an array of objects, an object, or NULL
+     */
     function get($id = NULL, $single = FALSE, $var = FALSE) {
         global $wpdb;
         $output = NULL;
@@ -133,8 +133,8 @@ class NMDB {
                 if ($single) {
                     $output = $wpdb->get_row($this->current_query);
                 } else {
-					$output = $wpdb->get_results($this->current_query);
-				}
+                    $output = $wpdb->get_results($this->current_query);
+                }
             } else {
                 $output = $wpdb->get_row($this->current_query);
             }
@@ -206,7 +206,7 @@ class NMDB {
      * Functions Added by Austin
      */
     
-    function delete_table() {
+    public function delete_table() {
         global $wpdb;
         $wpdb->query("DROP TABLE IF EXISTS $this->sqltable");
     }

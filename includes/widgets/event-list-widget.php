@@ -8,7 +8,7 @@
  *      - Initial Class Creation
  */
 
-class EventListWidget extends NMWidget {
+class WPMeetupEventListWidget extends NMWidget {
 
     var $slug = 'meetup_event_list';
     
@@ -36,8 +36,8 @@ class EventListWidget extends NMWidget {
         global $wp_meetup;
         extract($args);
         echo $before_widget;
-		if ( $instance['title'] ) {
-			echo $before_title . $instance['title'] . $after_title;
+        if ( $instance['title'] ) {
+            echo $before_title . $instance['title'] . $after_title;
         }
         $atts = array(
             'max' => $instance['max_events'],
@@ -55,14 +55,14 @@ class EventListWidget extends NMWidget {
      */
     public function form( $instance ) {
         $instance = wp_parse_args( (array) $instance, array( 'title' => '', 'max_events' => 3 ) );
-		$title = strip_tags($instance['title']);
+        $title = strip_tags($instance['title']);
         $max_events = strip_tags($instance['max_events']);
 ?>
-		<p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
-		<input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" /></p>
+        <p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
+        <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" /></p>
         
         <p><label for="<?php echo $this->get_field_id('max_events'); ?>"><?php _e('Maximun events shown:'); ?></label>
-		<input class="widefat" id="<?php echo $this->get_field_id('max_events'); ?>" name="<?php echo $this->get_field_name('max_events'); ?>" type="number" value="<?php echo esc_attr($max_events); ?>" /></p>
+        <input class="widefat" id="<?php echo $this->get_field_id('max_events'); ?>" name="<?php echo $this->get_field_name('max_events'); ?>" type="number" value="<?php echo esc_attr($max_events); ?>" /></p>
         <?php
     }
 
@@ -78,8 +78,8 @@ class EventListWidget extends NMWidget {
      */
     public function update( $new_instance, $old_instance ) {
         $instance = $old_instance;
-		$instance['title'] = strip_tags($new_instance['title']);
+        $instance['title'] = strip_tags($new_instance['title']);
         $instance['max_events'] = strip_tags($new_instance['max_events']);
-		return $instance;
+        return $instance;
     }
 }

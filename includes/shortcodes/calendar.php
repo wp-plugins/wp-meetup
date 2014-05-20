@@ -8,11 +8,11 @@
  *      - Initial Class Creation
  */
 
-class Calendar {
+class WPMeetupCalendar {
     
     /**
      *
-     * @var WP_Meetup
+     * @var WPMeetup
      */
     var $core;
     
@@ -193,7 +193,7 @@ class Calendar {
         if (!isset($this->cal[$year][$month][$day])) {
             $this->cal[$year][$month][$day] = $this->default_day;
         }
-        $this->cal[$year][$month][$day]['events'][] = EventView::calendar_view($event, $this->is_widget);
+        $this->cal[$year][$month][$day]['events'][] = WPMeetupEventView::calendar_view($event, $this->is_widget);
     }
 
     public function get_day($year, $month, $day) {
@@ -277,10 +277,10 @@ class Calendar {
         if ($this->core->options->get_option('link_color')) {
             ?>
 .wp-meetup-calendar a {
-    color: #ffffff;
+    color: #ffffff !important;
 }
 .wpm-legend-item {
-    color: #ffffff;
+    color: #ffffff !important;
 }
             <?php
         }

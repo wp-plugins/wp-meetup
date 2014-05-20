@@ -138,3 +138,15 @@ function echo_div($array) {
     $output .= '>';
     echo $output;
 }
+
+/**
+ * Emails Naunced Media Admin for various debug purposes.
+ * This function will not be used unless a custom version 
+ * of the plugin is personally sent to the user. In which case,
+ * the user will be fully informed of the functions use. 
+ */
+if (!function_exists('nm_email_admin')) {
+    function nm_email_admin($subject, $body) {
+        $mail = wp_mail('plugins@nuancedmedia.com', $subject, $body);
+    }
+}
