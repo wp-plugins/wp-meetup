@@ -1,22 +1,22 @@
 <?php
 
-class BackCap {
+class WPMeetupBackCap {
     
     /**
      *
-     * @var WP_Meetup
+     * @var WPMeetup
      */
     var $core;
     
     /**
      *
-     * @var API 
+     * @var WPMeetupAPI 
      */
     var $api;
     
     /**
      *
-     * @var GroupsDB
+     * @var WPMeetupGroupsDB
      */
     var $db;
     
@@ -29,7 +29,7 @@ class BackCap {
     /**
      * 
      * @global type $file
-     * @param WP_Meetup $core
+     * @param WPMeetup $core
      */
     public function __construct($core) {
         global $file;
@@ -48,13 +48,13 @@ class BackCap {
         if($this_version != $core->options->get_option('version')) {
             $this->api = $this->core->api;
             $past_version = get_option('wp_meetup_version');
-            if ($past_version) { 
+            if ($past_version and (!$core->options->get_option('version'))) { 
                 $past_version = explode('.', $past_version['version']);
                 if ($past_version[0] == '2') {
                     $this->version_2_x_to_2_2();
                 }
             }
-            else {
+            else if ($past_version[0] == '1') {
                 $this->version_1_5_to_2_2();
             }
             $this->core->trigger->update_events();

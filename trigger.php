@@ -8,7 +8,7 @@
  *      - Initial Class Creation
  */
 
-class Trigger {
+class WPMeetupTrigger {
     
     /**
      *
@@ -18,7 +18,7 @@ class Trigger {
     
     /**
      *
-     * @var WP_Meetup 
+     * @var WPMeetup 
      */
     var $core;
     
