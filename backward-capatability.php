@@ -38,12 +38,19 @@ class WPMeetupBackCap {
         $plugin_data = get_plugin_data( $file);
         $this_version = $plugin_data['Version'];
         $this_version_array = explode('.', $this_version);
-        if ($core->options->get_option('version') == '2.2.0') {
-            $update = array(
-                'queue_prompt' => time() + 259200,
-                'install_count' => 3,
-            );
-            $core->options->update_option($update);
+        if ($core->options->get_option('version')) {
+            $version = $core->options->get_option('version');
+            $version = explode('.', $version);
+            if ($version[0] == '2' && $version[1] >= 2 && $version[2] >= 3) {
+                return;
+            }
+            if ($version[0] == '2' && $version[1] >= 2) {
+                $update = array(
+                    'queue_prompt' => time() + 259200,
+                    'install_count' => 3,
+                );
+                $core->options->update_option($update);
+            }
         }
         if($this_version != $core->options->get_option('version')) {
             $this->api = $this->core->api;

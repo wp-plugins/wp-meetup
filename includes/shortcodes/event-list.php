@@ -45,7 +45,6 @@ class WPMeetupEventList {
         } else {
             $this->atts = $defaults;
         }
-        $this->execute();
     }
     
     public function execute() {
@@ -92,9 +91,9 @@ class WPMeetupEventList {
         if ($this->is_widget) {
             $output .= '</div>';
         }
-        echo $output;
         $this->group_color_styles();
-        $this->core->render_nm_credit();
+        $output .= $this->core->return_nm_credit();
+        return $output;
     }
     
     public function group_color_styles() {

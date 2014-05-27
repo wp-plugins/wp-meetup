@@ -68,15 +68,15 @@ class WPMeetupCalendar {
         if (!$this->is_widget) {
             $this->atts['legend'] = $this->core->options->get_option('legend');
         }
-        $this->execute();
     }
     
     public function execute() {
-        ?>
-        <div class='wp-meetup-wrapper <?php echo $this->atts['width'] ?>'>
-        <?php
+        $output = '';
+
+        $output .= '<div class="wp-meetup-wrapper' . $this->atts['width'] . '">';
+            
         if ($this->atts['legend']) {
-            $this->render_legend();
+            $output .= $this->return_legend();
         }
         $this->sort_events();
         $localtime = current_time('mysql');
@@ -97,13 +97,15 @@ class WPMeetupCalendar {
                 $month = $month - 12;
                 $year = $year + 1;
             }
-            $this->render_month($month, $year);
+            $output .= $this->render_month($month, $year);
             $queue_front = $queue_front + 1;
         }
-        $this->core->render_nm_credit();
-        ?>
-        </div> <!-- Close .wp-meetup-wrapper -->
-        <?php
+        $output .= $this->core->return_nm_credit();
+
+        $output .= '</div>'; // Close .wp-meetup-wrapper
+        $this->group_color_styles();
+        return $output;
+
     }
     
     public function build_skeleton($month, $year) {
@@ -208,10 +210,61 @@ class WPMeetupCalendar {
     
     public function render_month($month, $year) {
         $skeleton = $this->build_skeleton($month, $year);
-        $this->build_calendar($skeleton, $month, $year);
+        return $this->build_calendar($skeleton, $month, $year);
     }
     
     public function build_calendar($skeleton, $month, $year) {
+        $date = strtotime($year . '-' . $month);
+        $date = date("F Y",$date);
+
+        $output = '';
+
+        $output .= '<div class="wp-meetup-calendar ';
+        $output .= $this->atts['width'];
+        $output .= '">';
+        $output .= '<h4 class="wpm-current-date-display">';
+        $output .= $date;
+        $output .= '</h4>';
+        $output .= '<table class="table calendar-month heading-date">';
+        $output .= '<thead>';
+        $output .= '<tr>';
+        $output .= '<th>Sun</th>';
+        $output .= '<th>Mon</th>';
+        $output .= '<th>Tue</th>';
+        $output .= '<th>Wed</th>';
+        $output .= '<th>Thu</th>';
+        $output .= '<th>Fri</th>';
+        $output .= '<th>Sat</th>';
+        $output .= '</tr>';
+        $output .= '</thead>';
+        $output .= '<tbody>';
+
+        foreach ($skeleton as $week) {
+            $output .= '<tr class="calendar-week">';
+            foreach ($week as $day) {
+                $output .= '<td class="wpm-table-data wpm-day">';
+                $day_data = $this->get_day($year, $month, $day);
+                $output .='<div class="wpm-calendar-entry wpm-date">';
+                $output .='<div class="wpm-number-display">';
+                if (!($day == '0')) {
+                    $output .= $day;
+                } 
+                $output .= '</div>';
+                $output .= '<div class="wpm-event-list">';
+                foreach ($day_data['events'] as $event) { 
+                    $output .= $event;
+                } 
+                $output .= '</div>';
+                $output .= '</div>';
+            }
+        }
+        $output .= '</tbody>';
+        $output .= '</table>';
+        $output .= '</div>';
+        return $output;
+    }
+    
+    public function render_calendar($skeleton, $month, $year) {
         $date = strtotime($year . '-' . $month);
         $date = date("F Y",$date);
         ?>
@@ -328,5 +381,67 @@ class WPMeetupCalendar {
             <div class="clear"></div>
             <?php
         }
+    }
+    
+    private function return_legend() {
+        $output ='';
+
+        if ($this->is_widget) {
+
+            $output .= '<div class="wpm-calendar-legend">';
+            $output .= '<div class="wpm-legend-title wpm-widget-legend-title wpm-legend-item"> ';
+            $output .= __($this->core->options->get_option('legend_title'));
+            $output .= '</div>';
+            $output .= '<div class="clear"></div>';
+
+
+            foreach ($this->core->groups as $group) {
+
+                $output .= '<div class="wpm-legend-item group';
+                $output .= $group->group_id;
+                $output .= '" title="';
+                $output .= __($group->group_name) ;
+                $output .= '"><br /></div>';
+            }
+
+            $output .= '</div>';
+            $output .= '<div class="clear"></div>';
+
+        }
+
+        else {
+
+            $output .= '<div class="wpm-calendar-legend">';
+            $output .= '<div class="wpm-legend-item wpm-legend-title">';
+            $output .=  __($this->core->options->get_option('legend_title'));
+            $output .= '</div>';
+            $output .= '<div class="clear"></div>';
+
+
+            $count = 0;
+            foreach ($this->core->groups as $group) {
+
+                $output .= '<div class="wpm-legend-item group';
+                $output .= $group->group_id;
+                $output .= '">';
+                $output .= __($group->group_name);
+                $output .= '</div>';
+
+
+                $count = $count + 1;
+                if ($count >= 3) {
+                    $count = 0;
+
+                    $output .= '<div class="clear"></div>';
+
+
+                }
+            }
+
+            $output .= '</div>';
+            $output .= '<div class="clear"></div>';
+
+        }
+        return $output;
     }
 }

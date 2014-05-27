@@ -116,5 +116,7 @@ class WPMeetupAPI extends ApiInteraction {
         foreach ($parameters as $key=>$value) {
             $url .= '&' . $key . '=' . $value;
         }
-    }   
+    }
+    
+    
 }

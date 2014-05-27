@@ -58,25 +58,25 @@
 /* .wpm-date .wpm-event-list.wpm-collapsed { display: none; }
 .wpm-date .wpm-event-list.wpm-expanded { display: inherit; }
 .wpm-date {
-	.wpm-event-list { 
-		padding:5px;
-		margin:0px 0px 5px 0px;
-		z-index: 1000;
-		a:hover{
-			font-size:14px;
-		}
-		a{
-			.wpm-single{
-				font-size: 10px;
-				padding:10px;
-				margin: 5px 0px 3px;
-				border-radius: 10px;
-			}
-			.hover{
-				border-radius: 100% !important;
-			}
-		}
-	}
+  .wpm-event-list { 
+    padding:5px;
+    margin:0px 0px 5px 0px;
+    z-index: 1000;
+    a:hover{
+      font-size:14px;
+    }
+    a{
+      .wpm-single{
+        font-size: 10px;
+        padding:10px;
+        margin: 5px 0px 3px;
+        border-radius: 10px;
+      }
+      .hover{
+        border-radius: 100% !important;
+      }
+    }
+  }
 } */
 .credit-line p {
   text-align: right; }
@@ -113,12 +113,12 @@
     text-align: center;
     margin: auto;
     /* .credit-line {
-    	width: 100%;
-    	p {
-    		text-align: center;
-    		//width: 100%;
-    		margin-top: 20px;
-    	}
+      width: 100%;
+      p {
+        text-align: center;
+        //width: 100%;
+        margin-top: 20px;
+      }
     } */ }
     .meetup-backlink .button-wrapper .button {
       text-align: center;

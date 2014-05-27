@@ -277,11 +277,23 @@ class WPMeetup {
     } 
 
     public function shortcode_calendar($atts, $is_widget = FALSE) {
-        new WPMeetupCalendar($this, $atts, $is_widget);
+        $calendar = new WPMeetupCalendar($this, $atts, $is_widget);
+        if ($is_widget) {
+            echo $calendar->execute();
+        }
+        else {
+            return $calendar->execute();
+        }
     }
 
     public function shortcode_list($atts, $is_widget = FALSE) {
-        new WPMeetupEventList($this, $atts, $is_widget);
+        $event_list = new WPMeetupEventList($this, $atts, $is_widget);
+        if ($is_widget) {
+            echo $event_list->execute();
+        }
+        else {
+            return $event_list->execute();
+        }
     }
 
      public function register_calendar_widget() {
