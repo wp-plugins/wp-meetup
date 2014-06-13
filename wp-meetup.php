@@ -3,15 +3,15 @@
 /*
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
-Description: Pulls events from Meetup.com onto your blog to be displayed in a calendar, list, or various widgets. 
-Version: 2.2.5
+Description: Pulls events from Meetup.com onto your blog to be displayed in a calendar, list, or various widgets.
+Version: 2.2.6
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
 Copyright 2013  Nuanced Media
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License, version 2, as 
+it under the terms of the GNU General Public License, version 2, as
 published by the Free Software Foundation.
 
 This program is distributed in the hope that it will be useful,
@@ -84,7 +84,7 @@ require_once('includes/widgets/calendar-widget.php');
 require_once('includes/widgets/event-list-widget.php');
 
 /**
- * Require Views 
+ * Require Views
  */
 require_once('includes/views/event-view.php');
 
@@ -104,16 +104,16 @@ class WPMeetup {
 
     /**
      *
-     * @var WPMeetupOptions 
+     * @var WPMeetupOptions
      */
     var $options;
-    
+
     /**
      *
-     * @var WPMeetupPostType 
+     * @var WPMeetupPostType
      */
     var $pt;
-    
+
     /**
      *
      * @var WPMeetupEventsDB
@@ -125,48 +125,48 @@ class WPMeetup {
      * @var WPMeetupGroupsDB;
      */
     var $group_db;
-    
+
     /**
      *
      * @var WPMeetupPostsDB
      */
     var $post_db;
-    
+
     /**
      *
      * @var WPMeetupAdmin
      */
     var $admin;
-    
+
     /**
      *
-     * @var WPMeetupAPI 
+     * @var WPMeetupAPI
      */
     var $api;
-    
+
     /**
      *
-     * @var STRING 
+     * @var STRING
      */
     var $post_type;
-    
+
     /**
      *  @var STRING
      */
     var $options_name = 'wp_meetup_options';
-    
+
     /**
      *
-     * @var ARRAY 
+     * @var ARRAY
      */
     var $events;
-    
+
     /**
      *
      * @var ARRAY
      */
     var $groups;
-    
+
     /**
      *
      * @var WPMeetupTrigger
@@ -174,33 +174,33 @@ class WPMeetup {
     var $trigger;
 
     public function __construct() {
-        
+
         // Create - Update - Get options
         $this->options = new WPMeetupOptions($this);
         $this->options->update_options();
         $this->post_type = $this->options->get_option('wpm_pt');
-        
+
         // Create Database
         $this->event_db = new WPMeetupEventsDB();
         $this->group_db = new WPMeetupGroupsDB();
         $this->post_db = new WPMeetupPostsDB();
-        
+
         $this->api = new WPMeetupAPI($this);
         $this->pt = new WPMeetupPostType($this);
         $this->factory = new WPMeetupFactory($this);
         $this->trigger = new WPMeetupTrigger($this);
-                
+
         new WPMeetupBackCap($this);
-        
+
         // Execute Admin
         if (is_admin()) {
             $this->admin = new WPMeetupAdmin($this);
         }
-        
+
         if ($this->options->get_option('include_homepage')) {
             add_filter( 'pre_get_posts', array(&$this, 'include_events_in_loop') );
         }
-        
+
         add_action('init', array(&$this, 'init'));
         add_filter('plugin_action_links_' . plugin_basename(__FILE__), array(&$this, 'add_plugin_settings_link') );
 
@@ -215,33 +215,33 @@ class WPMeetup {
         // Widgets
         add_action( 'widgets_init', array(&$this, 'register_calendar_widget') );
         add_action( 'widgets_init', array(&$this, 'register_event_list_widget') );
-        
+
         // Load CSS
         add_action('wp_enqueue_scripts', array(&$this, 'load_styles'), 100);
-        
+
 
     }
-    
+
     public function init() {
         // Retrieve events from DB
         $this->event_db->order_by('event_time');
         $this->events = $this->event_db->get();
         $this->groups = $this->group_db->get();
-        
+
     }
-    
+
     public function load_styles() {
         $pluginDirectory = trailingslashit(plugins_url(basename(dirname(__FILE__))));
         wp_register_style('wpm-styles', $pluginDirectory . 'css/wp-meetup.css');
         wp_enqueue_style('wpm-styles');
     }
-    
+
     public function render_nm_credit() {
         $support = $this->options->get_option('support');
         if ($support) {
             ?>
                 <div class="credit-line">
-                    Supported By: 
+                    Supported By:
                     <a href="http://nuancedmedia.com">
                         <img alt="Nuanced Media" src="<?php echo plugins_url() ?>/wp-meetup/images/nuanced_media.png">
                     </a>
@@ -262,19 +262,19 @@ class WPMeetup {
             return $output;
         }
     }
-    
+
     public function include_events_in_loop($query) {
         if (is_home() && $query->is_main_query()) {
             $query->set( 'post_type', array( 'post', $this->options->get_option('wpm_pt')) );
         }
         return $query;
     }
-    
+
     public function add_plugin_settings_link($links) {
         $settings_link = '<a href="' . admin_url() . 'admin.php?page=wp_meetup_settings">' . __('Settings') . '</a>';
         array_unshift($links, $settings_link);
         return $links;
-    } 
+    }
 
     public function shortcode_calendar($atts, $is_widget = FALSE) {
         $calendar = new WPMeetupCalendar($this, $atts, $is_widget);
@@ -303,12 +303,10 @@ class WPMeetup {
     public function register_event_list_widget() {
         register_widget( 'WPMeetupEventListWidget' );
     }
-    
+
 }
 
 global $file;
 global $wp_meetup;
 $file = ABSPATH . 'wp-content/plugins/wp-meetup/wp-meetup.php';
 $wp_meetup = new WPMeetup();
-
-

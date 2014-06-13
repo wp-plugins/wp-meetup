@@ -9,42 +9,42 @@
  */
 
 class WPMeetupCalendar {
-    
+
     /**
      *
      * @var WPMeetup
      */
     var $core;
-    
+
     /**
      *
      * @var ARRAY
      */
     var $atts;
-    
+
     /**
      *
      * @var ARRAY
      */
     var $cal;
-    
+
     /**
      * @var ARRAY
      */
     var $default_day = array('events' => array());
-    
+
     /**
      *
      * @var ARRAY
      */
     var $use_events = array();
-    
+
     /**
-     * Since this is used for both the shortcode as the widget, this differentiates the uses. 
+     * Since this is used for both the shortcode as the widget, this differentiates the uses.
      * @var BOOL
      */
     var $is_widget;
-    
+
     public function __construct($core, $atts, $widget = false) {
         $this->core = $core;
         $this->is_widget = $widget;
@@ -64,17 +64,17 @@ class WPMeetupCalendar {
         else {
             $this->atts = $defaults;
         }
-        
+
         if (!$this->is_widget) {
             $this->atts['legend'] = $this->core->options->get_option('legend');
         }
     }
-    
+
     public function execute() {
         $output = '';
 
         $output .= '<div class="wp-meetup-wrapper' . $this->atts['width'] . '">';
-            
+
         if ($this->atts['legend']) {
             $output .= $this->return_legend();
         }
@@ -107,7 +107,7 @@ class WPMeetupCalendar {
         return $output;
 
     }
-    
+
     public function build_skeleton($month, $year) {
         // Calendar display
         $skeleton = array();
@@ -133,7 +133,7 @@ class WPMeetupCalendar {
         }
         return $skeleton;
     }
-    
+
     public function sort_events() {
         $this->filter_groups();
         foreach ($this->use_events as $event) {
@@ -144,7 +144,7 @@ class WPMeetupCalendar {
             $this->store_event($year, $month, $day, $event);
         }
     }
-    
+
     private function filter_groups() {
         $group = $this->atts['group'];
         $id = NULL;
@@ -184,7 +184,7 @@ class WPMeetupCalendar {
             $this->use_events = $this->core->events;
         }
     }
-    
+
     private function store_event($year, $month, $day, $event) {
         if (!isset($this->cal[$year])) {
             $this->cal[$year] = array();
@@ -199,7 +199,7 @@ class WPMeetupCalendar {
     }
 
     public function get_day($year, $month, $day) {
-        
+
         if (isset($this->cal[$year]) && isset($this->cal[$year][$month]) && isset($this->cal[$year][$month][$day])) {
             return $this->cal[$year][$month][$day];
         }
@@ -207,12 +207,12 @@ class WPMeetupCalendar {
             return $this->default_day;
         }
     }
-    
+
     public function render_month($month, $year) {
         $skeleton = $this->build_skeleton($month, $year);
         return $this->build_calendar($skeleton, $month, $year);
     }
-    
+
     public function build_calendar($skeleton, $month, $year) {
         $date = strtotime($year . '-' . $month);
         $date = date("F Y",$date);
@@ -248,22 +248,24 @@ class WPMeetupCalendar {
                 $output .='<div class="wpm-number-display">';
                 if (!($day == '0')) {
                     $output .= $day;
-                } 
+                }
                 $output .= '</div>';
                 $output .= '<div class="wpm-event-list">';
-                foreach ($day_data['events'] as $event) { 
+                foreach ($day_data['events'] as $event) {
                     $output .= $event;
-                } 
+                }
                 $output .= '</div>';
                 $output .= '</div>';
+                $output .= '</td>';
             }
+            $output .= '</tr>';
         }
         $output .= '</tbody>';
         $output .= '</table>';
         $output .= '</div>';
         return $output;
     }
-    
+
     public function render_calendar($skeleton, $month, $year) {
         $date = strtotime($year . '-' . $month);
         $date = date("F Y",$date);
@@ -291,7 +293,7 @@ class WPMeetupCalendar {
                 <tr class="calendar-week">
                 <?php
                 foreach ($week as $day) {
-                    ?> 
+                    ?>
                     <td class="wpm-table-data wpm-day">
                     <?php
 
@@ -305,8 +307,12 @@ class WPMeetupCalendar {
                             <?php foreach ($day_data['events'] as $event) { echo $event;} ?>
                             </div>
                         </div>
+                    </td>
                     <?php
                 }
+                ?>
+                </tr>
+                <?php
             }
             ?>
         </tbody>
@@ -314,11 +320,11 @@ class WPMeetupCalendar {
 </div>
         <?php
         $this->group_color_styles();
-        
+
     }
-    
+
     private function group_color_styles() {
-        
+
         ?> <style> <?php
         foreach ($this->core->groups as $group) {
             ?>
@@ -339,7 +345,7 @@ class WPMeetupCalendar {
         }
         ?> </style> <?php
     }
-    
+
     private function render_legend() {
         if ($this->is_widget) {
             ?>
@@ -382,7 +388,7 @@ class WPMeetupCalendar {
             <?php
         }
     }
-    
+
     private function return_legend() {
         $output ='';
 

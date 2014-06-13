@@ -4,7 +4,7 @@ Donate link: http://nuancedmedia.com/wordpress-meetup-plugin/
 Tags: meetup,meetup.com
 Requires at least: 3.7
 Tested up to: 3.9.1
-Stable tag: 2.2.5
+Stable tag: 2.2.6
 
 WP Meetup fetches event information from Meetup.com and creates posts for each event.
 
@@ -27,7 +27,7 @@ It has never been so easy to aggregate and display events.
 
 For more information, visit the plugin homepage at [Nuanced Media](http://nuancedmedia.com/wordpress-meetup-plugin/).
 
-About Nuanced Media: 
+About Nuanced Media:
 Nuanced Media specialized in [Web Design](http://nuancedmedia.com/tucson-website-design/), [Marketing](http://nuancedmedia.com/internet-marketing-tucson-az/) & [Brand](http://nuancedmedia.com/brand-tucson-az/) development. Nuanced takes pride in our hard work and dedication to drive more consumers towards client webpage. Through social media marketing, search engine optimization, and personalized web design the Nuanced Team ensures professional products.
 
 == Installation ==
@@ -37,7 +37,7 @@ Nuanced Media specialized in [Web Design](http://nuancedmedia.com/tucson-website
 3. Visit the options page located at Settings -> WP Meetup and follow the instructions.
 4. To include the event calendar on a page, create a new page and in the content editor, enter `[wp-meetup-calendar]` where you want the calendar to appear on the page.
 5. To include a variable number of months on the event calender, use shortcode, e.g. `[wp-meetup-calendar number_of_months='4']` by default the calender displays two months (the current, and the next).
-6. Starting with version 1.5.0, you now have the ability to show any number of previous and future events! Try, for example, [wp-meetup-calendar start_month=-2 end_month=2]. This will show a total of 4 months (2 previous months, and the next 2 months, all relative to the current month). Play around with it, it's great to be able to have this variable calendar showing! 
+6. Starting with version 1.5.0, you now have the ability to show any number of previous and future events! Try, for example, [wp-meetup-calendar start_month=-2 end_month=2]. This will show a total of 4 months (2 previous months, and the next 2 months, all relative to the current month). Play around with it, it's great to be able to have this variable calendar showing!
 
 Note: With version 2.0.0, shortcodes where added, e.g. `[meetup-calendar]` by default displays only the current month. The ability to display multiple months still exists, e.g. `[meetup-calendar past=1 future=2]` will display 4 months (1 previous month, the current month, and the next 2 months).
 
@@ -51,40 +51,45 @@ Note: With version 2.0.0, shortcodes where added, e.g. `[meetup-calendar]` by de
 
 == Changelog ==
 
+= 2.2.6 =
+* Correcting html output mistakes.
+* Editing support message.
+
 = 2.2.5 =
-* Takes advantage of an indirect method of displaying the calendar.
-* Removing a mail function that isn't used.
+* Changing the output of calendars from a direct to a more indirect rendering.
 
 = 2.2.4 =
 * Updating a crucial file forgotten in 2.2.3.
+* Takes advantage of an indirect method of displaying the calendar.
+* Removing a mail function that isn't used.
 
 = 2.2.3 =
 * Further editing of event times
 * Renaming of classes to avoid conflicts with other plugins.
-* Other Hotfixes. 
+* Other Hotfixes.
 
 = 2.2.2 =
 * Adding important tags to CSS for white link option.
 
 = 2.2.1 =
-* Hotfixes: Forcing int type on event times for 32-bit servers. 
+* Hotfixes: Forcing int type on event times for 32-bit servers.
 
 = 2.2.0 =
 * Major rewrite.
-* Added event list shortcode. 
+* Added event list shortcode.
 * Changed execution of widgets as to be more true to WordPress's intentions.
 * Added widget usage and widget options.
-* Included legend to calendar widget. 
+* Included legend to calendar widget.
 * Added group specification on event list widget in addition to the color of the day.
 * Added the use of a group table in the database for better performance.
 * Abstracted out much of the plugin allowing for future changes to be easier to execute.
 * Added new dashboard for visual appeal and functionality.
-* Major fix: Correcting the handling of groups who currently have no events planned. 
-* Now displays group name in calendar legend instead of group slug. 
+* Major fix: Correcting the handling of groups who currently have no events planned.
+* Now displays group name in calendar legend instead of group slug.
 * Now a single group can be displayed by each calendar shortcode.
 
 = 2.1.11 =
-* Added the widget title to the event list widget. 
+* Added the widget title to the event list widget.
 
 = 2.1.10 =
 * Correcting the handling of the event times, taking into consideration the possibilty of float variables.
@@ -95,16 +100,16 @@ Note: With version 2.0.0, shortcodes where added, e.g. `[meetup-calendar]` by de
 
 = 2.1.8 =
 * Fixes a mistake that encased widgets in heading tags.
-* Edits to the handling of data, specifically event times.  
+* Edits to the handling of data, specifically event times.
 
 = 2.1.7 =
-* Bug fix. 
+* Bug fix.
 
 = 2.1.6 =
-* Hotfix, correcting bug previous version. 
+* Hotfix, correcting bug previous version.
 
 = 2.1.5 =
-* Added an option to display events on homepage. 
+* Added an option to display events on homepage.
 * Fixes bug so that events deleted on Meetup.com no longer display on calendar.
 * Bug fixes and tweaks.
 
@@ -112,8 +117,8 @@ Note: With version 2.0.0, shortcodes where added, e.g. `[meetup-calendar]` by de
 * Minor Hotfix.
 
 = 2.1.3 =
-* Changed handling of version control. 
-* Bug fixes and tweaks. 
+* Changed handling of version control.
+* Bug fixes and tweaks.
 
 = 2.1.2 =
 * Bug fixes and tweaks.
@@ -131,13 +136,13 @@ Note: With version 2.0.0, shortcodes where added, e.g. `[meetup-calendar]` by de
 * Adding image.
 
 = 2.0.5 =
-* Hotfixes, such as editing date comparison and text colors. 
+* Hotfixes, such as editing date comparison and text colors.
 
 = 2.0.4 =
 * Added the "Events" submenu.
 * Included the ability to alter API key after initial upload.
 * Hotfixes, such as the resetting of permalinks and changing of custom post type name.
-* Bug fixes and tweaks. 
+* Bug fixes and tweaks.
 
 = 2.0.3 =
 * Hotfixes, such as editing the handling or group names.

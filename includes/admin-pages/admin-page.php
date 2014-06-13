@@ -10,24 +10,21 @@
  */
 
 class WPMeetupAdminPage {
-    
+
     var $title = '';
-    
+
      public function create_page() {
         if (!current_user_can('manage_options'))  {
                 wp_die( __('You do not have sufficient permissions to access this page.') );
         }
         $key = $this->core->options->get_option('key');
-        if (empty($key)) {   
+        if (empty($key)) {
                 // if there is no access token set, then this is run, requesting information required to generate accesss token.
                 $this->request_apikey();
                 echo '<div class="error">No API key stored.</div>';
         }
         if (!empty($key)) {
             $this->render_header($this->title);
-            if (intval($this->core->options->get_option('queue_prompt')) < time()) {
-                $this->prompt_support();
-            }
             $this->render_tabs();
             $this->core->options->update_messages();
             $this->render_container_open('three-fifths');
@@ -38,7 +35,7 @@ class WPMeetupAdminPage {
             $this->render_container_close();
         }
     }
-    
+
     public function request_apikey() {
 
         ?>
@@ -64,11 +61,11 @@ class WPMeetupAdminPage {
         </form>
         <?php
     }
-    
+
     public function display_option($array) {
-        
+
     }
-    
+
     /**
      * Echoes the tabs at the top of each admin page
      */
@@ -82,7 +79,7 @@ class WPMeetupAdminPage {
             'debug' => 'Debug Information',
         );
         $output = '<div class="tabs-container">';
-        
+
         foreach ($page_array as $key=>$value) {
             $output .= '<div class="tab">' . '<a href="'
                     . admin_url('admin.php?page=wp_meetup_' . $key)
@@ -91,12 +88,12 @@ class WPMeetupAdminPage {
                     . '</a>' . '</div>';
         }
         $output .= '</div>';
-        
+
         echo $output;
-        
+
     }
-   
-    
+
+
     /**
      * Echoes the admin header
      */
@@ -105,9 +102,9 @@ class WPMeetupAdminPage {
         $output .= '<a href="http://www.nuancedmedia.com" title="Nuanced Media"><img src="'. plugins_url() . '/wp-meetup/images/meetup_logo.png" width="106" height="59"/></a>';
         $output .= '<h2>WP Meetup Admin</h2>';
         $output .= '</div>';
-        echo $output; 
+        echo $output;
     }
-    
+
     function insert_review_us() {
         ?>
             <div class="review-us">
@@ -115,10 +112,10 @@ class WPMeetupAdminPage {
             </div>
         <?php
     }
-    
+
     function insert_mailing_list() {
         ?>
-        <div class="mailing-list">  
+        <div class="mailing-list">
         <p>Stay updated on new releases and future features for the WP Meetup Plugin by joining the email list below.</p>
         <div class="meetup-mailing-list-form">
                 <script>
@@ -153,7 +150,7 @@ class WPMeetupAdminPage {
         </div>
         <?php
     }
-    
+
     public function insert_support_box() {
         ?>
 <div class="nm-support-box">
@@ -171,43 +168,11 @@ class WPMeetupAdminPage {
 </div>
         <?php
     }
-    
-    public function prompt_support() {
-        if (!$this->core->options->get_option('support')) {
-            ?>
-                <div class="nm-support-prompt nm-error">
-                    <div class="nm-support-staff-form">
-                        <form action="" method="post">
-                            <input type="hidden" name="update" value="wpm-update-support-prompt" />
-                            <input type="hidden" name="support" value="checked" />
-                            <div class="nm-support-staff-label nm-support-staff-prompt-label">
-                                <!-- <label>It has been over <?php //echo $this->core->options->get_option('install_count'); ?> days since you installed the plugin. We work very hard to give you our plugins for free. Please help us continue to do so by supporting us!</label> -->
-                                <label>It has been over <?php echo $this->core->options->get_option('install_count'); ?> days, how are you liking WP MeetUp? Please consider adding a small link to the bottom of your calendar page.  The more sites that support us the more time we can justify building a great, free plugin for thousands of meetup groups. Visit <a href="http://www.nuancedmedia.com">Nuanced Media</a> or <a href="http://wordpress.org/extend/plugins/wp-meetup/">Review our plugin</a>.</label>
-                            </div>
-                            <input type="submit" class="nm-support-staff-prompt-submit button" value="Improve WP Meetup" />
-                            <div class="clear"></div>
-                        </form>
-                    </div>
-                    <div class="nm-support-staff-prompt-exit">
-                        <form action="" method="post">
-                            <input type="hidden" name="update" value="wpm-update-prompt" />
-                            <!-- <input type="hidden" name="queue_prompt" value="<?php  //echo time() + 10; ?>" /> -->
-                            <input type="hidden" name="queue_prompt" value="<?php  echo time() + 2419200; ?>" />
-                            <input type="hidden" name="install_count" value="<?php  echo $this->core->options->get_option('install_count') + 28; ?>" />
-                            <input type="submit" class="button" value="X">
-                        </form>
-                    </div>
-                    <div class="clear"></div>
-                </div>
-                
-            <?php
-        }
-    }
-    
+
     /**
      * Ian's Status class brought into my parent class
      */
-    
+
     public function render_header($title = NULL, $echo = TRUE) {
         global $file;
         $output = '';
@@ -230,17 +195,17 @@ class WPMeetupAdminPage {
             $this->insert_support_box();
             $this->render_postbox_close();
         }
-        
+
         $this->render_postbox_open('Review Our Plugin');
         $this->insert_review_us();
         $this->render_postbox_close();
-        
+
         $this->render_postbox_open('Join Our Email List');
         $this->insert_mailing_list();
         $this->render_postbox_close();
-        
-         
-        
+
+
+
         $this->render_postbox_open('Nuanced Media');
         $this->render_nm_logos();
         $this->render_postbox_close();
@@ -335,9 +300,9 @@ class WPMeetupAdminPage {
         }
         echo '<input type="checkbox" name="' . $name .'" value="checked" ' . $checked . '/>';
     }
-    
+
     public function render_nm_logos() {
-        ?> 
+        ?>
             <div class="nm-logo one-fourth">
                 <a href="http://nuancedmedia.com/" target="_blank">
                     <img src="http://nuancedmedia.com/wp-content/uploads/2014/04/nm-logo-black.png" />
@@ -376,4 +341,3 @@ class WPMeetupAdminPage {
         <?php
     }
 }
-
