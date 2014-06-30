@@ -15,6 +15,16 @@ class WPMeetupFactory {
      */
     var $core;
 
+    /**
+     * @var ARRAY $event_id_array
+     */
+    var $event_id_array = array();
+
+    /**
+    * @var ARRAY $post_id_array
+    */
+    var $post_id_array = array();
+
     public function __construct($core) {
         $this->core = $core;
     }
@@ -31,11 +41,11 @@ class WPMeetupFactory {
                 }
             }
         }
-        //$this->core->api->get_results();
     }
-    
+
     public function retrieve_and_store($slug) {
         $events_object = $this->core->api->get_results($slug);
+        //dump($events_object);
         if (is_null($events_object)) {
             if (is_admin()) {
                 echo '<div class="error">' . __('There was an error querying your events. Please try again at a later time.') . '</div>';
@@ -50,12 +60,13 @@ class WPMeetupFactory {
             return TRUE;
         }
         foreach ($events_array as $event) {
-            $this->store_individual($event);   
+            $this->store_individual($event);
         }
         return FALSE;
     }
-    
+
     public function store_individual($event) {
+
         $time = $event->time + $event->utc_offset;
         $event->time = $time/1000;
         if (gettype($event->time) == 'double') {
@@ -68,12 +79,14 @@ class WPMeetupFactory {
             'event_url' => $event->event_url,
             'group_id' => $event->group->id,
             'event' => serialize($event),
+            'status' => 'active',
         );
         $this->core->event_db->select('id');
         $this->core->event_db->where('wpm_event_id', $event->id);
         $id = $this->core->event_db->get();
         if (empty($id)) {$id = NULL;}
         else{$id = $id[0];$id = $id->id;}
+        $this->event_id_array[] = $id;
         $this->core->event_db->save($data, $id);
     }
 
@@ -97,6 +110,7 @@ class WPMeetupFactory {
             }
             else {
                 echo '<div class="error">' . __('WP Meetup: An error occured while updating posts. Pleaes demand an event update on the main settings page.') . '</div>';
+                return;
             }
             if ($event->wp_post_id) {
                 $post_array['ID'] = $event->wp_post_id;
@@ -107,9 +121,9 @@ class WPMeetupFactory {
                 $data[$key] = $val;
             }
             $this->core->event_db->save($data, $event->id);
-        } 
+        }
     }
-    
+
     function build_meetup_backlink($event) {
         $event_raw = unserialize($event->event);
         $event_link = $event->event_url;
@@ -150,7 +164,57 @@ class WPMeetupFactory {
         }
         $output .= $this->core->return_nm_credit();
         $output .= '</div>' . PHP_EOL;
-        
-        return $output; 
+
+        return $output;
     }
+
+    public function filter_old_events() {
+        
+        $unix_array = $this->get_unix_for_query_options();
+        $past = $unix_array['past'];
+        $future = $unix_array['future'];
+        $this->core->event_db->select('id');
+        if (!$this->core->options->get_option('delete_old')) { 
+            $this->core->event_db->where = ' WHERE `event_time` >= \'' . $past . '\' AND `event_time` <= \'' . $future . '\'';
+        }
+        $db_id_array = $this->core->event_db->get();
+        foreach ($db_id_array as $db_id) {
+            $id = $db_id->id;
+            if (!(in_array($id, $this->event_id_array))) {
+                $event = (array) $this->core->event_db->get($id, TRUE);
+                $event['status'] = 'inactive';
+                $d = $this->core->event_db->save($event, $event['id']);
+            }
+        } 
+        if ($this->core->options->get_option('auto_delete')) {
+            $this->delete_inactive_events();
+        }
+    }
+    
+    public function delete_inactive_events() {
+        $this->core->event_db->select('id');
+        $this->core->event_db->where('status', 'inactive');
+        $inactive = $this->core->event_db->get();
+        foreach ($inactive as $id) {
+            $id = $id->id;
+            $this->core->event_db->delete($id);
+        }
+    }
+    
+    public function get_unix_for_query_options() {
+        
+        $past = $this->core->options->get_option('past_months');
+        $past = nm_shift_unix(intval('-' . $past), 'month');
+        
+        $future = $this->core->options->get_option('future_months');
+        $future = nm_shift_unix(intval($future), 'month');
+        
+        return array('past' => $past, 'future'=>$future);
+        
+    }
+
+    public function clean_old_posts() {
+
+    }
+
 }

@@ -46,17 +46,11 @@ class WPMeetupOptionsAdmin extends WPMeetupAdminPage{
                 <input type="checkbox" name="support" value="checked"<?php echo $options['support'] ?> />
                 <label>Support the development team!</label>
                 <br /> 
-                <input type="checkbox" name="legend" value="checked" <?php echo $options['legend'] ?> />
-                <label>Would you like to display a legend showing which color applies to which group?</label>
-                <br />
                 <input type="checkbox" name="venue" value="checked" <?php echo $options['venue'] ?> />
                 <label>Would you like the venue address to display on event posts?</label>
                 <br />
                 <label>Root for custom post type: </label>
                 <input type="text" name="wpm_pt" value="<?php echo $options['wpm_pt'] ?>" />   
-                <br />
-                <label>Title for calendar legend: </label>
-                <input type="text" name="legend_title" value="<?php echo $options['legend_title'] ?>" />   
                 <br />
                 <label>Link name for event posts: </label>
                 <input type="text" name="link_name" value="<?php echo $options['link_name'] ?>" />   
@@ -64,6 +58,36 @@ class WPMeetupOptionsAdmin extends WPMeetupAdminPage{
                 
                 <input type="submit" class="button" value="Update Options" />
                 <?php 
+                $this->render_postbox_close();
+                $this->render_postbox_open('Legend Options');
+                ?>
+                <input type="checkbox" name="legend" value="checked" <?php echo $options['legend'] ?> />
+                <label>Would you like to display a legend showing which color applies to which group?</label>
+                <br />
+                <input type="checkbox" name="single_legend" value="checked" <?php echo $options['single_legend'] ?> />
+                <label>On single-group calendars, do you only want one group displayed?</label>
+                <br />
+                <label>Title for calendar legend: </label>
+                <input type="text" name="legend_title" value="<?php echo $options['legend_title'] ?>" />   
+                <br />
+                <label>Using the single-group legend? Add text above the group name: </label>
+                <input type="text" name="single_legend_title" value="<?php echo $options['single_legend_title'] ?>" />   
+                <br />
+                
+                <input type="submit" class="button" value="Update Options" />
+                <?php
+                $this->render_postbox_close();
+                $this->render_postbox_open('Database Options');
+                ?>
+                <input type="checkbox" name="auto_delete" value="checked" <?php echo $options['auto_delete'] ?> />
+                <label>Would you like to automatically delete inactive events?</label>
+                <br />
+                <input type="checkbox" name="delete_old" value="checked" <?php echo $options['delete_old'] ?> />
+                <label>Would you like events outside of your Query range to be marked inactive, not displaying on calendars and in archive pages?</label>
+                <br />
+                
+                <input type="submit" class="button" value="Update Options" />
+                <?php
                 $this->render_postbox_close();
                 $this->render_postbox_open('Query Options'); 
                 ?>

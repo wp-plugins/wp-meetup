@@ -34,8 +34,13 @@ class WPMeetupAPI extends ApiInteraction {
             $this->key = $this->core->options->get_option('key');
         }
         if (is_string($parameters)) {
+            $past = $this->core->options->get_option('past_months');
+            $future = $this->core->options->get_option('future_months');
+            $max = $this->core->options->get_option('max_events');
             $parameters = array(
                 'group_urlname' => $parameters,
+                'time' => '-' . $past . 'm,' . $future . 'm',
+                'page' => $max,
             );
         }
         if($type === 'post') {
@@ -53,7 +58,6 @@ class WPMeetupAPI extends ApiInteraction {
                 'group_urlname' =>'',
             );
             $settings = array_merge($defaults, $parameters);
-
             $url = 'https://api.meetup.com/2/events.json?key=';
 
             $url .= $this->key;
@@ -116,7 +120,5 @@ class WPMeetupAPI extends ApiInteraction {
         foreach ($parameters as $key=>$value) {
             $url .= '&' . $key . '=' . $value;
         }
-    }
-    
-    
+    } 
 }

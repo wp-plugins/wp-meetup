@@ -35,8 +35,7 @@ class WPMeetupEventsAdmin extends WPMeetupAdminPage{
     }
     
     public  function display_page() {
-        $this->render_postbox_open('Events');
-        $output = '';
+        $this->render_postbox_open('Active Events');
         ?>
 <table class="wpm-events-table">
     <thead>
@@ -50,6 +49,7 @@ class WPMeetupEventsAdmin extends WPMeetupAdminPage{
     </tr>
     </thead>
         <?php
+        $this->core->event_db->where('status', 'active');
         $events = $this->core->event_db->get();
         if (is_array($events)) {
             foreach ($events as $event) {
@@ -62,9 +62,55 @@ class WPMeetupEventsAdmin extends WPMeetupAdminPage{
 </table>
         <?php
         $this->render_postbox_close();
+        
+        $this->render_postbox_open('Inactive Events');
+        if ($this->core->options->get_option('auto_delete')) {
+            ?>
+<p>Currently inactive events are automatically deleted. If this is something that you don't want then it can be changed on the options page.</p>
+            <?php
+        }
+        ?>
+<form action="" method="post">
+    <input type="hidden" name="update" value="wpm-update-event-deletion">
+<table class="wpm-events-table">
+    <thead>
+        <tr>
+        <th> </th>
+        <th class="padding">Event Name</th>
+        <th class="padding">Event Date</th>
+        <th class="padding">Group</th>
+        <th class="padding">Group ID</th>
+        <th class="padding">WP Post ID</th>
+        <th class="padding">Delete Event</th>
+    </tr>
+    </thead>
+        <?php
+        $this->core->event_db->where('status', 'inactive');
+        $events = $this->core->event_db->get();
+        if (is_array($events) && !empty($events)) {
+            foreach ($events as $event) {
+                ?> <tr> <?php
+                $this->display_event($event, TRUE);
+                ?> </tr> <?php
+            }
+        } 
+        else {
+            ?>
+                <tr><td>There are no inactive events</td></tr>
+                <?php
+        }
+        ?>
+</table>
+    <br />
+    <input type="submit" value="Delete Selected" class="button">
+</form>
+        <?php
+        $this->render_postbox_close();
     }
     
-    public function display_event($event) {
+    
+    
+    public function display_event($event , $delete = NULL) {
         $event_raw = unserialize($event->event);
         ?>
 <td>
@@ -85,8 +131,14 @@ class WPMeetupEventsAdmin extends WPMeetupAdminPage{
 <td>
     <?php echo $event->wp_post_id ?>
 </td>
-
-        <?php
+        <?php 
+        if ($delete) { 
+            ?>
+            <td>
+                <input type="checkbox" name="<?php echo $event->id ?>" value="checked"><label>Delete</label>
+            </td>
+            <?php
+        }
         $this->group_color_styles();
     }
     

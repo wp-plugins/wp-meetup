@@ -4,7 +4,7 @@ Donate link: http://nuancedmedia.com/wordpress-meetup-plugin/
 Tags: meetup,meetup.com
 Requires at least: 3.7
 Tested up to: 3.9.1
-Stable tag: 2.2.6
+Stable tag: 2.2.7
 
 WP Meetup fetches event information from Meetup.com and creates posts for each event.
 
@@ -50,6 +50,11 @@ Note: With version 2.0.0, shortcodes where added, e.g. `[meetup-calendar]` by de
 3. Event calendar
 
 == Changelog ==
+
+= 2.2.7 =
+* Added options for automatic event deletion.
+* Added options for a single group calendar legend display.
+* Refactoring global $file to global $wpm_core.
 
 = 2.2.6 =
 * Correcting html output mistakes.

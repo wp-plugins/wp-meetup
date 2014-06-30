@@ -112,6 +112,69 @@ if (!function_exists('nm_remote_post')) {
     }
 }
 
+if (!function_exists('nm_shift_unix')) {
+    function nm_shift_unix($shift_int, $increment, $time = NULL) {
+        if (is_null($time)) {
+            $time = time();
+        }
+        $date = getdate($time);
+        //dump($date);
+        
+        // Increment by DAYS
+        if ($increment == 'day') {
+            $days = $shift_int;
+            $month = $date['mon'];
+            $year = $date['year'];
+            $dim = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+            if (($days + $date['mday']) > $dim) {
+                $new_time = nm_shift_unix( 1, 'month', $time);
+                $days = $days - $dim;
+                $newer_time = nm_shift_unix($days, 'day', $new_time);
+                $date = getdate($newer_time);
+            }
+            else if (($days + $date['mday']) <= 0) {
+                $new_time = nm_shift_unix( -1, 'month', $time);
+                $days = $days + cal_days_in_month(CAL_GREGORIAN, $month - 1, $year);
+                $newer_time = nm_shift_unix($days, 'day', $new_time);
+                $date = getdate($newer_time);
+            }
+            else {
+                $date['mday'] = $date['mday'] + $days;
+            }
+        }
+        
+        // Increment by WEEKS
+        if ($increment == 'week') {
+            $new_time = nm_shift_unix( $shift_int * 7, 'day', $time);
+            $date = getdate($new_time);
+        }
+        
+        // Increment by MONTHS
+        if ($increment == 'month') {
+            $date['mon'] = $date['mon'] + $shift_int;
+            if ($date['mon'] > 12) {
+                $new_time = nm_shift_unix( 1, 'year', $time);
+                $date = getdate($new_time);
+                $date['mon'] = $date['mon'] + $shift_int - 12;
+            }
+            if ($date['mon'] <= 0) {
+                $new_time = nm_shift_unix( -1, 'year', $time);
+                $date = getdate($new_time);
+                $date['mon'] = $date['mon'] + $shift_int + 12;
+            }
+        }
+        
+        // Increment by YEARS
+        if ($increment == 'year') {
+            $date['year'] = $date['year'] + $shift_int;
+        }
+        
+        $return_value = mktime( $date['hours'], $date['minutes'], $date['seconds'], $date['mon'], $date['mday'], $date['year']);
+        //dump($return_value);
+        return $return_value;
+    }
+}
+
 if (!function_exists('nm_clean_input')) {
     function nm_clean_input($string) {
         $output = strip_tags($string);
@@ -137,16 +200,4 @@ function echo_div($array) {
     }
     $output .= '>';
     echo $output;
-}
-
-/**
- * Emails Naunced Media Admin for various debug purposes.
- * This function will not be used unless a custom version 
- * of the plugin is personally sent to the user. In which case,
- * the user will be fully informed of the functions use. 
- */
-if (!function_exists('nm_email_admin')) {
-    function nm_email_admin($subject, $body) {
-        $mail = wp_mail('plugins@nuancedmedia.com', $subject, $body);
-    }
 }

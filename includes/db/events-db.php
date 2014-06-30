@@ -34,6 +34,7 @@ class WPMeetupEventsDB extends NMDB {
                  event_url text NOT NULL,
                  group_id text NOT NULL,
                  event longtext NOT NULL,
+                 status text NOT NULL,
                 PRIMARY KEY (id)
                 )
                 CHARACTER SET utf8

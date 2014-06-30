@@ -69,17 +69,20 @@ class WPMeetupDebugAdmin extends WPMeetupAdminPage{
 <tr>
     <td>Calendar Legend: </td><td><?php if ($options['legend']) { echo 'Displayed';} else {echo 'Not Displayed';} ?></td>
 </tr>
-
+<tr>
+    <td>Single Calendar Legend: </td><td><?php if ($options['single_legend']) { echo 'Displayed';} else {echo 'Not Displayed';} ?></td>
+</tr>
 <tr>
     <td>Link Text: </td><td><?php echo $options['link_name'] ?></td>
 </tr>
-
 <tr>
     <td>Custom Post Type Slug: </td><td><?php echo $options['wpm_pt'] ?></td>
 </tr>
-
 <tr>
     <td>Legend Title: </td><td><?php echo $options['legend_title'] ?></td>
+</tr>
+<tr>
+    <td>Single Legend Title: </td><td><?php echo $options['single_legend_title'] ?></td>
 </tr>
 
 

@@ -205,7 +205,7 @@ class WPMeetupGroupsAdmin extends WPMeetupAdminPage{
         ?>
         </table>
             <input type="hidden" name="update" value="wpm-update-color">
-            <input type="submit" value="Save and Delete">
+            <input type="submit" value="Update Groups">
         </form>
         <?php
     }

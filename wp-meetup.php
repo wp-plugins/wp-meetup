@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog to be displayed in a calendar, list, or various widgets.
-Version: 2.2.6
+Version: 2.2.7
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -172,18 +172,30 @@ class WPMeetup {
      * @var WPMeetupTrigger
      */
     var $trigger;
+    
+    /**
+     *
+     * @var WPMeetupFactory
+     */
+    var $factory;
+    
+    /**
+     * 
+     * @global string $wpm_core
+     */
 
     public function __construct() {
-
-        // Create - Update - Get options
-        $this->options = new WPMeetupOptions($this);
-        $this->options->update_options();
-        $this->post_type = $this->options->get_option('wpm_pt');
-
+        global $wpm_core;
+        
         // Create Database
         $this->event_db = new WPMeetupEventsDB();
         $this->group_db = new WPMeetupGroupsDB();
         $this->post_db = new WPMeetupPostsDB();
+        
+        // Create - Update - Get options
+        $this->options = new WPMeetupOptions($this);
+        $this->options->update_options();
+        $this->post_type = $this->options->get_option('wpm_pt');
 
         $this->api = new WPMeetupAPI($this);
         $this->pt = new WPMeetupPostType($this);
@@ -191,6 +203,11 @@ class WPMeetup {
         $this->trigger = new WPMeetupTrigger($this);
 
         new WPMeetupBackCap($this);
+        
+        // Update Version Number
+        $plugin_data = get_plugin_data( $wpm_core);
+        $this_version = $plugin_data['Version'];
+        $this->options->update_option('version', $this_version);
 
         // Execute Admin
         if (is_admin()) {
@@ -225,9 +242,10 @@ class WPMeetup {
     public function init() {
         // Retrieve events from DB
         $this->event_db->order_by('event_time');
+        $this->event_db->where('status', 'active');
         $this->events = $this->event_db->get();
         $this->groups = $this->group_db->get();
-
+       
     }
 
     public function load_styles() {
@@ -306,7 +324,7 @@ class WPMeetup {
 
 }
 
-global $file;
+global $wpm_core;
 global $wp_meetup;
-$file = ABSPATH . 'wp-content/plugins/wp-meetup/wp-meetup.php';
+$wpm_core = ABSPATH . 'wp-content/plugins/wp-meetup/wp-meetup.php';
 $wp_meetup = new WPMeetup();

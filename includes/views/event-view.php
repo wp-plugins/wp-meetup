@@ -81,6 +81,7 @@ class WPMeetupEventView {
             $output .= '</a>';
             $output .= '</p>';
             $output .= '</div>';
+            $output .= '<hr>';
             
         }
         
@@ -108,3 +109,4 @@ class WPMeetupEventView {
         return $new_name;
     }
 }
+

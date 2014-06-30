@@ -48,7 +48,7 @@ class NMCustomPost {
             echo '<div class="error">' . __('Development Error: The pt variable needs to be overwritten in each specific PT file.') . '</div>';
         }
     }
-    
+
     /**
      * Checks the database for the post and adds/updates accordingly.
      * @param type $post_array
@@ -71,7 +71,7 @@ class NMCustomPost {
             $id = $this->create_event_post($post_array);
         }
         return $id;
-        
+
     }
 
     /**

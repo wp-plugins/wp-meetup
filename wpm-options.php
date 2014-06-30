@@ -54,9 +54,13 @@ class WPMeetupOptions {
             'max_events' => 100,
             'legend' => FALSE,
             'legend_title' => __('Groups:'),
+            'single_legend_title' => '',
             'venue' => FALSE,
             'queue_prompt' => time() + 259200,
             'install_count' => 3,
+            'auto_delete' => FALSE,
+            'delete_old' => FALSE,
+            'single_legend' => FALSE,
         );
         if ($this->get_option() == FALSE) {
             $this->set_to_defaults();
@@ -78,6 +82,9 @@ class WPMeetupOptions {
             if (!isset($_POST['support'])) { $_POST['support'] = NULL; }
             if (!isset($_POST['legend'])) { $_POST['legend'] = NULL; }
             if (!isset($_POST['venue'])) { $_POST['venue'] = NULL; }
+            if (!isset($_POST['auto_delete'])) { $_POST['auto_delete'] = NULL; }
+            if (!isset($_POST['delete_old'])) { $_POST['delete_old'] = NULL; }
+            if (!isset($_POST['single_legend'])) { $_POST['single_legend'] = NULL; }
             $current_settings = $this->get_option();
             $clean_current_settings = array();
             foreach ($current_settings as $k=>$val) {
@@ -143,6 +150,15 @@ class WPMeetupOptions {
             $_POST['update'] = NULL;
             $this->updated = 'wpm-update-events';
             add_action('init', array(&$this, 'button_force_update'));
+        }
+        
+        else if (isset($_POST['update']) && $_POST['update'] === 'wpm-update-event-deletion') {
+            $_POST['update'] = NULL;
+            foreach ($_POST as $key=>$value) {
+                if ($key != 'update' && $key != NULL && $value == 'checked') {
+                    $this->core->event_db->delete($key);
+                }
+            }
         }
     }
     
@@ -314,6 +330,10 @@ class WPMeetupOptions {
         }
         else if ($this->updated == 'wpm-update-events') {
              echo '<div class="updated">Events have been updated.</div>';
+            $this->updated = FALSE;
+        }
+        else if ($this->updated == 'wpm-update-event-deletion') {
+             echo '<div class="updated">Specified inactive events have been deleted.</div>';
             $this->updated = FALSE;
         }
     }

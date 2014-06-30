@@ -28,22 +28,24 @@ class WPMeetupBackCap {
     
     /**
      * 
-     * @global type $file
+     * @global type $wpm_core
      * @param WPMeetup $core
      */
     public function __construct($core) {
-        global $file;
+        global $wpm_core;
         $this->core = $core;
         $this->db = $this->core->group_db;
-        $plugin_data = get_plugin_data( $file);
+        $plugin_data = get_plugin_data( $wpm_core);
         $this_version = $plugin_data['Version'];
         $this_version_array = explode('.', $this_version);
         if ($core->options->get_option('version')) {
             $version = $core->options->get_option('version');
+            
+            // If version is this version then exist out of here.
+            if ($this_version == $version) {return;}
             $version = explode('.', $version);
-            if ($version[0] == '2' && $version[1] >= 2 && $version[2] >= 3) {
-                return;
-            }
+            
+            // If version is after 2.2.0
             if ($version[0] == '2' && $version[1] >= 2) {
                 $update = array(
                     'queue_prompt' => time() + 259200,
@@ -51,7 +53,20 @@ class WPMeetupBackCap {
                 );
                 $core->options->update_option($update);
             }
+            
+            // If version is 2.2.x, such that x < 7
+            if ($version[0]=='2' && $version[1]=='2' && $version[2] < '7') {
+                $this->version_2_2_x_to_2_2_7();
+                $this->core->options->update_option('auto_delete', FALSE);
+                $this->core->options->update_option('delete_old', FALSE);
+                $this->core->options->update_option('single_legend', FALSE);
+                $this->core->options->update_option('single_legend_title', 'Events from:');
+                $this->core->trigger->execute_update();
+            }
+            return;
         }
+        
+        // Prior to 2.2.0 update handling.
         if($this_version != $core->options->get_option('version')) {
             $this->api = $this->core->api;
             $past_version = get_option('wp_meetup_version');
@@ -67,6 +82,13 @@ class WPMeetupBackCap {
             $this->core->trigger->update_events();
         }
         $this->core->options->update_option( 'version', $this_version);
+    }
+    
+    /**
+     * Update from 2.2.X such that X < 7
+     */
+    private function version_2_2_x_to_2_2_7 () {
+        $this->core->event_db->create_update_database();
     }
     
     /**

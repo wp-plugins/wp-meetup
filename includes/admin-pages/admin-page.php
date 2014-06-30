@@ -174,10 +174,10 @@ class WPMeetupAdminPage {
      */
 
     public function render_header($title = NULL, $echo = TRUE) {
-        global $file;
+        global $wpm_core;
         $output = '';
         if ($title == NULL) {
-            $plugin_data = get_plugin_data( $file);
+            $plugin_data = get_plugin_data( $wpm_core);
             $output .= '<h1>' . $plugin_data['Name'] . '</h1>';
         } else {
             $output = '<h1>' . $title . '</h1>';

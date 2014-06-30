@@ -76,7 +76,17 @@ class WPMeetupCalendar {
         $output .= '<div class="wp-meetup-wrapper' . $this->atts['width'] . '">';
 
         if ($this->atts['legend']) {
-            $output .= $this->return_legend();
+            if ($this->core->options->get_option('single_legend') && !empty($this->atts['group'])) {
+                $id = $this->get_group_id();
+                $this->core->group_db->select('group_name');
+                $this->core->group_db->where('group_id', $id);
+                $single_legend_title = $this->core->options->get_option('single_legend_title');
+                $group_name = $this->core->group_db->get(NULL, TRUE, TRUE);
+                $output .= '<h5>' . $single_legend_title . '</h5><h3> ' . $group_name . '</h3>';
+            }
+            else {
+                $output .= $this->return_legend();
+            }
         }
         $this->sort_events();
         $localtime = current_time('mysql');
@@ -146,6 +156,20 @@ class WPMeetupCalendar {
     }
 
     private function filter_groups() {
+        $id = $this->get_group_id();
+        if (!is_null($id)) {
+            foreach ($this->core->events as $event) {
+                if ($event->group_id == $id) {
+                    $this->use_events[] = $event;
+                }
+            }
+        }
+        else {
+            $this->use_events = $this->core->events;
+        }
+    }
+    
+    private function get_group_id() {
         $group = $this->atts['group'];
         $id = NULL;
         if (!empty($this->atts['group'])) {
@@ -163,7 +187,7 @@ class WPMeetupCalendar {
                     $id = $this->core->group_db->get(NULL, TRUE, TRUE);
                     if (!empty($id)) {
                         $this->atts['group'] = $id;
-                        $id = $this->filter_groups();
+                        $id = $this->get_group_id();
                     }
                     if (empty($id)) {
                         if (is_user_logged_in()) {
@@ -173,16 +197,7 @@ class WPMeetupCalendar {
                 }
             }
         }
-        if (!is_null($id)) {
-            foreach ($this->core->events as $event) {
-                if ($event->group_id == $id) {
-                    $this->use_events[] = $event;
-                }
-            }
-        }
-        else {
-            $this->use_events = $this->core->events;
-        }
+        return $id;
     }
 
     private function store_event($year, $month, $day, $event) {
