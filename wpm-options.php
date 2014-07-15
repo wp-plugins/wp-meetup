@@ -6,6 +6,10 @@
  * CHANGELOG:
  * 2014-04-11
  *      - Initial Class Creation
+ * 
+ * 2014-07-15
+ *      - Adding functionality to update API key 
+ *      
  */
 
 class WPMeetupOptions {
@@ -159,6 +163,20 @@ class WPMeetupOptions {
                     $this->core->event_db->delete($key);
                 }
             }
+        }
+        else if (isset($_POST['update']) && ($_POST['update'] === 'wpm-update-key')) {
+            $current_settings = $this->get_option();
+            $this->defaults = array_merge($this->defaults, $current_settings);
+            $update = array_merge($this->defaults, $_POST);
+            $data = array();
+            foreach ($update as $key=>$value) {
+                if ($key != 'update' && $key != NULL) {
+                    $data[$key] = $value;
+                }
+            }
+            $this->update_option($data);
+            $_POST['update'] = NULL;
+            $this->updated = 'wpm-update-key';
         }
     }
     
@@ -334,6 +352,10 @@ class WPMeetupOptions {
         }
         else if ($this->updated == 'wpm-update-event-deletion') {
              echo '<div class="updated">Specified inactive events have been deleted.</div>';
+            $this->updated = FALSE;
+        }
+        else if ($this->updated == 'wpm-update-key') {
+             echo '<div class="updated">API key has been updated.</div>';
             $this->updated = FALSE;
         }
     }

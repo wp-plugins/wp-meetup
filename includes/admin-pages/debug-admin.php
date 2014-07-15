@@ -35,7 +35,8 @@ class WPMeetupDebugAdmin extends WPMeetupAdminPage{
         $options = $this->core->options->get_option();        
         $this->render_postbox_open('API Key');
         ?>
-<input type="hidden" key="update" value="wpm-update-key">
+<form method="post" action="">
+<input type="hidden" name="update" value="wpm-update-key">
 <label>Your current API Key:</label>
 <span> <?php echo $options['key'] ?> </span>
 <br />
@@ -43,6 +44,7 @@ class WPMeetupDebugAdmin extends WPMeetupAdminPage{
 <input type="text" name="key" value="" placeholder="<?php echo $options['key'] ?>">
 <br />
 <input type="submit">
+</form>
         <?php
         $this->render_postbox_close();
         
