@@ -45,10 +45,15 @@ class WPMeetupFactory {
 
     public function retrieve_and_store($slug) {
         $events_object = $this->core->api->get_results($slug);
-        //dump($events_object);
         if (is_null($events_object)) {
             if (is_admin()) {
                 echo '<div class="error">' . __('There was an error querying your events. Please try again at a later time.') . '</div>';
+            }
+            return TRUE;
+        }
+        if (isset($events_object->problem)) {
+            if (is_admin()) {
+                echo '<div class="error">' . __('Please double check that you are connected to the internet and your API key is correct.') . '</div>';
             }
             return TRUE;
         }
@@ -84,8 +89,23 @@ class WPMeetupFactory {
         $this->core->event_db->select('id');
         $this->core->event_db->where('wpm_event_id', $event->id);
         $id = $this->core->event_db->get();
-        if (empty($id)) {$id = NULL;}
-        else{$id = $id[0];$id = $id->id;}
+        if (empty($id)) {
+            $id = NULL;
+            $this->core->event_db->save($data, $id);
+            
+            // ----- Now lets get the ID of the newly added event
+            // ----- And we can use that  for the event filtering. 
+            $this->core->event_db->select('id');
+            $this->core->event_db->where('wpm_event_id', $event->id);
+            $id = $this->core->event_db->get();
+            $id = $id[0];
+            $id = $id->id;
+        }
+        else{
+            $id = $id[0];
+            $id = $id->id;
+            $this->core->event_db->save($data, $id);
+        }
         $this->event_id_array[] = $id;
         $this->core->event_db->save($data, $id);
     }
@@ -123,7 +143,12 @@ class WPMeetupFactory {
             $this->core->event_db->save($data, $event->id);
         }
     }
-
+    
+    /**
+     * Build the on page Meetup backlink container
+     * @param type $event
+     * @return string
+     */
     function build_meetup_backlink($event) {
         $event_raw = unserialize($event->event);
         $event_link = $event->event_url;
@@ -167,30 +192,45 @@ class WPMeetupFactory {
 
         return $output;
     }
-
+    
+    /**
+     * Filter through events and make events that are in the DB but not returned
+     * in the query, then make event inactive
+     */
     public function filter_old_events() {
         
+        // ----- Get the UNIX code for the beginning and end of query parameters
         $unix_array = $this->get_unix_for_query_options();
         $past = $unix_array['past'];
         $future = $unix_array['future'];
+        
+        // ----- Build the query
         $this->core->event_db->select('id');
         if (!$this->core->options->get_option('delete_old')) { 
             $this->core->event_db->where = ' WHERE `event_time` >= \'' . $past . '\' AND `event_time` <= \'' . $future . '\'';
         }
         $db_id_array = $this->core->event_db->get();
+        
+        // ----- Compare the two ID arrays and update inactive events 
         foreach ($db_id_array as $db_id) {
             $id = $db_id->id;
+            
             if (!(in_array($id, $this->event_id_array))) {
                 $event = (array) $this->core->event_db->get($id, TRUE);
                 $event['status'] = 'inactive';
                 $d = $this->core->event_db->save($event, $event['id']);
             }
         } 
+        
+        // ----- If they want inactive events deleted then delete them
         if ($this->core->options->get_option('auto_delete')) {
             $this->delete_inactive_events();
         }
     }
     
+    /**
+     * Get all inacive events and delete them
+     */
     public function delete_inactive_events() {
         $this->core->event_db->select('id');
         $this->core->event_db->where('status', 'inactive');
@@ -201,6 +241,12 @@ class WPMeetupFactory {
         }
     }
     
+    /**
+     * Take the integer value of months and shift the current unix time
+     * to the appropriate date
+     * 
+     * @return type
+     */
     public function get_unix_for_query_options() {
         
         $past = $this->core->options->get_option('past_months');

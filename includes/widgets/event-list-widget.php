@@ -44,6 +44,7 @@ class WPMeetupEventListWidget extends NMWidget {
             'show' => 'future',
         );
         $wp_meetup->shortcode_list($atts, TRUE);
+        echo $after_widget;
     }
 
     /**

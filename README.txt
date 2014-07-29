@@ -51,6 +51,10 @@ Note: With version 2.0.0, shortcodes where added, e.g. `[meetup-calendar]` by de
 
 == Changelog ==
 
+= 2.2.9 =
+* Correcting widget handling. 
+* Hotfixes.  
+
 = 2.2.8 =
 * Adding functionality to API Key update form. 
 

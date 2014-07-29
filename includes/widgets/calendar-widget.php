@@ -48,6 +48,7 @@ class WPMeetupCalendarWidget extends NMWidget {
             'legend' => $instance['widget_legend'],
         );
         $wp_meetup->shortcode_calendar($atts, TRUE);
+        echo $after_widget;
     }
 
     /**

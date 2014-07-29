@@ -6,10 +6,6 @@
  * CHANGELOG:
  * 2014-04-11
  *      - Initial Class Creation
- * 
- * 2014-07-15
- *      - Adding functionality to update API key 
- *      
  */
 
 class WPMeetupOptions {
