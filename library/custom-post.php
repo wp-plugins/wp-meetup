@@ -68,6 +68,7 @@ class NMCustomPost {
             }
         }
         else {
+            $id = 0;
             $id = $this->create_event_post($post_array);
         }
         return $id;

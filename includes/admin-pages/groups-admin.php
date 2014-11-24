@@ -73,6 +73,8 @@ class WPMeetupGroupsAdmin extends WPMeetupAdminPage{
             $groups = $_POST['groups'];
             $group_array = explode(',', $groups);
             foreach ($group_array as $group) {
+                $group = str_replace('http://www.meetup.com/', '', $group);
+                $group = str_replace('www.meetup.com/', '', $group);
                 $group = str_replace('/', '', $group);
                 $group = str_replace('#', '', $group);
                 $group = str_replace(':', '', $group);
@@ -92,13 +94,14 @@ class WPMeetupGroupsAdmin extends WPMeetupAdminPage{
         $results = $this->api->get_results(array('group_urlname'=> $group), 'groups');
         if (nm_is_json($results)) {
             $results = json_decode($results);
-        } else if (!isset($results->results['0'])) {
-            echo '<div class="error">Please enter a correct group urlname.</div>';
+        } 
+        if (!isset($results->results['0'])) {
+            echo '<div class="error">Results not set. Please enter a correct group urlname.</div>';
             return;
         }
         $result = $results->results['0'];
         if (is_null($result)) {
-            echo '<div class="error">Please enter a correct group urlname.</div>';
+            echo '<div class="error">No results found. Please enter a correct group urlname.</div>';
             return;
         }
         $group_data = array(

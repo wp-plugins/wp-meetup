@@ -196,6 +196,10 @@ class WPMeetupAdminPage {
             $this->render_postbox_close();
         }
 
+        $this->render_postbox_open('Need Help?');
+        $this->insert_website_link();
+        $this->render_postbox_close();
+
         $this->render_postbox_open('Review Our Plugin');
         $this->insert_review_us();
         $this->render_postbox_close();
@@ -330,6 +334,11 @@ class WPMeetupAdminPage {
                 </div>
             </div>
             <div class="clear"></div>
+            <div class="google-plus-container" style="width: 100%; overflow: hidden;">
+                <!-- Google Plus Link -->
+                <script src="https://apis.google.com/js/platform.js" async defer></script>
+                <div class="g-page" data-href="//plus.google.com/u/0/103543858548099057697" data-rel="publisher"></div>
+            </div>
             <div class="nm-plugin-links">
                 <?php $this->render_postbox_open('WP Meetup Links') ?>
                 <ul class="wp-meetup-link-list">
@@ -337,6 +346,15 @@ class WPMeetupAdminPage {
                     <li><a href="http://nuancedmedia.com/wordpress-meetup-plugin/" target="_blank">WP Meetup Plugin homepage</a></li>
                 </ul>
                 <?php $this->render_postbox_close(); ?>
+            </div>
+        <?php
+    }
+
+    public function insert_website_link() {
+        ?>
+            <div class="website-link">
+            <a href="http://plugins.nuancedmedia.com/wordpress-meetup-plugin/" target="_BLANK"><button style="padding: 13px; background-color: #9f06c6; border-radius: 5px; color: #ffffff; border: none; width: 100%;">Visit Plugins Website</button></a>
+            <a href="http://plugins.nuancedmedia.com/installation-assistance/" target="_BLANK"><button style="padding: 13px; background-color: #069fc6; border-radius: 5px; color: #ffffff; border: none; width: 100%; margin-top: 13px;">Get Installation Assistance</button></a>
             </div>
         <?php
     }

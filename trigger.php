@@ -29,16 +29,33 @@ class WPMeetupTrigger {
         }
         add_action( 'wpm-event-update', array(&$this, 'execute_update') );
 
+        /**
+         * Debug Test Cron Job Query
+         */
+        //do_action('wpm-event-update');
+
     }
 
     public function execute_update() {
-        $this->update_events();
+        $error = $this->update_events();
+        if ($error) {
+            if (is_admin()) {
+                echo '<div class="error">' . __('WP Meetup: Query was cancelled. Please try again at a later time.') . '</div>';
+            }
+            return;
+        }
         $this->cleanse_old_events();
         $this->update_posts();
     }
 
     public function update_events() {
-        $this->core->factory->query();
+        $error = $this->core->factory->query();
+        if ($error) {
+            return $error;
+        }
+        else {
+            return null;
+        }
     }
 
     public function cleanse_old_events() {

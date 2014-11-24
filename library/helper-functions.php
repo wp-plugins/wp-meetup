@@ -76,11 +76,13 @@ if (!function_exists('nm_get_year')) {
     }
 }
 
-function nm_reset_permalinks() {
-    if (!class_exists('WP_Rewrite')) {
-        require_once(ABSPATH . '/wp-includes/rewrite.php');
+if (!function_exists('nm_reset_permalinks')) {
+    function nm_reset_permalinks() {
+        if (!class_exists('WP_Rewrite')) {
+            require_once(ABSPATH . '/wp-includes/rewrite.php');
+        }
+        $wp_rewrite->flush_rules(TRUE);
     }
-    $wp_rewrite->flush_rules(TRUE);
 }
 
 /**
@@ -118,8 +120,7 @@ if (!function_exists('nm_shift_unix')) {
             $time = time();
         }
         $date = getdate($time);
-        //dump($date);
-        
+
         // Increment by DAYS
         if ($increment == 'day') {
             $days = $shift_int;
@@ -142,13 +143,13 @@ if (!function_exists('nm_shift_unix')) {
                 $date['mday'] = $date['mday'] + $days;
             }
         }
-        
+
         // Increment by WEEKS
         if ($increment == 'week') {
             $new_time = nm_shift_unix( $shift_int * 7, 'day', $time);
             $date = getdate($new_time);
         }
-        
+
         // Increment by MONTHS
         if ($increment == 'month') {
             $date['mon'] = $date['mon'] + $shift_int;
@@ -163,14 +164,13 @@ if (!function_exists('nm_shift_unix')) {
                 $date['mon'] = $date['mon'] + $shift_int + 12;
             }
         }
-        
+
         // Increment by YEARS
         if ($increment == 'year') {
             $date['year'] = $date['year'] + $shift_int;
         }
-        
+
         $return_value = mktime( $date['hours'], $date['minutes'], $date['seconds'], $date['mon'], $date['mday'], $date['year']);
-        //dump($return_value);
         return $return_value;
     }
 }
@@ -184,20 +184,25 @@ if (!function_exists('nm_clean_input')) {
     }
 }
 
-
-function echo_clear() {
-    echo '<div class="clear"></div>';
-}
-
-function echo_div_close() {
-    echo '</div>';
-}
-
-function echo_div($array) {
-    $output = '<div';
-    foreach ($array as $key=>$value) {
-        $output .= ' ' . $key . '="' . $value . '"';
+if (!function_exists('echo_clear')) {
+    function echo_clear() {
+        echo '<div class="clear"></div>';
     }
-    $output .= '>';
-    echo $output;
+}
+
+if (!function_exists('echo_div_close')) {
+    function echo_div_close() {
+        echo '</div>';
+    }
+}
+
+if (!function_exists('echo_div')) {
+    function echo_div($array) {
+        $output = '<div';
+        foreach ($array as $key=>$value) {
+            $output .= ' ' . $key . '="' . $value . '"';
+        }
+        $output .= '>';
+        echo $output;
+    }
 }
