@@ -37,17 +37,18 @@ class WPMeetupFactory {
                 $slug = $slug_object->group_slug;
                 $error = $this->retrieve_and_store($slug);
                 if ($error) {
-                    return;
+                    return 'error';
                 }
             }
         }
+        return null;
     }
 
     public function retrieve_and_store($slug) {
         $events_object = $this->core->api->get_results($slug);
         if (is_null($events_object)) {
             if (is_admin()) {
-                echo '<div class="error">' . __('There was an error querying your events. Please try again at a later time.') . '</div>';
+                echo '<div class="error">' . __('WP Meetup: Query was not made. Please email plugins@nuancedmedia.com with a screenshot of your debug page as well as your options page.') . '</div>';
             }
             return TRUE;
         }
@@ -92,9 +93,9 @@ class WPMeetupFactory {
         if (empty($id)) {
             $id = NULL;
             $this->core->event_db->save($data, $id);
-            
+
             // ----- Now lets get the ID of the newly added event
-            // ----- And we can use that  for the event filtering. 
+            // ----- And we can use that  for the event filtering.
             $this->core->event_db->select('id');
             $this->core->event_db->where('wpm_event_id', $event->id);
             $id = $this->core->event_db->get();
@@ -134,6 +135,7 @@ class WPMeetupFactory {
             }
             if ($event->wp_post_id) {
                 $post_array['ID'] = $event->wp_post_id;
+                $post_array['post_status'] = 'inherit';
             }
             $id = $this->core->pt->add_post($post_array);
             $event->wp_post_id = $id;
@@ -143,7 +145,7 @@ class WPMeetupFactory {
             $this->core->event_db->save($data, $event->id);
         }
     }
-    
+
     /**
      * Build the on page Meetup backlink container
      * @param type $event
@@ -192,42 +194,42 @@ class WPMeetupFactory {
 
         return $output;
     }
-    
+
     /**
      * Filter through events and make events that are in the DB but not returned
      * in the query, then make event inactive
      */
     public function filter_old_events() {
-        
+
         // ----- Get the UNIX code for the beginning and end of query parameters
         $unix_array = $this->get_unix_for_query_options();
         $past = $unix_array['past'];
         $future = $unix_array['future'];
-        
+
         // ----- Build the query
         $this->core->event_db->select('id');
-        if (!$this->core->options->get_option('delete_old')) { 
+        if (!$this->core->options->get_option('delete_old')) {
             $this->core->event_db->where = ' WHERE `event_time` >= \'' . $past . '\' AND `event_time` <= \'' . $future . '\'';
         }
         $db_id_array = $this->core->event_db->get();
-        
-        // ----- Compare the two ID arrays and update inactive events 
+
+        // ----- Compare the two ID arrays and update inactive events
         foreach ($db_id_array as $db_id) {
             $id = $db_id->id;
-            
+
             if (!(in_array($id, $this->event_id_array))) {
                 $event = (array) $this->core->event_db->get($id, TRUE);
                 $event['status'] = 'inactive';
                 $d = $this->core->event_db->save($event, $event['id']);
             }
-        } 
-        
+        }
+
         // ----- If they want inactive events deleted then delete them
         if ($this->core->options->get_option('auto_delete')) {
             $this->delete_inactive_events();
         }
     }
-    
+
     /**
      * Get all inacive events and delete them
      */
@@ -240,23 +242,23 @@ class WPMeetupFactory {
             $this->core->event_db->delete($id);
         }
     }
-    
+
     /**
      * Take the integer value of months and shift the current unix time
      * to the appropriate date
-     * 
+     *
      * @return type
      */
     public function get_unix_for_query_options() {
-        
+
         $past = $this->core->options->get_option('past_months');
         $past = nm_shift_unix(intval('-' . $past), 'month');
-        
+
         $future = $this->core->options->get_option('future_months');
         $future = nm_shift_unix(intval($future), 'month');
-        
+
         return array('past' => $past, 'future'=>$future);
-        
+
     }
 
     public function clean_old_posts() {
