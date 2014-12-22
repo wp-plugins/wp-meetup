@@ -135,7 +135,7 @@ class WPMeetupFactory {
             }
             if ($event->wp_post_id) {
                 $post_array['ID'] = $event->wp_post_id;
-                $post_array['post_status'] = 'inherit';
+                $post_array['post_status'] = 'publish';
             }
             $id = $this->core->pt->add_post($post_array);
             $event->wp_post_id = $id;

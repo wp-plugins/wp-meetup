@@ -3,8 +3,8 @@ Contributors: Nuanced Media
 Donate link: http://nuancedmedia.com/wordpress-meetup-plugin/
 Tags: meetup,meetup.com
 Requires at least: 3.7
-Tested up to: 4.0.1
-Stable tag: 2.2.10
+Tested up to: 4.1.0
+Stable tag: 2.2.11
 
 WP Meetup fetches event information from Meetup.com and creates posts for each event.
 
@@ -51,16 +51,19 @@ Note: With version 2.0.0, shortcodes where added, e.g. `[meetup-calendar]` by de
 
 == Changelog ==
 
+= 2.2.11 =
+* Bug Fix: issue with inherit post statuses not linking.
+
 = 2.2.10 =
 * Handling bug fixes.
 * Minor changes to dashboard settings pages.
 
 = 2.2.9 =
-* Correcting widget handling. 
-* Hotfixes.  
+* Correcting widget handling.
+* Hotfixes.
 
 = 2.2.8 =
-* Adding functionality to API Key update form. 
+* Adding functionality to API Key update form.
 
 = 2.2.7 =
 * Added options for automatic event deletion.
