@@ -16,7 +16,7 @@ class WPMeetupMainAdmin  extends WPMeetupAdminPage{
 
     /**
      *
-     * @var WPMeetup 
+     * @var WPMeetup
      */
     var $core;
 
@@ -30,26 +30,26 @@ class WPMeetupMainAdmin  extends WPMeetupAdminPage{
             array($this, 'create_page')
         );
     }
-    
+
     public function display_page() {
-        
+
         $this->render_postbox_open('Instructions');
         $this->insert_instructions();
         $this->render_postbox_close();
-        
+
         $this->render_postbox_open('Calendar Shortcode');
         $this->insert_calendar_shortcode();
         $this->render_postbox_close();
-        
+
         $this->render_postbox_open('Event List Shortcode');
         $this->insert_eventlist_shortcode();
         $this->render_postbox_close();
-        
+
         $this->render_postbox_open('Update Events');
         $this->insert_event_update();
         $this->render_postbox_close();
     }
-    
+
     private function insert_instructions() {
         ?>
             <p>Thanks for using the WP Meetup Plugin for WordPress!</p>
@@ -67,9 +67,9 @@ class WPMeetupMainAdmin  extends WPMeetupAdminPage{
                     </form>
             </div>
         <?php
-        
+
     }
-    
+
     private function insert_calendar_shortcode() {
         ?>
             <p>In order to display the calendar on a page, place <strong>[meetup-calendar]</strong> on the page. By default, this displays the current month.</p>
@@ -86,7 +86,7 @@ class WPMeetupMainAdmin  extends WPMeetupAdminPage{
                 </li>
                 <li>
                     <p><strong>group:</strong> If you would only like a single group's events displayed on this page then you can specify that group here.</p>
-                    <p>Ex:<strong>group="group_urlname"</strong></p>
+                    <p>Ex: <strong>group="group_urlname"</strong></p>
                 </li>
                 <li>
                     <p><strong>width:</strong> Defines the width of the calendar. IMPORTANT --- Depending on the font-size of your site, this parameter might not work. For example, if you have a large font-size and try to create a one-third calendar, then the calendar will expand outside of the meant space. <strong>We are still working on this parameter.</strong></p>
@@ -97,7 +97,7 @@ class WPMeetupMainAdmin  extends WPMeetupAdminPage{
             <p>An example of all parameters in use would be as follows: <strong>[meetup-calendar past="2" future="1" group="group_urlname" width="one-third"]</strong></p>
         <?php
     }
-    
+
     private function insert_eventlist_shortcode() {
         ?>
             <p>In order to display the event list on a page, place <strong>[meetup-list]</strong> on the page. By default, this displays all events, past and future. </p>
@@ -112,9 +112,13 @@ class WPMeetupMainAdmin  extends WPMeetupAdminPage{
                     <p><strong>show:</strong> This parameter currently only have one option. That would be to display only the upcoming events instead of the default which is both past and future.</p>
                     <p>Ex: <strong>show="future"</strong></p>
                 </li>
+                <li>
+                    <p><strong>group:</strong> If you would only like a single group's events displayed on this page then you can specify that group here.</p>
+                    <p>Ex :<strong>group="group_urlname"</strong></p>
+                </li>
             </ul>
             <?php $this->render_postbox_close(); ?>
-            <p>An example of all parameters in use would be as follows: <strong>[meetup-list max="5" show="future"]</strong></p>
+            <p>An example of all parameters in use would be as follows: <strong>[meetup-list max="5" show="future" group="group_urlname"]</strong></p>
         <?php
     }
 }

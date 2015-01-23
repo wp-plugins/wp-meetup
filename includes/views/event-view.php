@@ -1,12 +1,12 @@
 <?php
 
 class WPMeetupEventView {
-    
+
     /**
      * Takes an single event and uses the data to create the display for the event
      * @param type $event The event object
      * @param bool $widget Whether or not this is for a widget
-     * @return STRING 
+     * @return STRING
      */
     public static function calendar_view($event, $widget = FALSE) {
         global $wp_meetup;
@@ -33,7 +33,7 @@ class WPMeetupEventView {
         }
         return $output;
     }
-    
+
     /**
      * Takes a single event and creates the appropriate list view
      * @param type $event
@@ -51,7 +51,7 @@ class WPMeetupEventView {
         }
         $event_raw = unserialize($event->event);
         $output = '';
-        
+
         if ($widget) {
             $output .= '<div class="wpm-date-display group' . $event->group_id . '">';
             $output .= date( 'M',$event->event_time);
@@ -76,18 +76,18 @@ class WPMeetupEventView {
             $end = 250;
             if (strlen($event_raw->description) < $end) {$end = strlen($event_raw->description);}
             $output .= substr($event_raw->description, 0, $end) . '... ';
-            $output .= '<a href="' . get_permalink($event->wp_post_id) . '">';
+            $output .= '<a href="' . $url . '">';
             $output .= 'Read More';
             $output .= '</a>';
             $output .= '</p>';
             $output .= '</div>';
             $output .= '<hr>';
-            
+
         }
-        
+
         return $output;
     }
-    
+
     public static function edit_name($event_name) {
         $new_name = '';
         $c = 0;
@@ -109,4 +109,3 @@ class WPMeetupEventView {
         return $new_name;
     }
 }
-
