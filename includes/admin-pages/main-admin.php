@@ -126,7 +126,7 @@ class WPMeetupMainAdmin  extends WPMeetupAdminPage{
                     <p>Ex :<strong>width="30%"</strong></p>
                 </li>
                 <li>
-                    <p><strong>align:</strong> If the list is displayed less than full width, as specified with the above parameter, this will float the list to either side of the content area, and other content can flow arround the list. If "center" is used, contente will not flow around the list. (options = "left","right","center")</p>
+                    <p><strong>align:</strong> If the list is displayed less than full width, as specified with the above parameter, this will float the list to either side of the content area, and other content can flow arround the list. If "center" is used, content will not flow around the list. (options = "left","right","center")</p>
                     <p>Ex :<strong>align="left"</strong></p>
                 </li>
             </ul>
