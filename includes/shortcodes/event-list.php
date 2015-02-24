@@ -64,7 +64,6 @@ class WPMeetupEventList {
         if( $width != '100%') {
             $output .= '<div style="width:'.$width .';';
             if( $align == 'center') {
-                dump("yhatsi");
                 $output .= '" class="aligncenter';
             } else {
                 $output .= 'float:'. $align . ';';
