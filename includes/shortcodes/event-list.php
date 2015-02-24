@@ -41,6 +41,9 @@ class WPMeetupEventList {
             'max' => NULL,
             'show' => NULL,
             'group' => '',
+            'display' => '',
+            'width' => '100%',
+            'align' => 'center'
         );
         if (is_array($atts)) {
             $this->atts = array_merge($defaults, $atts);
@@ -51,7 +54,24 @@ class WPMeetupEventList {
 
     public function execute() {
         $output = '';
-        if ($this->is_widget) {
+        $simple = FALSE;
+        $width = $this->atts['width'];
+        $align = $this->atts['align'];
+        $display = $this->atts['display'];
+        if( $display == 'simple') {
+            $simple = TRUE;
+        }
+        if( $width != '100%') {
+            $output .= '<div style="width:'.$width .';';
+            if( $align == 'center') {
+                dump("yhatsi");
+                $output .= '" class="aligncenter';
+            } else {
+                $output .= 'float:'. $align . ';';
+            }
+            $output .= '">';
+        }
+        if ($this->is_widget || $simple) {
             $output .= '<div class="meetup-widget-event-list">';
         }
         $use_events = array();
@@ -71,14 +91,12 @@ class WPMeetupEventList {
             }
         }
 
-
-
         $this->filter_groups($use_events);
 
         // Check for a count limit, if no limit exists
         if (is_null($this->atts['max'])) {
             foreach ($this->use_events as $event) {
-                $output .= WPMeetupEventView::list_view($event);
+                $output .= WPMeetupEventView::list_view($event, $this->is_widget, $simple);
             }
         }
         // Count limit exists, execute while loop
@@ -87,15 +105,40 @@ class WPMeetupEventList {
             $c = 0;
             while ($c < $this->atts['max']) {
                 if (isset($this->use_events[$i])) {
-                    $output .= WPMeetupEventView::list_view($this->use_events[$i], $this->is_widget);
+                    $output .= WPMeetupEventView::list_view($this->use_events[$i], $this->is_widget, $simple);
                 }
                 $c++;
                 $i++;
             }
         }
-        if ($this->is_widget) {
+        if ($this->is_widget || $simple) {
             $output .= '</div>';
         }
+
+        if($width != '100%') {
+            $output .=  '</div>';
+        }
+        if($this->atts['display'] == 'smaller') {
+            $output .= ' <style>
+                            .event-list-item {
+                              font-size:60%;
+                              margin:0;
+                            }
+                            .event-list-item>h2 {
+                              font-size:20px;
+                              margin-top:0.5em;
+                              margin-bottom:1em;
+                            }
+                            .event-list-item>h6 {
+                              font-size:15px;
+                              margin-top:0.5em;
+                              margin-bottom:1em;
+
+                            }
+                        </style>';
+        }
+
+
         $this->group_color_styles();
         $output .= $this->core->return_nm_credit();
         return $output;

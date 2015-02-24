@@ -116,9 +116,22 @@ class WPMeetupMainAdmin  extends WPMeetupAdminPage{
                     <p><strong>group:</strong> If you would only like a single group's events displayed on this page then you can specify that group here.</p>
                     <p>Ex :<strong>group="group_urlname"</strong></p>
                 </li>
+                 <li>
+                    <p><strong>display:</strong> This option alters the way in which the event list will be rendered. "simple" will mimmic the rendering of the event-list widget, and "smaller" will render the event-list as usual, however with smaller text.</p>
+                    <p>Ex :<strong>display="simple"</strong></p>
+                    <p>Ex :<strong>display="smaller"</strong></p>
+                </li>
+                <li>
+                    <p><strong>width:</strong> This where you can sepecify the % of the content area for the list to occupy. (default = 100%)</p>
+                    <p>Ex :<strong>width="30%"</strong></p>
+                </li>
+                <li>
+                    <p><strong>align:</strong> If the list is displayed less than full width, as specified with the above parameter, this will float the list to either side of the content area, and other content can flow arround the list. If "center" is used, contente will not flow around the list. (options = "left","right","center")</p>
+                    <p>Ex :<strong>align="left"</strong></p>
+                </li>
             </ul>
             <?php $this->render_postbox_close(); ?>
-            <p>An example of all parameters in use would be as follows: <strong>[meetup-list max="5" show="future" group="group_urlname"]</strong></p>
+            <p>An example of all parameters in use would be as follows: <strong>[meetup-list max="5" show="future" group="group_urlname" simple="true"]</strong></p>
         <?php
     }
 }
