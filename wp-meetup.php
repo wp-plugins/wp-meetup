@@ -4,7 +4,7 @@
 Plugin Name: WP Meetup
 Plugin URI: http://nuancedmedia.com/wordpress-meetup-plugin/
 Description: Pulls events from Meetup.com onto your blog to be displayed in a calendar, list, or various widgets.
-Version: 2.2.12
+Version: 2.2.13
 Author: Nuanced Media
 Author URI: http://nuancedmedia.com/
 
@@ -264,9 +264,9 @@ class WPMeetup {
     }
 
     public function load_styles() {
-        $pluginDirectory = trailingslashit(plugins_url(basename(dirname(__FILE__))));
-        wp_register_style('wpm-styles', $pluginDirectory . 'css/wp-meetup.css');
-        wp_enqueue_style('wpm-styles');
+		$pluginDirectory = trailingslashit(plugins_url(basename(dirname(__FILE__))));
+		wp_register_style('wpm-styles', $pluginDirectory . 'css/wp-meetup.css');
+		wp_enqueue_style('wpm-styles');
     }
 
     public function render_nm_credit() {
@@ -297,17 +297,17 @@ class WPMeetup {
     }
 
     public function include_events_in_loop($query) {
-        if (is_home() && $query->is_main_query()) {
-            $query->set( 'post_type', array( 'post', $this->options->get_option('wpm_pt')) );
-        }
+		if (is_home() && $query->is_main_query()) {
+			$query->set( 'post_type', array( 'post', $this->options->get_option('wpm_pt')) );
+		}
         return $query;
-    }
+	}
 
     public function add_plugin_settings_link($links) {
-        $settings_link = '<a href="' . admin_url() . 'admin.php?page=wp_meetup_settings">' . __('Settings') . '</a>';
-        array_unshift($links, $settings_link);
-        return $links;
-    }
+		$settings_link = '<a href="' . admin_url() . 'admin.php?page=wp_meetup_settings">' . __('Settings') . '</a>';
+		array_unshift($links, $settings_link);
+		return $links;
+	}
 
     public function shortcode_calendar($atts, $is_widget = FALSE) {
         $calendar = new WPMeetupCalendar($this, $atts, $is_widget);

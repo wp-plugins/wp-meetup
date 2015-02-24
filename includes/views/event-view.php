@@ -8,7 +8,7 @@ class WPMeetupEventView {
      * @param bool $widget Whether or not this is for a widget
      * @return STRING
      */
-    public static function calendar_view($event, $widget = FALSE) {
+    public static function calendar_view($event, $widget = FALSE, $simple = FALSE) {
         global $wp_meetup;
         $event_raw = unserialize($event->event);
         if ($wp_meetup->options->get_option('link_redirect')) {
@@ -40,7 +40,7 @@ class WPMeetupEventView {
      * @param bool $widget
      * @return string
      */
-    public static function list_view($event, $widget = FALSE) {
+    public static function list_view($event, $widget = FALSE, $simple = FALSE) {
         global $wp_meetup;
         $event_raw = unserialize($event->event);
         if ($wp_meetup->options->get_option('link_redirect')) {
@@ -52,7 +52,7 @@ class WPMeetupEventView {
         $event_raw = unserialize($event->event);
         $output = '';
 
-        if ($widget) {
+        if ($widget || $simple) {
             $output .= '<div class="wpm-date-display group' . $event->group_id . '">';
             $output .= date( 'M',$event->event_time);
             $output .= '<br />';
